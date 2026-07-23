@@ -1,0 +1,26 @@
+{
+  "name": "money-market-strategies",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint packages vitest.config.ts",
+    "test": "vitest run",
+    "verify": "npm run lint && npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.1",
+    "eslint": "10.7.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.65.0",
+    "vitest": "4.1.10"
+  }
+}
