@@ -4,3 +4,5 @@ export const projectIdentity = {
 } as const;
 
 export type DiagnosticMode = "diagnostic-only";
+
+export * from "./researchEvidence.js";
