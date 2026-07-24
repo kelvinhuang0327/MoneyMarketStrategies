@@ -6,3 +6,4 @@ export const projectIdentity = {
 export type DiagnosticMode = "diagnostic-only";
 
 export * from "./researchEvidence.js";
+export * from "./experimentRegistry.js";
