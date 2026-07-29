@@ -10,11 +10,11 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspaces --if-present",
+    "build": "npm run build --workspace @mms/contracts && npm run build --workspace @mms/research-kernel && npm run build --workspace @mms/experiment-registry",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint packages vitest.config.ts",
     "test": "vitest run",
-    "verify": "npm run lint && npm run typecheck && npm test && npm run build"
+    "verify": "npm run lint && npm run build && npm run typecheck && npm test"
   },
   "devDependencies": {
     "@types/node": "22.20.1",
