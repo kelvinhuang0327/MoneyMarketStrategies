@@ -6,12 +6,6 @@
     },
     {
       "path": "./packages/research-kernel"
-    },
-    {
-      "path": "./packages/experiment-registry"
-    },
-    {
-      "path": "./packages/research-runner"
     }
   ]
 }
