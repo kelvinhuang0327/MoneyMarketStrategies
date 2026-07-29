@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace @mms/contracts && npm run build --workspace @mms/research-kernel && npm run build --workspace @mms/experiment-registry",
+    "build": "npm run build --workspace @mms/contracts && npm run build --workspace @mms/research-kernel && npm run build --workspace @mms/experiment-registry && npm run build --workspace @mms/research-runner",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint packages vitest.config.ts",
     "test": "vitest run",
