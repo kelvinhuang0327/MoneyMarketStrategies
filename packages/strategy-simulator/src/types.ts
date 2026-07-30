@@ -15,6 +15,11 @@ export interface LongCashReplayRow {
 
 export type LongCashReplayPosition = "LONG" | "CASH";
 
+export interface SelectedScheduleWindow {
+  readonly entryDate: string;
+  readonly exitDate: string;
+}
+
 export interface LongCashReplayWindow {
   readonly sourceRowIndex: number;
   readonly entryDate: string;
@@ -44,6 +49,9 @@ export interface LongCashReplayPathSummary {
   readonly cashWindowCount: number;
   readonly roundTripCount: number;
   readonly totalTransactionCost: number;
+  readonly winningLongTradeCount: number;
+  readonly losingLongTradeCount: number;
+  readonly averageActiveLongNetReturn: number;
 }
 
 export interface LongCashReplayGuardrails {
@@ -65,10 +73,13 @@ export interface LongCashReplayResult {
   readonly replayWindowCount: number;
   readonly skippedOverlapCount: number;
   readonly inputSha256: string;
+  readonly selectedSchedule: readonly SelectedScheduleWindow[];
+  readonly selectedScheduleSha256: string;
   readonly replayWindowsSha256: string;
   readonly windows: readonly LongCashReplayWindow[];
   readonly strategy: LongCashReplayPathSummary;
   readonly benchmark: LongCashReplayPathSummary;
+  readonly excessReturn: number;
   readonly guardrails: LongCashReplayGuardrails;
   readonly normalizedResultSha256: string;
 }
