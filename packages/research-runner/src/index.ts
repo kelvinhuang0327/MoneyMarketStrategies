@@ -8,3 +8,15 @@ export type {
   RunResearchExperimentInput,
   RunResearchExperimentResult,
 } from "./researchExperimentRunner.js";
+
+export {
+  ResearchStudyRunnerError,
+  runResearchStudy,
+} from "./researchStudyRunner.js";
+
+export type {
+  EvidenceLevelCount,
+  PromotionStatusCount,
+  RunResearchStudyInput,
+  RunResearchStudyResult,
+} from "./researchStudyRunner.js";
