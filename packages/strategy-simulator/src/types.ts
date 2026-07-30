@@ -169,6 +169,50 @@ export interface WalkForwardThresholdEvaluationResult {
   readonly normalizedResultSha256: string;
 }
 
+export interface WalkForwardStabilityFoldDiagnostic {
+  readonly foldId: string;
+  readonly validationStartDate: string;
+  readonly validationEndDate: string;
+  readonly selectedThreshold: number;
+  readonly validationStrategyReturn: number;
+  readonly validationBenchmarkReturn: number;
+  readonly validationExcessReturn: number;
+  readonly validationMaximumDrawdown: number;
+  readonly validationActiveLongCount: number;
+  readonly validationCashCount: number;
+}
+
+export interface WalkForwardStabilityDiagnostics {
+  readonly schemaVersion: "MMS_WALK_FORWARD_STABILITY_DIAGNOSTICS_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly foldCount: number;
+  readonly foldDiagnostics: readonly WalkForwardStabilityFoldDiagnostic[];
+  readonly positiveStrategyReturnFoldCount: number;
+  readonly positiveExcessReturnFoldCount: number;
+  readonly nonNegativeExcessReturnFoldCount: number;
+  readonly meanValidationStrategyReturn: number;
+  readonly medianValidationStrategyReturn: number;
+  readonly meanValidationBenchmarkReturn: number;
+  readonly medianValidationBenchmarkReturn: number;
+  readonly meanValidationExcessReturn: number;
+  readonly medianValidationExcessReturn: number;
+  readonly bestFoldByExcessReturn: WalkForwardStabilityFoldDiagnostic;
+  readonly worstFoldByExcessReturn: WalkForwardStabilityFoldDiagnostic;
+  readonly maximumValidationDrawdownAcrossFolds: number;
+  readonly selectedThresholdFrequencies: readonly WalkForwardThresholdFrequency[];
+  readonly uniqueSelectedThresholdCount: number;
+  readonly dominantSelectedThreshold: number;
+  readonly dominantSelectedThresholdFrequency: number;
+  readonly dominantSelectedThresholdRatio: number;
+  readonly aggregateStrategyReturn: number;
+  readonly aggregateBenchmarkReturn: number;
+  readonly aggregateExcessReturn: number;
+  readonly aggregateMaximumDrawdown: number;
+  readonly foldDiagnosticsSha256: string;
+  readonly selectedThresholdFrequenciesSha256: string;
+  readonly normalizedResultSha256: string;
+}
+
 export class LongCashReplayError extends Error {
   constructor(message: string) {
     super(`strategy simulator failed closed: ${message}`);

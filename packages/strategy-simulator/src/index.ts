@@ -2,6 +2,7 @@ export { calibrateLongCashThreshold } from "./calibrateLongCashThreshold.js";
 export {
   runWalkForwardThresholdEvaluation,
 } from "./runWalkForwardThresholdEvaluation.js";
+export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.js";
 export { simulateLongCashReplay } from "./simulateLongCashReplay.js";
 export { LongCashReplayError } from "./types.js";
 export type {
@@ -22,4 +23,6 @@ export type {
   WalkForwardThresholdEvaluationInput,
   WalkForwardThresholdEvaluationResult,
   WalkForwardThresholdFrequency,
+  WalkForwardStabilityDiagnostics,
+  WalkForwardStabilityFoldDiagnostic,
 } from "./types.js";
