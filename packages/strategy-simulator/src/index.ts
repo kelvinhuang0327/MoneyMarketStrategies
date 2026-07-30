@@ -1,3 +1,4 @@
+export { calibrateLongCashThreshold } from "./calibrateLongCashThreshold.js";
 export { simulateLongCashReplay } from "./simulateLongCashReplay.js";
 export { LongCashReplayError } from "./types.js";
 export type {
@@ -9,4 +10,7 @@ export type {
   LongCashReplayResult,
   LongCashReplayRow,
   LongCashReplayWindow,
+  LongCashThresholdCalibrationCandidateResult,
+  LongCashThresholdCalibrationInput,
+  LongCashThresholdCalibrationResult,
 } from "./types.js";

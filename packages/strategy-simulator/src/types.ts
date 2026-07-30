@@ -84,6 +84,36 @@ export interface LongCashReplayResult {
   readonly normalizedResultSha256: string;
 }
 
+export interface LongCashThresholdCalibrationInput {
+  readonly symbol: string;
+  readonly candidateThresholds: readonly number[];
+  readonly roundTripCostBps: number;
+  readonly initialCapital: number;
+  readonly calibrationRows: readonly LongCashReplayRow[];
+  readonly validationRows: readonly LongCashReplayRow[];
+}
+
+export interface LongCashThresholdCalibrationCandidateResult {
+  readonly threshold: number;
+  readonly eligible: boolean;
+  readonly replay: LongCashReplayResult;
+}
+
+export interface LongCashThresholdCalibrationResult {
+  readonly schemaVersion: "MMS_LONG_CASH_THRESHOLD_CALIBRATION_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly symbol: string;
+  readonly roundTripCostBps: number;
+  readonly initialCapital: number;
+  readonly candidateThresholds: readonly number[];
+  readonly calibrationMaxExitDate: string;
+  readonly validationMinEntryDate: string;
+  readonly calibrationResults: readonly LongCashThresholdCalibrationCandidateResult[];
+  readonly selectedThreshold: number;
+  readonly selectedCalibrationResult: LongCashReplayResult;
+  readonly validationResult: LongCashReplayResult;
+}
+
 export class LongCashReplayError extends Error {
   constructor(message: string) {
     super(`strategy simulator failed closed: ${message}`);
