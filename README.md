@@ -9,10 +9,15 @@ map is deliberately small:
 - `@mms/contracts` holds minimal shared identity and diagnostic-mode contracts.
 - `@mms/research-kernel` is the boundary for deterministic quantitative
   research code.
+- `@mms/experiment-registry` records immutable diagnostic experiment evidence.
+- `@mms/research-runner` coordinates deterministic research studies.
+- `@mms/strategy-simulator` replays single-symbol, non-overlapping long/cash
+  strategies against a cost-matched always-long benchmark.
 
-The current foundation is diagnostic-only and research-only. It does not
-provide investment advice, trading signals, or trading execution. No production
-database has been selected, and the local bootstrap has no configured remote.
+The current foundation is diagnostic-only and research-only. Historical replay
+positions are research evidence, not current trading signals. The platform does
+not provide investment advice or trading execution. No production database has
+been selected, and the local bootstrap has no configured remote.
 
 ## Authority boundaries
 

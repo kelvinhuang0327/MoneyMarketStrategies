@@ -6,6 +6,9 @@
     },
     {
       "path": "./packages/research-kernel"
+    },
+    {
+      "path": "./packages/strategy-simulator"
     }
   ]
 }
