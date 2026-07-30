@@ -114,6 +114,61 @@ export interface LongCashThresholdCalibrationResult {
   readonly validationResult: LongCashReplayResult;
 }
 
+export interface WalkForwardThresholdEvaluationFoldInput {
+  readonly foldId: string;
+  readonly candidateThresholds: readonly number[];
+  readonly calibrationRows: readonly LongCashReplayRow[];
+  readonly validationRows: readonly LongCashReplayRow[];
+}
+
+export interface WalkForwardThresholdEvaluationInput {
+  readonly symbol: string;
+  readonly roundTripCostBps: number;
+  readonly initialCapital: number;
+  readonly folds: readonly WalkForwardThresholdEvaluationFoldInput[];
+}
+
+export interface WalkForwardThresholdEvaluationFoldResult {
+  readonly foldId: string;
+  readonly validationStartDate: string;
+  readonly validationEndDate: string;
+  readonly selectedThreshold: number;
+  readonly calibrationResult: LongCashThresholdCalibrationResult;
+}
+
+export interface WalkForwardEquityCurvePoint {
+  readonly foldId: string | null;
+  readonly capital: number;
+}
+
+export interface WalkForwardThresholdFrequency {
+  readonly threshold: number;
+  readonly count: number;
+}
+
+export interface WalkForwardThresholdEvaluationResult {
+  readonly schemaVersion: "MMS_WALK_FORWARD_THRESHOLD_EVALUATION_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly symbol: string;
+  readonly roundTripCostBps: number;
+  readonly initialCapital: number;
+  readonly foldCount: number;
+  readonly orderedFoldIds: readonly string[];
+  readonly foldResults: readonly WalkForwardThresholdEvaluationFoldResult[];
+  readonly aggregateStrategyEquityCurve: readonly WalkForwardEquityCurvePoint[];
+  readonly aggregateBenchmarkEquityCurve: readonly WalkForwardEquityCurvePoint[];
+  readonly cumulativeAggregateStrategyReturn: number;
+  readonly cumulativeAggregateBenchmarkReturn: number;
+  readonly aggregateExcessReturn: number;
+  readonly aggregateMaximumStrategyDrawdown: number;
+  readonly thresholdFrequencies: readonly WalkForwardThresholdFrequency[];
+  readonly normalizedFoldsSha256: string;
+  readonly foldResultsSha256: string;
+  readonly aggregateStrategyCurveSha256: string;
+  readonly aggregateBenchmarkCurveSha256: string;
+  readonly normalizedResultSha256: string;
+}
+
 export class LongCashReplayError extends Error {
   constructor(message: string) {
     super(`strategy simulator failed closed: ${message}`);
