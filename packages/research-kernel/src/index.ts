@@ -12,4 +12,6 @@ export * from "./features.js";
 export * from "./logisticRegression.js";
 export * from "./researchEvidenceKernel.js";
 export * from "./scaler.js";
+export * from "./twseAdjustedOhlcvQualification.js";
+export * from "./twStrategyResearchRunner.js";
 export * from "./types.js";

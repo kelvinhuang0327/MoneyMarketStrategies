@@ -14,7 +14,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint packages vitest.config.ts",
     "test": "vitest run",
-    "verify": "npm run lint && npm run build && npm run typecheck && npm test"
+    "verify": "npm run lint && npm run build && npm run typecheck && npm test",
+    "research:tw": "node scripts/runTwStrategyResearchStudy.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.1",
