@@ -450,5 +450,5 @@ export function buildScenarioFoldInputs(
 
 export const LEGACY_ML_RETRAINING_STATUS = "NEGATIVE_HISTORICAL_EVIDENCE" as const;
 export const PROMOTION_DECISION = "WITHHELD" as const;
-export const PROMOTION_REASON = "STABILITY_GATE_NOT_YET_APPLIED" as const;
+export const PROMOTION_REASON = "STABILITY_GATE_EVIDENCE_ONLY_MANUAL_RESEARCH_REVIEW_REQUIRED" as const;
 export const CURRENT_DATE_PREDICTION_CLAIM = false as const;

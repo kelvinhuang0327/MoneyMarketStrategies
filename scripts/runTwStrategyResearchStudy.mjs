@@ -2,11 +2,11 @@
 // Thin CLI: owns every Node-specific concern (reading the pinned git blob,
 // verifying its SHA-256 pin, hashing fixture payload text) and composes
 // @mms/research-kernel's pure TW strategy research runner primitives with
-// @mms/strategy-simulator's existing walk-forward/threshold evaluation to
-// produce the three required scenarios (2330_RAW_CONTROL, 0050_RAW,
-// 0050_SOURCE_QUALIFIED_ADJUSTED) as deterministic JSON. Diagnostic-only: no
-// investment advice, no promotion, no execution, no network access, no
-// writes to the legacy repository.
+// @mms/strategy-simulator's walk-forward/threshold evaluation and stability
+// gate to produce the three required scenarios (2330_RAW_CONTROL, 0050_RAW,
+// 0050_SOURCE_QUALIFIED_ADJUSTED) as deterministic JSON and Markdown.
+// Diagnostic-only: no investment advice, no promotion, no execution, no network
+// access, no writes to the legacy repository.
 import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
@@ -33,8 +33,10 @@ import {
   VOLUME_ADJUSTMENT_STATUS,
 } from "@mms/research-kernel";
 import {
+  evaluateWalkForwardStabilityGate,
   runWalkForwardThresholdEvaluation,
   summarizeWalkForwardStability,
+  TW_STABILITY_RESEARCH_POLICY_V1,
 } from "@mms/strategy-simulator";
 
 const DEFAULTS = Object.freeze({
@@ -88,7 +90,7 @@ function round8(value) {
   return Object.is(rounded, -0) ? 0 : rounded;
 }
 
-function runScenario(symbol, marketRows) {
+function runScenario(symbol, marketRows, policy = TW_STABILITY_RESEARCH_POLICY_V1) {
   const prep = buildScenarioFoldInputs(marketRows, { candidateThresholds: CANDIDATE_THRESHOLDS });
   const walkForward = runWalkForwardThresholdEvaluation({
     symbol,
@@ -97,6 +99,7 @@ function runScenario(symbol, marketRows) {
     folds: prep.foldInputs,
   });
   const stability = summarizeWalkForwardStability(walkForward);
+  const stabilityGate = evaluateWalkForwardStabilityGate({ policy, diagnostics: stability });
   const operativeThreshold = walkForward.foldResults.at(-1).selectedThreshold;
   const position = prep.latestSignal.probabilityUp >= operativeThreshold ? "LONG" : "CASH";
   return {
@@ -105,6 +108,7 @@ function runScenario(symbol, marketRows) {
     foldBoundaries: prep.foldBoundaries,
     walkForward,
     stability,
+    stabilityGate,
     latestSignal: {
       ...prep.latestSignal,
       operativeThreshold,
@@ -124,8 +128,73 @@ function scenarioOutput(symbol, scenarioId, result, extra) {
     foldBoundaries: result.foldBoundaries,
     walkForward: result.walkForward,
     stability: result.stability,
+    stabilityGate: result.stabilityGate,
     latestSignal: result.latestSignal,
   };
+}
+
+function generateMarkdownReport(output) {
+  const policy = TW_STABILITY_RESEARCH_POLICY_V1;
+  const scenarios = output.scenarios;
+  const lines = [
+    "# Taiwan Strategy Research Study V1 Report",
+    "",
+    "## Executive Summary",
+    `- **Schema Version**: ${output.schemaVersion}`,
+    `- **Review Date**: ${output.reviewDate}`,
+    `- **Research Mode**: ${output.researchMode}`,
+    `- **Promotion Decision**: ${output.promotionDecision}`,
+    `- **Promotion Reason**: \`${output.promotionReason}\``,
+    `- **Source CSV SHA256**: \`${output.source.sha256}\``,
+    `- **Source Row Count**: ${output.source.rowCount} (${output.source.dateRange.min} to ${output.source.dateRange.max})`,
+    "",
+    "## Walk-Forward Stability Gate Policy",
+    `- **Policy ID**: \`${policy.policyId}\``,
+    `- **Policy Version**: \`${policy.policyVersion}\``,
+    `- **Minimum Fold Count**: ${policy.minimumFoldCount}`,
+    `- **Minimum Positive Excess Return Fold Ratio**: ${policy.minimumPositiveExcessReturnFoldRatio}`,
+    `- **Minimum Median Validation Excess Return**: ${policy.minimumMedianValidationExcessReturn}`,
+    `- **Minimum Aggregate Excess Return**: ${policy.minimumAggregateExcessReturn}`,
+    `- **Maximum Aggregate Drawdown**: ${policy.maximumAggregateDrawdown}`,
+    `- **Maximum Dominant Threshold Ratio**: ${policy.maximumDominantThresholdRatio}`,
+    "",
+    "## Scenario Stability Gate Evaluation Results",
+    "",
+    "| Scenario | Symbol | Adj Applied | Gate Result | Agg Excess Return | Agg Max Drawdown | Dominant Thresh Ratio | Position |",
+    "| --- | --- | --- | --- | --- | --- | --- | --- |",
+  ];
+
+  for (const [key, sc] of Object.entries(scenarios)) {
+    const gate = sc.stabilityGate;
+    const aggExcess = sc.walkForward.aggregateExcessReturn.toFixed(6);
+    const aggDrawdown = sc.walkForward.aggregateMaximumStrategyDrawdown.toFixed(6);
+    const domRatio = sc.stability.dominantSelectedThresholdRatio.toFixed(6);
+    lines.push(
+      `| ${key} | ${sc.symbol} | ${sc.adjustmentApplied} | **${gate.overallPass ? "PASS" : "FAIL"}** | ${aggExcess} | ${aggDrawdown} | ${domRatio} | ${sc.latestSignal.position} |`,
+    );
+  }
+
+  lines.push("", "## Gate Criteria Detail by Scenario", "");
+  for (const [key, sc] of Object.entries(scenarios)) {
+    const gate = sc.stabilityGate;
+    lines.push(`### ${key} (Overall: ${gate.overallPass ? "PASS" : "FAIL"})`, "");
+    lines.push("| Criterion ID | Pass | Observed | Threshold | Comparator |");
+    lines.push("| --- | --- | --- | --- | --- |");
+    for (const c of gate.criteria) {
+      lines.push(`| \`${c.criterionId}\` | ${c.pass ? "PASS" : "FAIL"} | ${c.observedValue.toFixed(6)} | ${c.thresholdValue.toFixed(6)} | \`${c.comparator}\` |`);
+    }
+    lines.push("");
+  }
+
+  lines.push(
+    "## Research Limitations & Disclaimers",
+    "",
+  );
+  for (const lim of output.limitations) {
+    lines.push(`- ${lim}`);
+  }
+  lines.push("");
+  return lines.join("\n");
 }
 
 async function main() {
@@ -225,6 +294,7 @@ async function main() {
       candidateThresholds: CANDIDATE_THRESHOLDS,
       roundTripCostBps: ROUND_TRIP_COST_BPS,
       initialCapital: INITIAL_CAPITAL,
+      stabilityGatePolicy: TW_STABILITY_RESEARCH_POLICY_V1,
     },
     scenarios: {
       "2330_RAW_CONTROL": scenarioOutput("2330", "RAW_CONTROL", result2330RawControl, {
@@ -275,17 +345,26 @@ async function main() {
       "This is a historical research study (dataEndDate " + args.dataEndDate + "); the 'latest "
         + "signal' is the most recent row whose forward-return target already resolved in the "
         + "pinned dataset, not a live/current call (currentDatePredictionClaim=false).",
-      "No promotion, ranking, or investment-advice claim is made; stability diagnostics are "
-        + "reported for research review only.",
+      "No promotion, ranking, or investment-advice claim is made; stability diagnostics and gate "
+        + "evaluations are reported for research review only.",
     ],
     blockedScenarios: [],
   };
 
   mkdirSync(args.outDir, { recursive: true });
-  const json = JSON.stringify(output, null, 2);
-  writeFileSync(path.join(args.outDir, "tw_strategy_research_study_v1.json"), json + "\n");
-  console.log("OUTPUT_SHA256=" + sha256Hex(Buffer.from(json + "\n", "utf8")));
-  console.log("wrote " + path.join(args.outDir, "tw_strategy_research_study_v1.json"));
+  const jsonText = JSON.stringify(output, null, 2) + "\n";
+  const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
+  const jsonFile = path.join(args.outDir, "tw_strategy_research_study_v1.json");
+  writeFileSync(jsonFile, jsonText);
+  console.log("JSON_OUTPUT_SHA256=" + jsonSha256);
+  console.log("wrote " + jsonFile);
+
+  const mdText = generateMarkdownReport(output);
+  const mdSha256 = sha256Hex(Buffer.from(mdText, "utf8"));
+  const mdFile = path.join(args.outDir, "tw_strategy_research_study_v1.md");
+  writeFileSync(mdFile, mdText);
+  console.log("MARKDOWN_OUTPUT_SHA256=" + mdSha256);
+  console.log("wrote " + mdFile);
 }
 
 main().catch((error) => {

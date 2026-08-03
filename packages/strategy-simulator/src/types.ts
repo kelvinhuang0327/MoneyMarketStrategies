@@ -213,6 +213,51 @@ export interface WalkForwardStabilityDiagnostics {
   readonly normalizedResultSha256: string;
 }
 
+export interface WalkForwardStabilityGatePolicy {
+  readonly policyId: string;
+  readonly policyVersion: string;
+  readonly minimumFoldCount: number;
+  readonly minimumPositiveExcessReturnFoldRatio: number;
+  readonly minimumMedianValidationExcessReturn: number;
+  readonly minimumAggregateExcessReturn: number;
+  readonly maximumAggregateDrawdown: number;
+  readonly maximumDominantThresholdRatio: number;
+}
+
+export type WalkForwardStabilityGateCriterionId =
+  | "MINIMUM_FOLD_COUNT"
+  | "MINIMUM_POSITIVE_EXCESS_RETURN_FOLD_RATIO"
+  | "MINIMUM_MEDIAN_VALIDATION_EXCESS_RETURN"
+  | "MINIMUM_AGGREGATE_EXCESS_RETURN"
+  | "MAXIMUM_AGGREGATE_DRAWDOWN"
+  | "MAXIMUM_DOMINANT_THRESHOLD_RATIO";
+
+export interface WalkForwardStabilityGateCriterionResult {
+  readonly criterionId: WalkForwardStabilityGateCriterionId;
+  readonly pass: boolean;
+  readonly observedValue: number;
+  readonly thresholdValue: number;
+  readonly comparator: ">=" | "<=";
+}
+
+export interface EvaluateWalkForwardStabilityGateInput {
+  readonly policy: WalkForwardStabilityGatePolicy;
+  readonly diagnostics: WalkForwardStabilityDiagnostics;
+}
+
+export interface WalkForwardStabilityGateEvaluationResult {
+  readonly schemaVersion: "MMS_WALK_FORWARD_STABILITY_GATE_EVALUATION_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly policyId: string;
+  readonly policyVersion: string;
+  readonly policySha256: string;
+  readonly diagnosticsSha256: string;
+  readonly overallPass: boolean;
+  readonly criteria: readonly WalkForwardStabilityGateCriterionResult[];
+  readonly policy: WalkForwardStabilityGatePolicy;
+  readonly normalizedResultSha256: string;
+}
+
 export class LongCashReplayError extends Error {
   constructor(message: string) {
     super(`strategy simulator failed closed: ${message}`);

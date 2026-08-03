@@ -24,6 +24,7 @@ import {
   CURRENT_DATE_PREDICTION_CLAIM,
   INITIAL_CAPITAL,
   parseTwStrategyResearchCsvText,
+  PROMOTION_REASON,
   ROUND_TRIP_COST_BPS,
   TwStrategyResearchRunnerError,
   validateTwStrategyResearchRows,
@@ -163,6 +164,7 @@ describe("buildScenarioFoldInputs determinism", () => {
     expect(prep.latestSignal.signalAsOfFeatureDate <= marketRows.at(-1)!.date).toBe(true);
     expect(prep.latestSignal.signalAsOfTargetDate <= marketRows.at(-1)!.date).toBe(true);
     expect(CURRENT_DATE_PREDICTION_CLAIM).toBe(false);
+    expect(PROMOTION_REASON).toBe("STABILITY_GATE_EVIDENCE_ONLY_MANUAL_RESEARCH_REVIEW_REQUIRED");
   });
 });
 
