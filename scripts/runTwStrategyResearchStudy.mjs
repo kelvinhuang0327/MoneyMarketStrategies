@@ -39,6 +39,7 @@ import {
 import {
   evaluateWalkForwardStabilityGate,
   runWalkForwardThresholdEvaluation,
+  summarizeLongCashReplay,
   summarizeWalkForwardStability,
   TW_STABILITY_RESEARCH_POLICY_V1,
 } from "@mms/strategy-simulator";
@@ -173,6 +174,10 @@ function runScenario(
     initialCapital: INITIAL_CAPITAL,
     folds: prep.foldInputs,
   });
+  const validationReplaySummaries = walkForward.foldResults.map((fold) => ({
+    foldId: fold.foldId,
+    ...summarizeLongCashReplay(fold.calibrationResult.validationResult),
+  }));
   const stability = summarizeWalkForwardStability(walkForward);
   const stabilityGate = evaluateWalkForwardStabilityGate({ policy, diagnostics: stability });
   const operativeThreshold = walkForward.foldResults.at(-1).selectedThreshold;
@@ -182,6 +187,7 @@ function runScenario(
     featureRowCount: prep.featureRowCount,
     foldBoundaries: prep.foldBoundaries,
     walkForward,
+    validationReplaySummaries,
     stability,
     stabilityGate,
     latestSignal: {
@@ -202,6 +208,7 @@ function scenarioOutput(symbol, scenarioId, result, extra) {
     featureRowCount: result.featureRowCount,
     foldBoundaries: result.foldBoundaries,
     walkForward: result.walkForward,
+    validationReplaySummaries: result.validationReplaySummaries,
     stability: result.stability,
     stabilityGate: result.stabilityGate,
     latestSignal: result.latestSignal,
@@ -259,6 +266,26 @@ function generateMarkdownReport(output) {
       lines.push(`| \`${c.criterionId}\` | ${c.pass ? "PASS" : "FAIL"} | ${c.observedValue.toFixed(6)} | ${c.thresholdValue.toFixed(6)} | \`${c.comparator}\` |`);
     }
     lines.push("");
+  }
+
+  lines.push(
+    "## Long/Cash Replay Performance Summary",
+    "",
+    "Rule: LONG when probability meets or exceeds the configured threshold; otherwise CASH.",
+    "",
+    "| Scenario | Fold | Threshold | Observations | LONG | CASH | Wins | Losses | Hit Rate | Strategy Return | Benchmark Return | Excess Return |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+  );
+  for (const [key, sc] of Object.entries(scenarios)) {
+    for (const summary of sc.validationReplaySummaries) {
+      lines.push(
+        `| ${key} | ${summary.foldId} | ${summary.configuredThreshold.toFixed(6)} | `
+        + `${summary.observations} | ${summary.longObservations} | ${summary.cashObservations} | `
+        + `${summary.winningLongObservations} | ${summary.losingLongObservations} | `
+        + `${summary.longHitRate.toFixed(6)} | ${summary.strategyTotalReturn.toFixed(6)} | `
+        + `${summary.benchmarkTotalReturn.toFixed(6)} | ${summary.excessReturn.toFixed(6)} |`,
+      );
+    }
   }
 
   lines.push(

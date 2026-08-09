@@ -7,6 +7,8 @@ export {
   runWalkForwardThresholdEvaluation,
 } from "./runWalkForwardThresholdEvaluation.js";
 export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.js";
+export { summarizeLongCashReplay } from "./summarizeLongCashReplay.js";
+export type { LongCashReplaySummary } from "./summarizeLongCashReplay.js";
 export { simulateLongCashReplay } from "./simulateLongCashReplay.js";
 export { LongCashReplayError } from "./types.js";
 export type {
