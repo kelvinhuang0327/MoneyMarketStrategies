@@ -13,6 +13,13 @@ export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.j
 export { summarizeLongCashReplay } from "./summarizeLongCashReplay.js";
 export type { LongCashReplaySummary } from "./summarizeLongCashReplay.js";
 export { simulateLongCashReplay } from "./simulateLongCashReplay.js";
+export { validateLongCashReplay } from "./validateLongCashReplay.js";
+export type {
+  LongCashReplayIntegrityReport,
+  LongCashReplayIntegrityWarning,
+  LongCashReplayIntegrityWarningCode,
+  LongCashReplayIntegrityWarningSeverity,
+} from "./validateLongCashReplay.js";
 export { LongCashReplayError } from "./types.js";
 export type {
   EvaluateWalkForwardStabilityGateInput,
