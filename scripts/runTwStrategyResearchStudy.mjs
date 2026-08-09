@@ -31,8 +31,6 @@ import {
   runTwStrategyTransactionCostSensitivityStudy,
   toMarketRows,
   TWSE_QUALIFICATION_FIXTURE_PAYLOADS,
-  TwStrategyTemporalRobustnessError,
-  TwStrategyTransactionCostSensitivityError,
   validateCutoffDates,
   validateRoundTripCostBpsGrid,
   validateTwStrategyResearchRows,
@@ -111,6 +109,55 @@ function readPinnedGitBlob(repoPath, ref, relativePath) {
 function round8(value) {
   const rounded = Number(value.toFixed(8));
   return Object.is(rounded, -0) ? 0 : rounded;
+}
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+function failMissingSensitivityValue(fieldName, costKey, cutoffDate, reason) {
+  throw new Error(
+    `STOP_MMS_TW_COST_SENSITIVITY_REPORT_MISSING_REQUIRED_VALUE:field=${fieldName}:cost=${costKey}:cutoff=${cutoffDate}:reason=${reason}`,
+  );
+}
+
+function requireNestedSensitivityValue(summary, fieldName, costKey, cutoffDate) {
+  if (!isRecord(summary)) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "summary_not_object");
+  }
+  const byCost = summary[fieldName];
+  if (!isRecord(byCost)) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "cost_map_not_object");
+  }
+  if (!Object.prototype.hasOwnProperty.call(byCost, costKey)) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "cost_key_missing");
+  }
+  const byCutoff = byCost[costKey];
+  if (!isRecord(byCutoff)) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "cutoff_map_not_object");
+  }
+  if (!Object.prototype.hasOwnProperty.call(byCutoff, cutoffDate)) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "cutoff_key_missing");
+  }
+  const value = byCutoff[cutoffDate];
+  if (value === undefined || value === null) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "value_missing");
+  }
+  return value;
+}
+
+function requireSensitivityString(value, fieldName, costKey, cutoffDate) {
+  if (typeof value !== "string") {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "value_not_string");
+  }
+  return value;
+}
+
+function requireSensitivityNumber(value, fieldName, costKey, cutoffDate) {
+  if (typeof value !== "number" || !Number.isFinite(value)) {
+    failMissingSensitivityValue(fieldName, costKey, cutoffDate, "value_not_finite_number");
+  }
+  return value;
 }
 
 function runScenario(
@@ -322,11 +369,36 @@ function generateSensitivityMarkdownReport(output) {
     for (const cost of output.orderedRoundTripCostBpsValues) {
       const costKey = String(cost);
       for (const cutoffDate of output.orderedCutoffDates) {
-        const gateStatus = summary.gateStatusByCostAndCutoff[costKey]![cutoffDate]!;
-        const aggExcess = summary.aggregateExcessReturnByCostAndCutoff[costKey]![cutoffDate]!.toFixed(6);
-        const aggDrawdown = summary.aggregateMaximumDrawdownByCostAndCutoff[costKey]![cutoffDate]!.toFixed(6);
-        const domRatio = summary.dominantThresholdRatioByCostAndCutoff[costKey]![cutoffDate]!.toFixed(6);
-        const position = summary.operativePositionByCostAndCutoff[costKey]![cutoffDate]!;
+        const gateStatus = requireSensitivityString(
+          requireNestedSensitivityValue(summary, "gateStatusByCostAndCutoff", costKey, cutoffDate),
+          "gateStatusByCostAndCutoff",
+          costKey,
+          cutoffDate,
+        );
+        const aggExcess = requireSensitivityNumber(
+          requireNestedSensitivityValue(summary, "aggregateExcessReturnByCostAndCutoff", costKey, cutoffDate),
+          "aggregateExcessReturnByCostAndCutoff",
+          costKey,
+          cutoffDate,
+        ).toFixed(6);
+        const aggDrawdown = requireSensitivityNumber(
+          requireNestedSensitivityValue(summary, "aggregateMaximumDrawdownByCostAndCutoff", costKey, cutoffDate),
+          "aggregateMaximumDrawdownByCostAndCutoff",
+          costKey,
+          cutoffDate,
+        ).toFixed(6);
+        const domRatio = requireSensitivityNumber(
+          requireNestedSensitivityValue(summary, "dominantThresholdRatioByCostAndCutoff", costKey, cutoffDate),
+          "dominantThresholdRatioByCostAndCutoff",
+          costKey,
+          cutoffDate,
+        ).toFixed(6);
+        const position = requireSensitivityString(
+          requireNestedSensitivityValue(summary, "operativePositionByCostAndCutoff", costKey, cutoffDate),
+          "operativePositionByCostAndCutoff",
+          costKey,
+          cutoffDate,
+        );
 
         lines.push(
           `| ${cost} | ${cutoffDate} | **${gateStatus}** | ${aggExcess} | ${aggDrawdown} | ${domRatio} | ${position} |`,
