@@ -38,6 +38,7 @@ import {
 } from "@mms/research-kernel";
 import {
   evaluateWalkForwardStabilityGate,
+  runThresholdParameterSensitivity,
   runWalkForwardThresholdEvaluation,
   summarizeLongCashReplay,
   summarizeWalkForwardStability,
@@ -174,6 +175,12 @@ function runScenario(
     initialCapital: INITIAL_CAPITAL,
     folds: prep.foldInputs,
   });
+  const thresholdParameterSensitivity = runThresholdParameterSensitivity({
+    symbol,
+    roundTripCostBps,
+    initialCapital: INITIAL_CAPITAL,
+    folds: prep.foldInputs,
+  });
   const validationReplaySummaries = walkForward.foldResults.map((fold) => ({
     foldId: fold.foldId,
     ...summarizeLongCashReplay(fold.calibrationResult.validationResult),
@@ -187,6 +194,7 @@ function runScenario(
     featureRowCount: prep.featureRowCount,
     foldBoundaries: prep.foldBoundaries,
     walkForward,
+    thresholdParameterSensitivity,
     validationReplaySummaries,
     stability,
     stabilityGate,
@@ -208,6 +216,7 @@ function scenarioOutput(symbol, scenarioId, result, extra) {
     featureRowCount: result.featureRowCount,
     foldBoundaries: result.foldBoundaries,
     walkForward: result.walkForward,
+    thresholdParameterSensitivity: result.thresholdParameterSensitivity,
     validationReplaySummaries: result.validationReplaySummaries,
     stability: result.stability,
     stabilityGate: result.stabilityGate,
@@ -285,6 +294,39 @@ function generateMarkdownReport(output) {
         + `${summary.longHitRate.toFixed(6)} | ${summary.strategyTotalReturn.toFixed(6)} | `
         + `${summary.benchmarkTotalReturn.toFixed(6)} | ${summary.excessReturn.toFixed(6)} |`,
       );
+    }
+  }
+
+  lines.push(
+    "## Threshold Parameter Sensitivity (Diagnostic Only)",
+    "",
+    "Calibration-selected thresholds are fixed before validation; every candidate threshold is replayed on validation rows only. This diagnostic does not promote or recommend a threshold.",
+    "",
+  );
+  for (const [key, sc] of Object.entries(scenarios)) {
+    const sensitivity = sc.thresholdParameterSensitivity;
+    lines.push(
+      `- **${key} aggregate fragility**: **${sensitivity.aggregateFragilityStatus}** (${sensitivity.foldSignFlipCount} fold(s) with an excess-return sign flip)`,
+    );
+  }
+  lines.push(
+    "",
+    "| Scenario | Fold | Selected Threshold | Candidate Threshold | Strategy Return | Benchmark Return | Excess Return | Return Delta | Excess Delta | Return Degradation | Excess Degradation | Fragility |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+  );
+  for (const [key, sc] of Object.entries(scenarios)) {
+    const sensitivity = sc.thresholdParameterSensitivity;
+    for (const fold of sensitivity.foldResults) {
+      for (const candidate of fold.candidateThresholdResults) {
+        lines.push(
+          `| ${key} | ${fold.foldId} | ${fold.selectedThreshold.toFixed(6)} | ${candidate.threshold.toFixed(6)} | `
+          + `${candidate.validationStrategyReturn.toFixed(6)} | ${candidate.validationBenchmarkReturn.toFixed(6)} | `
+          + `${candidate.validationExcessReturn.toFixed(6)} | ${candidate.returnDeltaVersusSelectedThreshold.toFixed(6)} | `
+          + `${candidate.excessReturnDeltaVersusSelectedThreshold.toFixed(6)} | `
+          + `${candidate.degradationVersusSelectedThreshold.toFixed(6)} | `
+          + `${candidate.excessReturnDegradationVersusSelectedThreshold.toFixed(6)} | ${fold.fragilityStatus} |`,
+        );
+      }
     }
   }
 

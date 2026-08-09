@@ -6,6 +6,9 @@ export {
 export {
   runWalkForwardThresholdEvaluation,
 } from "./runWalkForwardThresholdEvaluation.js";
+export {
+  runThresholdParameterSensitivity,
+} from "./runThresholdParameterSensitivity.js";
 export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.js";
 export { summarizeLongCashReplay } from "./summarizeLongCashReplay.js";
 export type { LongCashReplaySummary } from "./summarizeLongCashReplay.js";
@@ -36,4 +39,10 @@ export type {
   WalkForwardThresholdEvaluationInput,
   WalkForwardThresholdEvaluationResult,
   WalkForwardThresholdFrequency,
+  ThresholdParameterSensitivityAggregateStatus,
+  ThresholdParameterSensitivityCandidateResult,
+  ThresholdParameterSensitivityFoldResult,
+  ThresholdParameterSensitivityFragilityStatus,
+  ThresholdParameterSensitivityGuardrails,
+  ThresholdParameterSensitivityResult,
 } from "./types.js";

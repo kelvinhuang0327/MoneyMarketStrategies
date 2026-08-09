@@ -169,6 +169,68 @@ export interface WalkForwardThresholdEvaluationResult {
   readonly normalizedResultSha256: string;
 }
 
+export type ThresholdParameterSensitivityFragilityStatus =
+  | "NO_EXCESS_RETURN_SIGN_FLIP"
+  | "EXCESS_RETURN_SIGN_FLIP";
+
+export type ThresholdParameterSensitivityAggregateStatus =
+  | "NO_FOLD_SIGN_FLIP"
+  | "ONE_OR_MORE_FOLD_SIGN_FLIPS";
+
+export interface ThresholdParameterSensitivityGuardrails {
+  readonly providesInvestmentAdvice: false;
+  readonly supportsOrderExecution: false;
+  readonly supportsAutomaticPromotion: false;
+  readonly supportsPortfolioOptimization: false;
+  readonly supportsMultiSymbolAllocation: false;
+  readonly validationOutcomesAffectThresholdSelection: false;
+  readonly candidateThresholdsAreDiagnosticsOnly: true;
+}
+
+export interface ThresholdParameterSensitivityCandidateResult {
+  readonly threshold: number;
+  readonly isSelectedThreshold: boolean;
+  readonly validationStrategyReturn: number;
+  readonly validationBenchmarkReturn: number;
+  readonly validationExcessReturn: number;
+  readonly returnDeltaVersusSelectedThreshold: number;
+  readonly excessReturnDeltaVersusSelectedThreshold: number;
+  readonly degradationVersusSelectedThreshold: number;
+  readonly excessReturnDegradationVersusSelectedThreshold: number;
+}
+
+export interface ThresholdParameterSensitivityFoldResult {
+  readonly foldId: string;
+  readonly validationStartDate: string;
+  readonly validationEndDate: string;
+  readonly selectedThreshold: number;
+  readonly selectedValidationStrategyReturn: number;
+  readonly selectedValidationBenchmarkReturn: number;
+  readonly selectedValidationExcessReturn: number;
+  readonly candidateThresholdResults: readonly ThresholdParameterSensitivityCandidateResult[];
+  readonly maximumValidationReturnDegradation: number;
+  readonly maximumValidationExcessReturnDegradation: number;
+  readonly anyCandidateChangesValidationExcessReturnSign: boolean;
+  readonly fragilityStatus: ThresholdParameterSensitivityFragilityStatus;
+}
+
+export interface ThresholdParameterSensitivityResult {
+  readonly schemaVersion: "MMS_THRESHOLD_PARAMETER_SENSITIVITY_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly symbol: string;
+  readonly roundTripCostBps: number;
+  readonly initialCapital: number;
+  readonly candidateThresholds: readonly number[];
+  readonly foldCount: number;
+  readonly orderedFoldIds: readonly string[];
+  readonly foldResults: readonly ThresholdParameterSensitivityFoldResult[];
+  readonly foldSignFlipCount: number;
+  readonly aggregateFragilityStatus: ThresholdParameterSensitivityAggregateStatus;
+  readonly guardrails: ThresholdParameterSensitivityGuardrails;
+  readonly foldResultsSha256: string;
+  readonly normalizedResultSha256: string;
+}
+
 export interface WalkForwardStabilityFoldDiagnostic {
   readonly foldId: string;
   readonly validationStartDate: string;
