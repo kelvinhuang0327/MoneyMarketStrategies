@@ -43,6 +43,7 @@ import {
   summarizeLongCashReplay,
   summarizeWalkForwardStability,
   TW_STABILITY_RESEARCH_POLICY_V1,
+  validateLongCashReplay,
 } from "@mms/strategy-simulator";
 
 const DEFAULTS = Object.freeze({
@@ -185,6 +186,10 @@ function runScenario(
     foldId: fold.foldId,
     ...summarizeLongCashReplay(fold.calibrationResult.validationResult),
   }));
+  const validationReplayIntegrityReports = walkForward.foldResults.map((fold) => ({
+    foldId: fold.foldId,
+    ...validateLongCashReplay(fold.calibrationResult.validationResult),
+  }));
   const stability = summarizeWalkForwardStability(walkForward);
   const stabilityGate = evaluateWalkForwardStabilityGate({ policy, diagnostics: stability });
   const operativeThreshold = walkForward.foldResults.at(-1).selectedThreshold;
@@ -196,6 +201,7 @@ function runScenario(
     walkForward,
     thresholdParameterSensitivity,
     validationReplaySummaries,
+    validationReplayIntegrityReports,
     stability,
     stabilityGate,
     latestSignal: {
@@ -218,10 +224,37 @@ function scenarioOutput(symbol, scenarioId, result, extra) {
     walkForward: result.walkForward,
     thresholdParameterSensitivity: result.thresholdParameterSensitivity,
     validationReplaySummaries: result.validationReplaySummaries,
+    validationReplayIntegrityReports: result.validationReplayIntegrityReports,
     stability: result.stability,
     stabilityGate: result.stabilityGate,
     latestSignal: result.latestSignal,
   };
+}
+
+function appendReplayIntegrityDiagnostics(lines, entries) {
+  lines.push(
+    "## Replay Integrity Diagnostics (Research Integrity / Evidence Quality)",
+    "",
+    "Diagnostic-only output: PASS does not mean profitable or recommended, and trustScore does not indicate future-performance confidence.",
+    "",
+  );
+
+  for (const { label, report } of entries) {
+    lines.push(
+      `### ${label}`,
+      `- **Status**: **${report.passed ? "PASS" : "CAUTION"}**`,
+      `- **Trust score**: ${report.trustScore}`,
+    );
+    if (report.warnings.length === 0) {
+      lines.push("- **Warnings**: None detected.");
+    } else {
+      lines.push("- **Warnings**:");
+      for (const warning of report.warnings) {
+        lines.push(`  - **${warning.severity.toUpperCase()} — ${warning.code}**: ${warning.message}`);
+      }
+    }
+    lines.push(`- **Summary**: ${report.summary}`, "");
+  }
 }
 
 function generateMarkdownReport(output) {
@@ -330,6 +363,16 @@ function generateMarkdownReport(output) {
     }
   }
 
+  appendReplayIntegrityDiagnostics(
+    lines,
+    Object.entries(scenarios).flatMap(([key, sc]) =>
+      sc.validationReplayIntegrityReports.map((report) => ({
+        label: `${key} / Fold ${report.foldId}`,
+        report,
+      })),
+    ),
+  );
+
   lines.push(
     "## Research Limitations & Disclaimers",
     "",
@@ -388,6 +431,20 @@ function generateTemporalMarkdownReport(output) {
     }
     lines.push("");
   }
+
+  const integrityEntries = [];
+  for (const cutoffRun of output.cutoffRuns) {
+    for (const scenarioId of output.scenarioOrder) {
+      const scenario = cutoffRun.scenarios[scenarioId];
+      for (const report of scenario.validationReplayIntegrityReports) {
+        integrityEntries.push({
+          label: `${scenarioId} / Cutoff ${cutoffRun.requestedCutoffDate} / Fold ${report.foldId}`,
+          report,
+        });
+      }
+    }
+  }
+  appendReplayIntegrityDiagnostics(lines, integrityEntries);
 
   lines.push(
     "## Research Limitations & Disclaimers",
@@ -476,6 +533,23 @@ function generateSensitivityMarkdownReport(output) {
     }
     lines.push("");
   }
+
+  const integrityEntries = [];
+  for (const cost of output.orderedRoundTripCostBpsValues) {
+    const study = output.temporalStudiesByCost[String(cost)];
+    for (const cutoffRun of study.cutoffRuns) {
+      for (const scenarioId of study.scenarioOrder) {
+        const scenario = cutoffRun.scenarios[scenarioId];
+        for (const report of scenario.validationReplayIntegrityReports) {
+          integrityEntries.push({
+            label: `${scenarioId} / ${cost} bps / Cutoff ${cutoffRun.requestedCutoffDate} / Fold ${report.foldId}`,
+            report,
+          });
+        }
+      }
+    }
+  }
+  appendReplayIntegrityDiagnostics(lines, integrityEntries);
 
   lines.push(
     "## Research Limitations & Disclaimers",
