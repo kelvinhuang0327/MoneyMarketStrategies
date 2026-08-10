@@ -200,6 +200,30 @@ export interface ProbabilityCalibrationProfile {
   readonly caveats: readonly string[];
 }
 
+export interface FeatureDateErrorCohort {
+  readonly featureDate: string;
+  readonly sampleCount: number;
+  readonly correctCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number;
+  readonly falsePositiveCount: number;
+  readonly falseNegativeCount: number;
+  readonly predictedPositiveCount: number;
+  readonly meanProbabilityUp: number;
+  readonly targetDateStart: string;
+  readonly targetDateEnd: string;
+  readonly symbols: readonly string[];
+}
+
+export interface FeatureDateErrorCohortProfile {
+  readonly cohortCount: number;
+  readonly cohorts: readonly FeatureDateErrorCohort[];
+  readonly totalErrorCount: number;
+  readonly dominantErrorCohort: string | null;
+  readonly dominantErrorShare: number | null;
+  readonly caveats: readonly string[];
+}
+
 export interface FinalTestEvidence {
   readonly evaluationPartition: "FINAL_TEST";
   readonly finalTestRowsSha256: string;
@@ -209,6 +233,7 @@ export interface FinalTestEvidence {
   readonly metrics: EvaluationMetrics;
   readonly symbolReliability: SymbolReliabilityProfile;
   readonly probabilityCalibration: ProbabilityCalibrationProfile;
+  readonly featureDateErrorCohortProfile: FeatureDateErrorCohortProfile;
 }
 
 export interface ExperimentRunEvidence {

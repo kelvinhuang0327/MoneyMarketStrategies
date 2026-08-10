@@ -5,6 +5,9 @@ import { predictProbability } from "./logisticRegression.js";
 import {
   fail,
   type EvaluationMetrics,
+  type FeatureDateErrorCohort,
+  type FeatureDateErrorCohortProfile,
+  type FeatureRow,
   type FinalTestEvidence,
   type FinalTestScoredRow,
   type LogisticRegressionFit,
@@ -36,6 +39,12 @@ export const THRESHOLD_TIE_BREAK_RULE = Object.freeze([
 
 function round(value: number, digits = 8): number {
   return Number(value.toFixed(digits));
+}
+
+function lexicalCompare(left: string, right: string): number {
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
 }
 
 function assertFitCompatibility(
@@ -129,6 +138,129 @@ function scorePartition(
   });
 }
 
+interface FeatureDateErrorCohortStats {
+  readonly featureDate: string;
+  sampleCount: number;
+  correctCount: number;
+  errorCount: number;
+  falsePositiveCount: number;
+  falseNegativeCount: number;
+  predictedPositiveCount: number;
+  probabilityTotal: number;
+  targetDates: string[];
+  symbols: Set<string>;
+}
+
+function assertFeatureDateCohortAlignment(
+  finalTestRows: readonly FeatureRow[],
+  scoredRows: readonly FinalTestScoredRow[],
+): void {
+  if (finalTestRows.length !== scoredRows.length) {
+    fail("final-test rows and scored rows must have identical lengths");
+  }
+  for (let index = 0; index < finalTestRows.length; index += 1) {
+    const row = finalTestRows[index];
+    const scored = scoredRows[index];
+    if (row === undefined || scored === undefined) {
+      fail("final-test cohort input row is missing");
+    }
+    if (
+      row.symbol !== scored.symbol
+      || row.featureDate !== scored.featureDate
+      || row.targetDate !== scored.targetDate
+      || row.target !== scored.target
+    ) {
+      fail("final-test cohort rows are not aligned with the scored pass");
+    }
+    if (!Number.isFinite(scored.probability)) {
+      fail("final-test cohort probability is not finite");
+    }
+  }
+}
+
+export function buildFeatureDateErrorCohortProfile(
+  finalTestRows: readonly FeatureRow[],
+  scoredRows: readonly FinalTestScoredRow[],
+): FeatureDateErrorCohortProfile {
+  assertFeatureDateCohortAlignment(finalTestRows, scoredRows);
+  const statsByFeatureDate = new Map<string, FeatureDateErrorCohortStats>();
+
+  for (let index = 0; index < finalTestRows.length; index += 1) {
+    const row = finalTestRows[index];
+    const scored = scoredRows[index];
+    if (row === undefined || scored === undefined) {
+      fail("final-test cohort input row is missing");
+    }
+    const current = statsByFeatureDate.get(row.featureDate) ?? {
+      featureDate: row.featureDate,
+      sampleCount: 0,
+      correctCount: 0,
+      errorCount: 0,
+      falsePositiveCount: 0,
+      falseNegativeCount: 0,
+      predictedPositiveCount: 0,
+      probabilityTotal: 0,
+      targetDates: [],
+      symbols: new Set<string>(),
+    } satisfies FeatureDateErrorCohortStats;
+    const correct = scored.prediction === row.target;
+    current.sampleCount += 1;
+    current.correctCount += correct ? 1 : 0;
+    current.errorCount += correct ? 0 : 1;
+    current.falsePositiveCount += scored.prediction === 1 && row.target === 0 ? 1 : 0;
+    current.falseNegativeCount += scored.prediction === 0 && row.target === 1 ? 1 : 0;
+    current.predictedPositiveCount += scored.prediction === 1 ? 1 : 0;
+    current.probabilityTotal += scored.probability;
+    current.targetDates.push(row.targetDate);
+    current.symbols.add(row.symbol);
+    statsByFeatureDate.set(row.featureDate, current);
+  }
+
+  const cohorts = [...statsByFeatureDate.values()]
+    .map((stats): FeatureDateErrorCohort => {
+      const targetDates = [...stats.targetDates].sort(lexicalCompare);
+      const targetDateStart = targetDates[0];
+      const targetDateEnd = targetDates[targetDates.length - 1];
+      if (targetDateStart === undefined || targetDateEnd === undefined) {
+        fail("final-test cohort target-date range is empty");
+      }
+      return Object.freeze({
+        featureDate: stats.featureDate,
+        sampleCount: stats.sampleCount,
+        correctCount: stats.correctCount,
+        errorCount: stats.errorCount,
+        errorRate: round(stats.errorCount / stats.sampleCount),
+        falsePositiveCount: stats.falsePositiveCount,
+        falseNegativeCount: stats.falseNegativeCount,
+        predictedPositiveCount: stats.predictedPositiveCount,
+        meanProbabilityUp: round(stats.probabilityTotal / stats.sampleCount),
+        targetDateStart,
+        targetDateEnd,
+        symbols: Object.freeze([...stats.symbols].sort(lexicalCompare)),
+      });
+    })
+    .sort((left, right) =>
+      right.errorCount - left.errorCount
+      || right.errorRate - left.errorRate
+      || lexicalCompare(left.featureDate, right.featureDate),
+    );
+  const totalErrorCount = cohorts.reduce((total, cohort) => total + cohort.errorCount, 0);
+  const dominant = totalErrorCount > 0 ? cohorts[0] ?? null : null;
+
+  return Object.freeze({
+    cohortCount: cohorts.length,
+    cohorts: Object.freeze(cohorts),
+    totalErrorCount,
+    dominantErrorCohort: dominant?.featureDate ?? null,
+    dominantErrorShare: dominant === null ? null : round(dominant.errorCount / totalErrorCount),
+    caveats: Object.freeze([
+      "Uses only untouched final-test rows, their scored probabilities, and frozen-threshold predictions.",
+      "Groups only by FeatureRow.featureDate; target dates and symbols are descriptive context.",
+      "Research-only diagnostic evidence; it does not affect fitting, threshold selection, promotion, replay, or execution.",
+    ]),
+  });
+}
+
 function candidateIsBetter(
   candidate: ThresholdCandidateEvidence,
   incumbent: ThresholdCandidateEvidence,
@@ -213,6 +345,10 @@ export function createFinalTestEvaluator(): FinalTestEvaluator {
           partition.rows,
           scored.scoredRows,
           scored.metrics.brierScore,
+        ),
+        featureDateErrorCohortProfile: buildFeatureDateErrorCohortProfile(
+          partition.rows,
+          scored.scoredRows,
         ),
       });
     },

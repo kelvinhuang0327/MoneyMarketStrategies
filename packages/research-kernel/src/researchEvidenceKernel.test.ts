@@ -9,6 +9,7 @@ import {
 } from "./index.js";
 import { buildProbabilityCalibrationProfile } from "./buildProbabilityCalibrationProfile.js";
 import { buildSymbolReliabilityProfile } from "./buildSymbolReliabilityProfile.js";
+import { buildFeatureDateErrorCohortProfile } from "./evaluation.js";
 import type { FeatureRow, FinalTestScoredRow } from "./types.js";
 
 function fixtureRows(count = 120): MarketDataRow[] {
@@ -98,6 +99,31 @@ function probabilityCalibrationFixture(
   };
 }
 
+function featureDateErrorCohortFixture(
+  entries: readonly [string, string, string, 0 | 1, number, 0 | 1][],
+): { rows: FeatureRow[]; scoredRows: FinalTestScoredRow[] } {
+  return {
+    rows: entries.map(([symbol, featureDate, targetDate, target]) => ({
+      symbol,
+      featureDate,
+      targetDate,
+      featureSourceStartDate: featureDate,
+      featureSourceEndDate: featureDate,
+      features: [0, 0, 0, 0, 0],
+      target,
+      forwardReturn: target === 1 ? 0.01 : -0.01,
+    })),
+    scoredRows: entries.map(([symbol, featureDate, targetDate, target, probability, prediction]) => ({
+      symbol,
+      featureDate,
+      targetDate,
+      target,
+      probability,
+      prediction,
+    })),
+  };
+}
+
 describe("research evidence kernel", () => {
   it("produces non-empty training, validation, both purge, and final-test evidence", () => {
     const { evidence } = run();
@@ -141,6 +167,137 @@ describe("research evidence kernel", () => {
     expect(evidence.finalTest.symbolReliability).toBeDefined();
     expect(evidence.finalTest.probabilityCalibration).toBeDefined();
     expect(evidence.finalTest.probabilityCalibration.brierScore).toBeNull();
+    expect(evidence.finalTest.featureDateErrorCohortProfile).toBeDefined();
+  });
+
+  it("calculates hand-checked feature-date error cohorts", () => {
+    const fixture = featureDateErrorCohortFixture([
+      ["BETA", "2025-01-02", "2025-02-03", 1, 0.8, 1],
+      ["ALPHA", "2025-01-02", "2025-02-01", 0, 0.7, 1],
+      ["BETA", "2025-01-02", "2025-02-02", 1, 0.2, 0],
+      ["ZETA", "2025-01-01", "2025-02-04", 0, 0.1, 0],
+      ["ALPHA", "2025-01-01", "2025-02-02", 1, 0.9, 1],
+      ["GAMMA", "2025-01-03", "2025-02-05", 0, 0.6, 1],
+      ["BETA", "2025-01-03", "2025-02-01", 0, 0.4, 0],
+      ["GAMMA", "2025-01-03", "2025-02-03", 1, 0.3, 0],
+    ]);
+
+    const profile = buildFeatureDateErrorCohortProfile(fixture.rows, fixture.scoredRows);
+
+    expect(profile).toMatchObject({
+      cohortCount: 3,
+      totalErrorCount: 4,
+      dominantErrorCohort: "2025-01-02",
+      dominantErrorShare: 0.5,
+    });
+    expect(profile.cohorts).toEqual([
+      {
+        featureDate: "2025-01-02",
+        sampleCount: 3,
+        correctCount: 1,
+        errorCount: 2,
+        errorRate: 0.66666667,
+        falsePositiveCount: 1,
+        falseNegativeCount: 1,
+        predictedPositiveCount: 2,
+        meanProbabilityUp: 0.56666667,
+        targetDateStart: "2025-02-01",
+        targetDateEnd: "2025-02-03",
+        symbols: ["ALPHA", "BETA"],
+      },
+      {
+        featureDate: "2025-01-03",
+        sampleCount: 3,
+        correctCount: 1,
+        errorCount: 2,
+        errorRate: 0.66666667,
+        falsePositiveCount: 1,
+        falseNegativeCount: 1,
+        predictedPositiveCount: 1,
+        meanProbabilityUp: 0.43333333,
+        targetDateStart: "2025-02-01",
+        targetDateEnd: "2025-02-05",
+        symbols: ["BETA", "GAMMA"],
+      },
+      {
+        featureDate: "2025-01-01",
+        sampleCount: 2,
+        correctCount: 2,
+        errorCount: 0,
+        errorRate: 0,
+        falsePositiveCount: 0,
+        falseNegativeCount: 0,
+        predictedPositiveCount: 1,
+        meanProbabilityUp: 0.5,
+        targetDateStart: "2025-02-02",
+        targetDateEnd: "2025-02-04",
+        symbols: ["ALPHA", "ZETA"],
+      },
+    ]);
+    expect(profile.caveats).toContain(
+      "Research-only diagnostic evidence; it does not affect fitting, threshold selection, promotion, replay, or execution.",
+    );
+  });
+
+  it("selects the dominant error cohort by error count, rate, then feature date", () => {
+    const fixture = featureDateErrorCohortFixture([
+      ["LATE", "2025-01-04", "2025-02-01", 0, 0.6, 1],
+      ["EARLY", "2025-01-03", "2025-02-01", 0, 0.6, 1],
+      ["LOW_RATE", "2025-01-02", "2025-02-01", 0, 0.6, 1],
+      ["LOW_RATE", "2025-01-02", "2025-02-02", 0, 0.4, 0],
+    ]);
+
+    const profile = buildFeatureDateErrorCohortProfile(fixture.rows, fixture.scoredRows);
+
+    expect(profile.cohorts.map(({ featureDate }) => featureDate))
+      .toEqual(["2025-01-03", "2025-01-04", "2025-01-02"]);
+    expect(profile.dominantErrorCohort).toBe("2025-01-03");
+    expect(profile.dominantErrorShare).toBe(0.33333333);
+  });
+
+  it("uses null dominant-error values when every final-test prediction is correct", () => {
+    const fixture = featureDateErrorCohortFixture([
+      ["ALPHA", "2025-01-01", "2025-02-01", 0, 0.2, 0],
+      ["BETA", "2025-01-02", "2025-02-02", 1, 0.8, 1],
+    ]);
+
+    const profile = buildFeatureDateErrorCohortProfile(fixture.rows, fixture.scoredRows);
+
+    expect(profile.totalErrorCount).toBe(0);
+    expect(profile.dominantErrorCohort).toBeNull();
+    expect(profile.dominantErrorShare).toBeNull();
+  });
+
+  it("fails closed on cohort cardinality and identity misalignment", () => {
+    const fixture = featureDateErrorCohortFixture([
+      ["ALPHA", "2025-01-01", "2025-02-01", 0, 0.2, 0],
+      ["BETA", "2025-01-02", "2025-02-02", 1, 0.8, 1],
+    ]);
+
+    expect(() => buildFeatureDateErrorCohortProfile(fixture.rows, fixture.scoredRows.slice(0, 1)))
+      .toThrow(/identical lengths/);
+    expect(() => buildFeatureDateErrorCohortProfile(
+      fixture.rows,
+      fixture.scoredRows.map((row, index) => index === 0 ? { ...row, featureDate: "2025-01-09" } : row),
+    )).toThrow(/not aligned/);
+  });
+
+  it("freezes the cohort profile and remains deterministic", () => {
+    const fixture = featureDateErrorCohortFixture([
+      ["BETA", "2025-01-02", "2025-02-02", 1, 0.8, 1],
+      ["ALPHA", "2025-01-02", "2025-02-01", 0, 0.7, 1],
+    ]);
+
+    const first = buildFeatureDateErrorCohortProfile(fixture.rows, fixture.scoredRows);
+    const second = buildFeatureDateErrorCohortProfile(fixture.rows, fixture.scoredRows);
+
+    expect(first).toEqual(second);
+    expect(hashValue(first)).toBe(hashValue(second));
+    expect(Object.isFrozen(first)).toBe(true);
+    expect(Object.isFrozen(first.cohorts)).toBe(true);
+    expect(Object.isFrozen(first.cohorts[0])).toBe(true);
+    expect(Object.isFrozen(first.cohorts[0]?.symbols)).toBe(true);
+    expect(Object.isFrozen(first.caveats)).toBe(true);
   });
 
   it("calculates fixed-bin calibration metrics from hand-checked pairs", () => {
@@ -407,6 +564,29 @@ describe("research evidence kernel", () => {
     expect(hashValue(changed)).not.toBe(firstHash);
   });
 
+  it("includes final-test feature-date cohorts in the normalized evidence hash", () => {
+    const { evidence } = run();
+    const { normalizedEvidenceSha256, ...normalized } = evidence;
+    void normalizedEvidenceSha256;
+    const firstHash = hashValue(normalized);
+    const firstCohort = normalized.finalTest.featureDateErrorCohortProfile.cohorts[0];
+    if (firstCohort === undefined) throw new Error("feature-date cohort fixture row is missing");
+    const changed = {
+      ...normalized,
+      finalTest: {
+        ...normalized.finalTest,
+        featureDateErrorCohortProfile: {
+          ...normalized.finalTest.featureDateErrorCohortProfile,
+          cohorts: [
+            { ...firstCohort, errorRate: firstCohort.errorRate + 0.00000001 },
+            ...normalized.finalTest.featureDateErrorCohortProfile.cohorts.slice(1),
+          ],
+        },
+      },
+    };
+    expect(hashValue(changed)).not.toBe(firstHash);
+  });
+
   it("returns a research candidate only when final evidence beats its baseline", () => {
     const result = run();
 
@@ -481,5 +661,9 @@ describe("research evidence kernel", () => {
     expect(Object.isFrozen(evidence.finalTest.probabilityCalibration.bins)).toBe(true);
     expect(Object.isFrozen(evidence.finalTest.probabilityCalibration.bins[0])).toBe(true);
     expect(Object.isFrozen(evidence.finalTest.probabilityCalibration.caveats)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.featureDateErrorCohortProfile)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.featureDateErrorCohortProfile.cohorts)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.featureDateErrorCohortProfile.cohorts[0])).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.featureDateErrorCohortProfile.caveats)).toBe(true);
   });
 });
