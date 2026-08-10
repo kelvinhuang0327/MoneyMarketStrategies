@@ -22,6 +22,11 @@ interface BinStats {
   probabilityTotal: number;
   actualUpCount: number;
   rawCalibrationGap: number | null;
+  actualPositiveCount: number;
+  actualNegativeCount: number;
+  falsePositiveCount: number;
+  falseNegativeCount: number;
+  errorCount: number;
 }
 
 export const FINAL_TEST_PROBABILITY_CALIBRATION_BINS = Object.freeze([
@@ -52,6 +57,12 @@ function emptyBin(definition: ProbabilityCalibrationBinDefinition): ProbabilityC
     meanProbabilityUp: null,
     actualUpRate: null,
     calibrationGap: null,
+    falsePositiveCount: 0,
+    falseNegativeCount: 0,
+    errorCount: 0,
+    errorRate: null,
+    falsePositiveRate: null,
+    falseNegativeRate: null,
   });
 }
 
@@ -93,6 +104,11 @@ export function buildProbabilityCalibrationProfile(
     probabilityTotal: 0,
     actualUpCount: 0,
     rawCalibrationGap: null,
+    actualPositiveCount: 0,
+    actualNegativeCount: 0,
+    falsePositiveCount: 0,
+    falseNegativeCount: 0,
+    errorCount: 0,
   }));
   let resolvedPairCount = 0;
   let probabilityTotal = 0;
@@ -127,6 +143,18 @@ export function buildProbabilityCalibrationProfile(
     stats.resolvedPairCount += 1;
     stats.probabilityTotal += scored.probability;
     stats.actualUpCount += row.target;
+    if (row.target === 1) {
+      stats.actualPositiveCount += 1;
+    } else {
+      stats.actualNegativeCount += 1;
+    }
+    if (scored.prediction === 1 && row.target === 0) {
+      stats.falsePositiveCount += 1;
+      stats.errorCount += 1;
+    } else if (scored.prediction === 0 && row.target === 1) {
+      stats.falseNegativeCount += 1;
+      stats.errorCount += 1;
+    }
   }
 
   const bins = statsByBin.map((stats): ProbabilityCalibrationBin => {
@@ -141,6 +169,16 @@ export function buildProbabilityCalibrationProfile(
       meanProbabilityUp: round(meanProbabilityUp),
       actualUpRate: round(actualUpRate),
       calibrationGap: round(stats.rawCalibrationGap),
+      falsePositiveCount: stats.falsePositiveCount,
+      falseNegativeCount: stats.falseNegativeCount,
+      errorCount: stats.errorCount,
+      errorRate: round(stats.errorCount / stats.resolvedPairCount),
+      falsePositiveRate: stats.actualNegativeCount === 0
+        ? null
+        : round(stats.falsePositiveCount / stats.actualNegativeCount),
+      falseNegativeRate: stats.actualPositiveCount === 0
+        ? null
+        : round(stats.falseNegativeCount / stats.actualPositiveCount),
     });
   });
   const populatedStats = statsByBin.filter((stats) => stats.resolvedPairCount > 0);

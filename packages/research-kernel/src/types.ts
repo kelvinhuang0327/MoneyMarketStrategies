@@ -186,6 +186,12 @@ export interface ProbabilityCalibrationBin {
   readonly meanProbabilityUp: number | null;
   readonly actualUpRate: number | null;
   readonly calibrationGap: number | null;
+  readonly falsePositiveCount: number;
+  readonly falseNegativeCount: number;
+  readonly errorCount: number;
+  readonly errorRate: number | null;
+  readonly falsePositiveRate: number | null;
+  readonly falseNegativeRate: number | null;
 }
 
 export interface ProbabilityCalibrationProfile {

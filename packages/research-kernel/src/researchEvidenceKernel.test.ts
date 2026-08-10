@@ -75,7 +75,7 @@ function symbolReliabilityFixture(
 }
 
 function probabilityCalibrationFixture(
-  entries: readonly [number, 0 | 1][],
+  entries: readonly [number, 0 | 1, (0 | 1)?][],
 ): { rows: FeatureRow[]; scoredRows: FinalTestScoredRow[] } {
   return {
     rows: entries.map(([, target], index) => ({
@@ -88,13 +88,13 @@ function probabilityCalibrationFixture(
       target,
       forwardReturn: target === 1 ? 0.01 : -0.01,
     })),
-    scoredRows: entries.map(([probability, target], index) => ({
+    scoredRows: entries.map(([probability, target, prediction], index) => ({
       symbol: "CALIBRATION",
       featureDate: `2025-03-${String(index + 1).padStart(2, "0")}`,
       targetDate: `2025-04-${String(index + 1).padStart(2, "0")}`,
       target,
       probability,
-      prediction: probability >= 0.5 ? 1 : 0,
+      prediction: prediction ?? (probability >= 0.5 ? 1 : 0),
     })),
   };
 }
@@ -332,6 +332,107 @@ describe("research evidence kernel", () => {
     ]);
   });
 
+  it("calculates directional errors from aligned target and prediction pairs", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1, 1],
+      [0.51, 0, 0],
+      [0.52, 0, 1],
+      [0.53, 1, 0],
+    ]);
+
+    const bin = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0).bins[0];
+
+    expect(bin).toMatchObject({
+      resolvedPairCount: 4,
+      falsePositiveCount: 1,
+      falseNegativeCount: 1,
+      errorCount: 2,
+      errorRate: 0.5,
+      falsePositiveRate: 0.5,
+      falseNegativeRate: 0.5,
+    });
+  });
+
+  it("decomposes a false-positive-heavy band without changing calibration values", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 0, 1],
+      [0.51, 0, 1],
+      [0.52, 0, 1],
+      [0.53, 1, 1],
+    ]);
+
+    const bin = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0).bins[0];
+
+    expect(bin).toMatchObject({
+      resolvedPairCount: 4,
+      meanProbabilityUp: 0.515,
+      actualUpRate: 0.25,
+      calibrationGap: -0.265,
+      falsePositiveCount: 3,
+      falseNegativeCount: 0,
+      errorCount: 3,
+      errorRate: 0.75,
+      falsePositiveRate: 1,
+      falseNegativeRate: 0,
+    });
+  });
+
+  it("decomposes a false-negative-heavy band", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1, 0],
+      [0.51, 1, 0],
+      [0.52, 1, 0],
+      [0.53, 0, 0],
+    ]);
+
+    const bin = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0).bins[0];
+
+    expect(bin).toMatchObject({
+      falsePositiveCount: 0,
+      falseNegativeCount: 3,
+      errorCount: 3,
+      errorRate: 0.75,
+      falsePositiveRate: 0,
+      falseNegativeRate: 1,
+    });
+  });
+
+  it("returns null for a missing actual-negative class", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1, 1],
+      [0.51, 1, 0],
+    ]);
+
+    const bin = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0).bins[0];
+
+    expect(bin).toMatchObject({
+      falsePositiveCount: 0,
+      falseNegativeCount: 1,
+      errorCount: 1,
+      errorRate: 0.5,
+      falsePositiveRate: null,
+      falseNegativeRate: 0.5,
+    });
+  });
+
+  it("returns null for a missing actual-positive class", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 0, 1],
+      [0.51, 0, 0],
+    ]);
+
+    const bin = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0).bins[0];
+
+    expect(bin).toMatchObject({
+      falsePositiveCount: 1,
+      falseNegativeCount: 0,
+      errorCount: 1,
+      errorRate: 0.5,
+      falsePositiveRate: 0.5,
+      falseNegativeRate: null,
+    });
+  });
+
   it("uses legacy lower-inclusive and finite-upper-exclusive boundaries", () => {
     const fixture = probabilityCalibrationFixture([
       [0.5, 1],
@@ -378,23 +479,72 @@ describe("research evidence kernel", () => {
       meanProbabilityUp: null,
       actualUpRate: null,
       calibrationGap: null,
+      falsePositiveCount: 0,
+      falseNegativeCount: 0,
+      errorCount: 0,
+      errorRate: null,
+      falsePositiveRate: null,
+      falseNegativeRate: null,
     });
     expect(profile.caveats).toContain(
       "Final-test probabilities below 0.5 are outside the pinned legacy calibration domain and are excluded as unresolved.",
     );
   });
 
-  it("does not consume forward returns or frozen predictions", () => {
+  it("does not consume forward returns", () => {
     const fixture = probabilityCalibrationFixture([
       [0.5, 1],
       [0.75, 0],
     ]);
     const baseline = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0.25);
     const changedRows = fixture.rows.map((row) => ({ ...row, forwardReturn: row.forwardReturn * 100 }));
-    const changedScoredRows = fixture.scoredRows.map((row) => ({ ...row, prediction: row.prediction === 1 ? 0 : 1 }));
+    const changedScoredRows = fixture.scoredRows.map((row) => ({ ...row }));
 
     expect(buildProbabilityCalibrationProfile(changedRows, changedScoredRows, 0.25))
       .toEqual(baseline);
+  });
+
+  it("fails closed on calibration cardinality and identity misalignment", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1],
+      [0.75, 0],
+    ]);
+
+    expect(() => buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows.slice(0, 1), 0))
+      .toThrow(/identical lengths/);
+    expect(() => buildProbabilityCalibrationProfile(
+      fixture.rows,
+      fixture.scoredRows.map((row, index) => index === 0 ? { ...row, targetDate: "2025-04-09" } : row),
+      0,
+    )).toThrow(/not aligned/);
+  });
+
+  it("fails closed on non-finite calibration probabilities", () => {
+    const fixture = probabilityCalibrationFixture([[0.5, 1]]);
+
+    for (const probability of [Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY]) {
+      expect(() => buildProbabilityCalibrationProfile(
+        fixture.rows,
+        fixture.scoredRows.map((row) => ({ ...row, probability })),
+        0,
+      )).toThrow(/not finite/);
+    }
+  });
+
+  it("is deterministic and freezes directional-error bin fields", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1, 1],
+      [0.51, 0, 1],
+    ]);
+
+    const first = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0);
+    const second = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0);
+
+    expect(first).toEqual(second);
+    expect(hashValue(first)).toBe(hashValue(second));
+    expect(Object.isFrozen(first)).toBe(true);
+    expect(Object.isFrozen(first.bins)).toBe(true);
+    expect(Object.isFrozen(first.bins[0])).toBe(true);
   });
 
   it("calculates hand-checked symbol reliability metrics and status", () => {
@@ -558,6 +708,29 @@ describe("research evidence kernel", () => {
         probabilityCalibration: {
           ...normalized.finalTest.probabilityCalibration,
           expectedCalibrationError: (normalized.finalTest.probabilityCalibration.expectedCalibrationError ?? 0) + 0.00000001,
+        },
+      },
+    };
+    expect(hashValue(changed)).not.toBe(firstHash);
+  });
+
+  it("includes directional-error decomposition in the normalized evidence hash", () => {
+    const { evidence } = run();
+    const { normalizedEvidenceSha256, ...normalized } = evidence;
+    void normalizedEvidenceSha256;
+    const firstHash = hashValue(normalized);
+    const firstBin = normalized.finalTest.probabilityCalibration.bins[0];
+    if (firstBin === undefined) throw new Error("probability calibration fixture bin is missing");
+    const changed = {
+      ...normalized,
+      finalTest: {
+        ...normalized.finalTest,
+        probabilityCalibration: {
+          ...normalized.finalTest.probabilityCalibration,
+          bins: [
+            { ...firstBin, falsePositiveCount: firstBin.falsePositiveCount + 1 },
+            ...normalized.finalTest.probabilityCalibration.bins.slice(1),
+          ],
         },
       },
     };
