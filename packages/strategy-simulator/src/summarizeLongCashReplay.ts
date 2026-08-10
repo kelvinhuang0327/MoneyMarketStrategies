@@ -59,6 +59,27 @@ function calculateStrategyProfitFactor(
   return round(grossProfit / grossLoss);
 }
 
+function calculateMaximumDrawdownDuration(
+  initialCapital: number,
+  capitals: readonly number[],
+): number {
+  let runningPeak = initialCapital;
+  let currentDuration = 0;
+  let maximumDuration = 0;
+
+  for (const capital of capitals) {
+    if (capital > runningPeak) {
+      runningPeak = capital;
+      currentDuration = 0;
+    } else {
+      currentDuration += 1;
+      if (currentDuration > maximumDuration) maximumDuration = currentDuration;
+    }
+  }
+
+  return maximumDuration;
+}
+
 export function summarizeLongCashReplay(
   replay: LongCashReplayResult,
 ): LongCashReplaySummary {
@@ -77,6 +98,14 @@ export function summarizeLongCashReplay(
       ? 0
       : round(winningLongObservations / longObservations),
     strategyProfitFactor: calculateStrategyProfitFactor(replay),
+    strategyMaxDrawdownDuration: calculateMaximumDrawdownDuration(
+      replay.initialCapital,
+      replay.windows.map((window) => window.strategyCapital),
+    ),
+    benchmarkMaxDrawdownDuration: calculateMaximumDrawdownDuration(
+      replay.initialCapital,
+      replay.windows.map((window) => window.benchmarkCapital),
+    ),
     strategyTotalReturn: replay.strategy.totalReturn,
     benchmarkTotalReturn: replay.benchmark.totalReturn,
     excessReturn: replay.excessReturn,

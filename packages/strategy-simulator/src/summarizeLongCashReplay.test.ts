@@ -70,12 +70,16 @@ describe("summarizeLongCashReplay", () => {
       losingLongObservations: 1,
       longHitRate: 0.5,
       strategyProfitFactor: 1,
+      strategyMaxDrawdownDuration: 2,
+      benchmarkMaxDrawdownDuration: 1,
       strategyTotalReturn: replay.strategy.totalReturn,
       benchmarkTotalReturn: replay.benchmark.totalReturn,
       excessReturn: replay.excessReturn,
       strategyUlcerIndex: 11.54700538,
       benchmarkUlcerIndex: 11.54700538,
     });
+    expect(replay.strategy.maximumDrawdown).toBe(0.2);
+    expect(replay.benchmark.maximumDrawdown).toBe(0.2);
   });
 
   it("handles all-cash replay without dividing by zero", () => {
@@ -108,6 +112,8 @@ describe("summarizeLongCashReplay", () => {
     expect(summary.losingLongObservations).toBe(0);
     expect(summary.longHitRate).toBe(0);
     expect(summary.strategyProfitFactor).toBe(0);
+    expect(summary.strategyMaxDrawdownDuration).toBe(2);
+    expect(summary.benchmarkMaxDrawdownDuration).toBe(1);
     expect(summary.strategyTotalReturn).toBe(replay.strategy.totalReturn);
     expect(summary.strategyUlcerIndex).toBe(0);
     expect(summary.benchmarkUlcerIndex).toBe(7.07106781);
@@ -136,6 +142,8 @@ describe("summarizeLongCashReplay", () => {
       losingLongObservations: 0,
       longHitRate: 0,
       strategyProfitFactor: 0,
+      strategyMaxDrawdownDuration: 0,
+      benchmarkMaxDrawdownDuration: 0,
       strategyTotalReturn: 0,
       strategyUlcerIndex: 0,
       benchmarkUlcerIndex: 0,
@@ -214,6 +222,8 @@ describe("summarizeLongCashReplay", () => {
     const summary = summarizeLongCashReplay(replay);
     expect(replay.windows.map((window) => window.strategyCapital)).toEqual([100, 100]);
     expect(replay.windows.map((window) => window.benchmarkCapital)).toEqual([120, 96]);
+    expect(summary.strategyMaxDrawdownDuration).toBe(2);
+    expect(summary.benchmarkMaxDrawdownDuration).toBe(1);
     expect(summary.strategyUlcerIndex).toBe(0);
     expect(summary.benchmarkUlcerIndex).toBe(14.14213562);
   });
@@ -259,6 +269,94 @@ describe("summarizeLongCashReplay", () => {
     });
     expect(summarizeLongCashReplay(replay)).toEqual(summarizeLongCashReplay(replay));
     expect(Object.isFrozen(summarizeLongCashReplay(replay))).toBe(true);
+  });
+
+  it("matches legacy duration for a drawdown, recovery, and new high", () => {
+    const replay = replayFromPositions([
+      { position: "LONG", netReturn: 0.2 },
+      { position: "LONG", netReturn: -0.1 },
+      { position: "LONG", netReturn: -0.1 },
+      { position: "LONG", netReturn: 0.1 },
+      { position: "LONG", netReturn: 0.2 },
+    ]);
+
+    expect(replay.windows.map((window) => window.strategyCapital)).toEqual([
+      120,
+      108,
+      97.2,
+      106.92,
+      128.304,
+    ]);
+    expect(summarizeLongCashReplay(replay).strategyMaxDrawdownDuration).toBe(3);
+  });
+
+  it("calculates strategy and benchmark duration independently", () => {
+    const replay = replayFromPositions([
+      { position: "LONG", netReturn: 0.2 },
+      { position: "CASH", netReturn: -0.05 },
+      { position: "LONG", netReturn: -0.2 },
+      { position: "CASH", netReturn: 0.5 },
+      { position: "LONG", netReturn: 0.3 },
+    ]);
+    const summary = summarizeLongCashReplay(replay);
+
+    expect(replay.windows.map((window) => window.strategyCapital)).toEqual([
+      120,
+      120,
+      96,
+      96,
+      124.8,
+    ]);
+    expect(replay.windows.map((window) => window.benchmarkCapital)).toEqual([
+      120,
+      114,
+      91.2,
+      136.8,
+      177.84,
+    ]);
+    expect(summary.strategyMaxDrawdownDuration).toBe(3);
+    expect(summary.benchmarkMaxDrawdownDuration).toBe(2);
+  });
+
+  it("returns zero for immediate new highs", () => {
+    const summary = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.1 },
+      { position: "LONG", netReturn: 0.2 },
+    ]));
+
+    expect(summary.strategyMaxDrawdownDuration).toBe(0);
+    expect(summary.benchmarkMaxDrawdownDuration).toBe(0);
+  });
+
+  it("counts flat-at-peak observations using legacy semantics", () => {
+    const summary = summarizeLongCashReplay(replayFromPositions([
+      { position: "CASH", netReturn: 0 },
+      { position: "CASH", netReturn: 0 },
+    ]));
+
+    // Legacy resets only on a strictly greater high; equal capital increments duration.
+    expect(summary.strategyMaxDrawdownDuration).toBe(2);
+    expect(summary.benchmarkMaxDrawdownDuration).toBe(2);
+  });
+
+  it("does not count initial capital and keeps the longest trailing episode", () => {
+    const singleObservation = summarizeLongCashReplay(replayFromPositions([
+      { position: "CASH", netReturn: 0 },
+    ]));
+    const multipleEpisodes = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.2 },
+      { position: "LONG", netReturn: -0.1 },
+      { position: "LONG", netReturn: -0.1 },
+      { position: "LONG", netReturn: 0.3 },
+      { position: "LONG", netReturn: -0.05 },
+      { position: "LONG", netReturn: -0.05 },
+      { position: "LONG", netReturn: -0.05 },
+    ]));
+
+    expect(singleObservation.strategyMaxDrawdownDuration).toBe(1);
+    expect(singleObservation.benchmarkMaxDrawdownDuration).toBe(1);
+    expect(multipleEpisodes.strategyMaxDrawdownDuration).toBe(3);
+    expect(multipleEpisodes.benchmarkMaxDrawdownDuration).toBe(3);
   });
 
   it("aggregates multiple winning LONG returns", () => {
