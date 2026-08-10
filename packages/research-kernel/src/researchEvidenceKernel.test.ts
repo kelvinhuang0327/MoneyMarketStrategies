@@ -3,9 +3,12 @@ import { describe, expect, it } from "vitest";
 import {
   canonicalStringify,
   decidePromotion,
+  hashValue,
   runResearchEvidenceKernel,
   type MarketDataRow,
 } from "./index.js";
+import { buildSymbolReliabilityProfile } from "./buildSymbolReliabilityProfile.js";
+import type { FeatureRow, FinalTestScoredRow } from "./types.js";
 
 function fixtureRows(count = 120): MarketDataRow[] {
   const rows: MarketDataRow[] = [];
@@ -42,6 +45,31 @@ function run(rows: readonly MarketDataRow[] = fixtureRows()) {
       l2: 0.01,
     },
   });
+}
+
+function symbolReliabilityFixture(
+  entries: readonly [string, 0 | 1, number, 0 | 1][],
+): { rows: FeatureRow[]; scoredRows: FinalTestScoredRow[] } {
+  return {
+    rows: entries.map(([symbol, target], index) => ({
+      symbol,
+      featureDate: `2025-01-${String(index + 1).padStart(2, "0")}`,
+      targetDate: `2025-02-${String(index + 1).padStart(2, "0")}`,
+      featureSourceStartDate: "2025-01-01",
+      featureSourceEndDate: "2025-01-01",
+      features: [0, 0, 0, 0, 0],
+      target,
+      forwardReturn: target === 1 ? 0.01 : -0.01,
+    })),
+    scoredRows: entries.map(([symbol, target, probability, prediction], index) => ({
+      symbol,
+      featureDate: `2025-01-${String(index + 1).padStart(2, "0")}`,
+      targetDate: `2025-02-${String(index + 1).padStart(2, "0")}`,
+      target,
+      probability,
+      prediction,
+    })),
+  };
 }
 
 describe("research evidence kernel", () => {
@@ -84,6 +112,122 @@ describe("research evidence kernel", () => {
     expect(evidence.finalTest.evaluationPartition).toBe("FINAL_TEST");
     expect(evidence.finalTest.evaluatorExecutionCount).toBe(1);
     expect(evidence.finalTest.metrics.sampleCount).toBe(evidence.split.finalTestRowCount);
+    expect(evidence.finalTest.symbolReliability).toBeDefined();
+  });
+
+  it("calculates hand-checked symbol reliability metrics and status", () => {
+    const fixture = symbolReliabilityFixture([
+      ["BETA", 1, 0.8, 1],
+      ["ALPHA", 0, 0.1, 0],
+      ["BETA", 1, 0.7, 1],
+      ["ALPHA", 1, 0.6, 0],
+      ["BETA", 0, 0.4, 0],
+      ["ALPHA", 0, 0.4, 1],
+      ["ALPHA", 1, 0.5, 1],
+      ["GAMMA", 1, 0.9, 1],
+      ["GAMMA", 0, 0.1, 1],
+    ]);
+
+    const profile = buildSymbolReliabilityProfile(fixture.rows, fixture.scoredRows);
+
+    expect(profile.rows).toEqual([
+      expect.objectContaining({
+        symbol: "ALPHA",
+        resolvedPairCount: 4,
+        correctRate: 0.5,
+        actualUpRate: 0.5,
+        meanProbabilityUp: 0.4,
+        calibrationGap: 0.1,
+        predictedUpCount: 2,
+      }),
+      expect.objectContaining({
+        symbol: "BETA",
+        resolvedPairCount: 3,
+        correctRate: 1,
+        actualUpRate: 0.66666667,
+        meanProbabilityUp: 0.63333333,
+        calibrationGap: 0.03333333,
+        predictedUpCount: 2,
+      }),
+      expect.objectContaining({
+        symbol: "GAMMA",
+        resolvedPairCount: 2,
+        correctRate: 0.5,
+        actualUpRate: 0.5,
+        meanProbabilityUp: 0.5,
+        calibrationGap: 0,
+        predictedUpCount: 2,
+      }),
+    ]);
+    expect(profile.rows.find((row) => row.symbol === "GAMMA")?.warnings)
+      .toEqual({ lowSample: true, poorCalibration: false });
+    expect(profile.status).toMatchObject({
+      enoughSymbols: true,
+      minPairCount: 3,
+      worstCalibrationSymbol: "ALPHA",
+      bestHitRateSymbol: "BETA",
+    });
+  });
+
+  it("applies warning boundaries, deterministic ordering, and tie-breaking", () => {
+    const boundary = symbolReliabilityFixture([
+      ["BOUNDARY", 1, 0.75, 1],
+      ["BOUNDARY", 1, 0.75, 1],
+      ["BOUNDARY", 1, 0.75, 1],
+      ["BOUNDARY", 1, 0.75, 1],
+      ["BELOW", 1, 0.750000001, 1],
+      ["BELOW", 1, 0.750000001, 1],
+      ["BELOW", 1, 0.750000001, 1],
+      ["BELOW", 1, 0.750000001, 1],
+      ["ALPHA", 1, 0.5, 1],
+      ["ALPHA", 0, 0.5, 0],
+      ["ALPHA", 1, 0.5, 0],
+      ["BETA", 1, 0.5, 1],
+      ["BETA", 0, 0.5, 0],
+      ["BETA", 1, 0.5, 0],
+    ]);
+    const boundaryProfile = buildSymbolReliabilityProfile(boundary.rows, boundary.scoredRows);
+    expect(boundaryProfile.rows.find((row) => row.symbol === "BOUNDARY")?.warnings)
+      .toEqual({ lowSample: false, poorCalibration: true });
+    expect(boundaryProfile.rows.find((row) => row.symbol === "BELOW")?.warnings)
+      .toEqual({ lowSample: false, poorCalibration: false });
+    expect(boundaryProfile.rows.slice(-2).map((row) => row.symbol)).toEqual(["ALPHA", "BETA"]);
+
+    const lexicalTie = symbolReliabilityFixture([
+      ["BETA", 1, 0.5, 1],
+      ["ALPHA", 0, 0.5, 0],
+      ["BETA", 0, 0.5, 1],
+      ["ALPHA", 1, 0.5, 0],
+      ["BETA", 1, 0.5, 0],
+      ["ALPHA", 0, 0.5, 1],
+    ]);
+    const lexicalTieProfile = buildSymbolReliabilityProfile(lexicalTie.rows, lexicalTie.scoredRows);
+    expect(lexicalTieProfile.status.worstCalibrationSymbol).toBe("ALPHA");
+    expect(lexicalTieProfile.status.bestHitRateSymbol).toBe("ALPHA");
+
+    const sampleTie = symbolReliabilityFixture([
+      ["SMALL", 1, 0.5, 1],
+      ["SMALL", 0, 0.5, 0],
+      ["SMALL", 1, 0.5, 0],
+      ["LARGE", 1, 0.5, 1],
+      ["LARGE", 0, 0.5, 1],
+      ["LARGE", 1, 0.5, 1],
+      ["LARGE", 0, 0.5, 0],
+      ["LARGE", 1, 0.5, 1],
+      ["LARGE", 0, 0.5, 1],
+    ]);
+    expect(buildSymbolReliabilityProfile(sampleTie.rows, sampleTie.scoredRows).status.bestHitRateSymbol)
+      .toBe("LARGE");
+  });
+
+  it("sets enoughSymbols only after two symbols meet the minimum sample", () => {
+    const oneSymbol = symbolReliabilityFixture([
+      ["ONLY", 1, 0.5, 1],
+      ["ONLY", 0, 0.5, 0],
+      ["ONLY", 1, 0.5, 1],
+    ]);
+    expect(buildSymbolReliabilityProfile(oneSymbol.rows, oneSymbol.scoredRows).status.enoughSymbols)
+      .toBe(false);
   });
 
   it("returns byte-identical normalized evidence for identical explicit inputs", () => {
@@ -93,6 +237,31 @@ describe("research evidence kernel", () => {
     expect(canonicalStringify(first.evidence)).toBe(canonicalStringify(second.evidence));
     expect(first.evidence.normalizedEvidenceSha256)
       .toBe(second.evidence.normalizedEvidenceSha256);
+    expect(first.evidence.finalTest.symbolReliability)
+      .toEqual(second.evidence.finalTest.symbolReliability);
+  });
+
+  it("includes final-test symbol evidence in the normalized evidence hash", () => {
+    const { evidence } = run();
+    const { normalizedEvidenceSha256, ...normalized } = evidence;
+    void normalizedEvidenceSha256;
+    const firstHash = hashValue(normalized);
+    const firstRow = normalized.finalTest.symbolReliability.rows[0];
+    if (firstRow === undefined) throw new Error("symbol reliability fixture row is missing");
+    const changed = {
+      ...normalized,
+      finalTest: {
+        ...normalized.finalTest,
+        symbolReliability: {
+          ...normalized.finalTest.symbolReliability,
+          rows: [
+            { ...firstRow, correctRate: firstRow.correctRate + 0.00000001 },
+            ...normalized.finalTest.symbolReliability.rows.slice(1),
+          ],
+        },
+      },
+    };
+    expect(hashValue(changed)).not.toBe(firstHash);
   });
 
   it("returns a research candidate only when final evidence beats its baseline", () => {
@@ -161,5 +330,9 @@ describe("research evidence kernel", () => {
     expect(Object.isFrozen(evidence)).toBe(true);
     expect(Object.isFrozen(evidence.finalTest.metrics)).toBe(true);
     expect(Object.isFrozen(evidence.thresholdSelection.candidates)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.symbolReliability)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.symbolReliability.rows)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.symbolReliability.rows[0])).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.symbolReliability.status)).toBe(true);
   });
 });

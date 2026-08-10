@@ -139,6 +139,44 @@ export interface ThresholdSelectionEvidence {
   readonly tieBreakRule: readonly string[];
 }
 
+export interface FinalTestScoredRow {
+  readonly symbol: string;
+  readonly featureDate: string;
+  readonly targetDate: string;
+  readonly target: BinaryTarget;
+  readonly probability: number;
+  readonly prediction: BinaryTarget;
+}
+
+export interface SymbolReliabilityWarningFlags {
+  readonly lowSample: boolean;
+  readonly poorCalibration: boolean;
+}
+
+export interface SymbolReliabilityRow {
+  readonly symbol: string;
+  readonly resolvedPairCount: number;
+  readonly correctRate: number;
+  readonly actualUpRate: number;
+  readonly meanProbabilityUp: number;
+  readonly calibrationGap: number;
+  readonly predictedUpCount: number;
+  readonly warnings: SymbolReliabilityWarningFlags;
+}
+
+export interface SymbolReliabilityStatus {
+  readonly enoughSymbols: boolean;
+  readonly minPairCount: number;
+  readonly worstCalibrationSymbol: string | null;
+  readonly bestHitRateSymbol: string | null;
+  readonly caveats: readonly string[];
+}
+
+export interface SymbolReliabilityProfile {
+  readonly rows: readonly SymbolReliabilityRow[];
+  readonly status: SymbolReliabilityStatus;
+}
+
 export interface FinalTestEvidence {
   readonly evaluationPartition: "FINAL_TEST";
   readonly finalTestRowsSha256: string;
@@ -146,6 +184,7 @@ export interface FinalTestEvidence {
   readonly frozenThreshold: number;
   readonly evaluatorExecutionCount: 1;
   readonly metrics: EvaluationMetrics;
+  readonly symbolReliability: SymbolReliabilityProfile;
 }
 
 export interface ExperimentRunEvidence {

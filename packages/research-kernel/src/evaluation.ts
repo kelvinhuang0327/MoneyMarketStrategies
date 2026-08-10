@@ -1,9 +1,11 @@
 import { hashValue } from "./evidence.js";
+import { buildSymbolReliabilityProfile } from "./buildSymbolReliabilityProfile.js";
 import { predictProbability } from "./logisticRegression.js";
 import {
   fail,
   type EvaluationMetrics,
   type FinalTestEvidence,
+  type FinalTestScoredRow,
   type LogisticRegressionFit,
   type PartitionKind,
   type RowPartition,
@@ -56,6 +58,7 @@ function scorePartition(
   threshold: number,
 ): {
   readonly metrics: EvaluationMetrics;
+  readonly scoredRows: readonly FinalTestScoredRow[];
   readonly scoredRowsSha256: string;
 } {
   if (partition.rows.length === 0) fail(`cannot evaluate empty ${partition.kind} rows`);
@@ -69,14 +72,7 @@ function scorePartition(
   let falseNegative = 0;
   let brierTotal = 0;
   let logLossTotal = 0;
-  const scoredRows: {
-    readonly symbol: string;
-    readonly featureDate: string;
-    readonly targetDate: string;
-    readonly target: 0 | 1;
-    readonly probability: number;
-    readonly prediction: 0 | 1;
-  }[] = [];
+  const scoredRows: FinalTestScoredRow[] = [];
   const epsilon = 1e-12;
   for (const row of partition.rows) {
     const probability = predictProbability(row.features, scaler, model);
@@ -104,6 +100,7 @@ function scorePartition(
   const sensitivity = positiveCount === 0 ? 0 : truePositive / positiveCount;
   const specificity = negativeCount === 0 ? 0 : trueNegative / negativeCount;
   const precision = predictedPositiveCount === 0 ? 0 : truePositive / predictedPositiveCount;
+  const frozenScoredRows = Object.freeze(scoredRows.map((row) => Object.freeze(row)));
   return Object.freeze({
     metrics: Object.freeze({
       sampleCount: partition.rows.length,
@@ -126,7 +123,8 @@ function scorePartition(
         falseNegative,
       }),
     }),
-    scoredRowsSha256: hashValue(scoredRows),
+    scoredRows: frozenScoredRows,
+    scoredRowsSha256: hashValue(frozenScoredRows),
   });
 }
 
@@ -209,6 +207,7 @@ export function createFinalTestEvaluator(): FinalTestEvaluator {
         frozenThreshold,
         evaluatorExecutionCount: 1,
         metrics: scored.metrics,
+        symbolReliability: buildSymbolReliabilityProfile(partition.rows, scored.scoredRows),
       });
     },
     assertExactlyOnce() {
