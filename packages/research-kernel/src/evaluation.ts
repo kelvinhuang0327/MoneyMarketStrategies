@@ -1,4 +1,5 @@
 import { hashValue } from "./evidence.js";
+import { buildProbabilityCalibrationProfile } from "./buildProbabilityCalibrationProfile.js";
 import { buildSymbolReliabilityProfile } from "./buildSymbolReliabilityProfile.js";
 import { predictProbability } from "./logisticRegression.js";
 import {
@@ -208,6 +209,11 @@ export function createFinalTestEvaluator(): FinalTestEvaluator {
         evaluatorExecutionCount: 1,
         metrics: scored.metrics,
         symbolReliability: buildSymbolReliabilityProfile(partition.rows, scored.scoredRows),
+        probabilityCalibration: buildProbabilityCalibrationProfile(
+          partition.rows,
+          scored.scoredRows,
+          scored.metrics.brierScore,
+        ),
       });
     },
     assertExactlyOnce() {

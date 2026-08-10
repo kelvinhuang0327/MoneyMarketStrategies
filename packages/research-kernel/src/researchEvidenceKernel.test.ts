@@ -7,6 +7,7 @@ import {
   runResearchEvidenceKernel,
   type MarketDataRow,
 } from "./index.js";
+import { buildProbabilityCalibrationProfile } from "./buildProbabilityCalibrationProfile.js";
 import { buildSymbolReliabilityProfile } from "./buildSymbolReliabilityProfile.js";
 import type { FeatureRow, FinalTestScoredRow } from "./types.js";
 
@@ -72,6 +73,31 @@ function symbolReliabilityFixture(
   };
 }
 
+function probabilityCalibrationFixture(
+  entries: readonly [number, 0 | 1][],
+): { rows: FeatureRow[]; scoredRows: FinalTestScoredRow[] } {
+  return {
+    rows: entries.map(([, target], index) => ({
+      symbol: "CALIBRATION",
+      featureDate: `2025-03-${String(index + 1).padStart(2, "0")}`,
+      targetDate: `2025-04-${String(index + 1).padStart(2, "0")}`,
+      featureSourceStartDate: "2025-03-01",
+      featureSourceEndDate: "2025-03-01",
+      features: [0, 0, 0, 0, 0],
+      target,
+      forwardReturn: target === 1 ? 0.01 : -0.01,
+    })),
+    scoredRows: entries.map(([probability, target], index) => ({
+      symbol: "CALIBRATION",
+      featureDate: `2025-03-${String(index + 1).padStart(2, "0")}`,
+      targetDate: `2025-04-${String(index + 1).padStart(2, "0")}`,
+      target,
+      probability,
+      prediction: probability >= 0.5 ? 1 : 0,
+    })),
+  };
+}
+
 describe("research evidence kernel", () => {
   it("produces non-empty training, validation, both purge, and final-test evidence", () => {
     const { evidence } = run();
@@ -113,6 +139,105 @@ describe("research evidence kernel", () => {
     expect(evidence.finalTest.evaluatorExecutionCount).toBe(1);
     expect(evidence.finalTest.metrics.sampleCount).toBe(evidence.split.finalTestRowCount);
     expect(evidence.finalTest.symbolReliability).toBeDefined();
+    expect(evidence.finalTest.probabilityCalibration).toBeDefined();
+    expect(evidence.finalTest.probabilityCalibration.brierScore).toBeNull();
+  });
+
+  it("calculates fixed-bin calibration metrics from hand-checked pairs", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1],
+      [0.54, 0],
+      [0.55, 1],
+      [0.59, 0],
+      [0.6, 1],
+      [0.65, 1],
+      [0.7, 0],
+      [0.75, 1],
+      [1, 0],
+    ]);
+
+    const profile = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0.32524444);
+
+    expect(profile.resolvedPairCount).toBe(9);
+    expect(profile.meanProbabilityUp).toBe(0.65333333);
+    expect(profile.actualUpRate).toBe(0.55555556);
+    expect(profile.brierScore).toBe(0.32524444);
+    expect(profile.expectedCalibrationError).toBe(0.26444444);
+    expect(profile.maximumCalibrationGap).toBe(0.7);
+    expect(profile.bins.map(({ lowerBound, upperBound, resolvedPairCount }) =>
+      ({ lowerBound, upperBound, resolvedPairCount }))).toEqual([
+      { lowerBound: 0.5, upperBound: 0.55, resolvedPairCount: 2 },
+      { lowerBound: 0.55, upperBound: 0.6, resolvedPairCount: 2 },
+      { lowerBound: 0.6, upperBound: 0.65, resolvedPairCount: 1 },
+      { lowerBound: 0.65, upperBound: 0.7, resolvedPairCount: 1 },
+      { lowerBound: 0.7, upperBound: 0.75, resolvedPairCount: 1 },
+      { lowerBound: 0.75, upperBound: null, resolvedPairCount: 2 },
+    ]);
+  });
+
+  it("uses legacy lower-inclusive and finite-upper-exclusive boundaries", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1],
+      [0.54999999, 1],
+      [0.55, 1],
+      [0.59999999, 1],
+      [0.6, 1],
+      [0.64999999, 1],
+      [0.65, 1],
+      [0.69999999, 1],
+      [0.7, 1],
+      [0.74999999, 1],
+      [0.75, 1],
+      [1, 1],
+    ]);
+
+    expect(buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0).bins)
+      .toEqual(expect.arrayContaining([
+        expect.objectContaining({ lowerBound: 0.5, upperBound: 0.55, resolvedPairCount: 2 }),
+        expect.objectContaining({ lowerBound: 0.55, upperBound: 0.6, resolvedPairCount: 2 }),
+        expect.objectContaining({ lowerBound: 0.6, upperBound: 0.65, resolvedPairCount: 2 }),
+        expect.objectContaining({ lowerBound: 0.65, upperBound: 0.7, resolvedPairCount: 2 }),
+        expect.objectContaining({ lowerBound: 0.7, upperBound: 0.75, resolvedPairCount: 2 }),
+        expect.objectContaining({ lowerBound: 0.75, upperBound: null, resolvedPairCount: 2 }),
+      ]));
+  });
+
+  it("keeps empty bins canonical and excludes unsupported probabilities without sentinels", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.4, 1],
+      [0.5, 0],
+      [0.8, 1],
+    ]);
+
+    const profile = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0.2);
+
+    expect(profile.resolvedPairCount).toBe(2);
+    expect(profile.brierScore).toBeNull();
+    expect(profile.bins).toHaveLength(6);
+    expect(profile.bins[1]).toMatchObject({
+      lowerBound: 0.55,
+      upperBound: 0.6,
+      resolvedPairCount: 0,
+      meanProbabilityUp: null,
+      actualUpRate: null,
+      calibrationGap: null,
+    });
+    expect(profile.caveats).toContain(
+      "Final-test probabilities below 0.5 are outside the pinned legacy calibration domain and are excluded as unresolved.",
+    );
+  });
+
+  it("does not consume forward returns or frozen predictions", () => {
+    const fixture = probabilityCalibrationFixture([
+      [0.5, 1],
+      [0.75, 0],
+    ]);
+    const baseline = buildProbabilityCalibrationProfile(fixture.rows, fixture.scoredRows, 0.25);
+    const changedRows = fixture.rows.map((row) => ({ ...row, forwardReturn: row.forwardReturn * 100 }));
+    const changedScoredRows = fixture.scoredRows.map((row) => ({ ...row, prediction: row.prediction === 1 ? 0 : 1 }));
+
+    expect(buildProbabilityCalibrationProfile(changedRows, changedScoredRows, 0.25))
+      .toEqual(baseline);
   });
 
   it("calculates hand-checked symbol reliability metrics and status", () => {
@@ -264,6 +389,24 @@ describe("research evidence kernel", () => {
     expect(hashValue(changed)).not.toBe(firstHash);
   });
 
+  it("includes final-test probability calibration in the normalized evidence hash", () => {
+    const { evidence } = run();
+    const { normalizedEvidenceSha256, ...normalized } = evidence;
+    void normalizedEvidenceSha256;
+    const firstHash = hashValue(normalized);
+    const changed = {
+      ...normalized,
+      finalTest: {
+        ...normalized.finalTest,
+        probabilityCalibration: {
+          ...normalized.finalTest.probabilityCalibration,
+          expectedCalibrationError: (normalized.finalTest.probabilityCalibration.expectedCalibrationError ?? 0) + 0.00000001,
+        },
+      },
+    };
+    expect(hashValue(changed)).not.toBe(firstHash);
+  });
+
   it("returns a research candidate only when final evidence beats its baseline", () => {
     const result = run();
 
@@ -334,5 +477,9 @@ describe("research evidence kernel", () => {
     expect(Object.isFrozen(evidence.finalTest.symbolReliability.rows)).toBe(true);
     expect(Object.isFrozen(evidence.finalTest.symbolReliability.rows[0])).toBe(true);
     expect(Object.isFrozen(evidence.finalTest.symbolReliability.status)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.probabilityCalibration)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.probabilityCalibration.bins)).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.probabilityCalibration.bins[0])).toBe(true);
+    expect(Object.isFrozen(evidence.finalTest.probabilityCalibration.caveats)).toBe(true);
   });
 });

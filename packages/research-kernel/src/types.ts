@@ -177,6 +177,29 @@ export interface SymbolReliabilityProfile {
   readonly status: SymbolReliabilityStatus;
 }
 
+export type ProbabilityCalibrationStatus = "missing" | "insufficient" | "ready";
+
+export interface ProbabilityCalibrationBin {
+  readonly lowerBound: number;
+  readonly upperBound: number | null;
+  readonly resolvedPairCount: number;
+  readonly meanProbabilityUp: number | null;
+  readonly actualUpRate: number | null;
+  readonly calibrationGap: number | null;
+}
+
+export interface ProbabilityCalibrationProfile {
+  readonly resolvedPairCount: number;
+  readonly meanProbabilityUp: number | null;
+  readonly actualUpRate: number | null;
+  readonly brierScore: number | null;
+  readonly expectedCalibrationError: number | null;
+  readonly maximumCalibrationGap: number | null;
+  readonly bins: readonly ProbabilityCalibrationBin[];
+  readonly status: ProbabilityCalibrationStatus;
+  readonly caveats: readonly string[];
+}
+
 export interface FinalTestEvidence {
   readonly evaluationPartition: "FINAL_TEST";
   readonly finalTestRowsSha256: string;
@@ -185,6 +208,7 @@ export interface FinalTestEvidence {
   readonly evaluatorExecutionCount: 1;
   readonly metrics: EvaluationMetrics;
   readonly symbolReliability: SymbolReliabilityProfile;
+  readonly probabilityCalibration: ProbabilityCalibrationProfile;
 }
 
 export interface ExperimentRunEvidence {
