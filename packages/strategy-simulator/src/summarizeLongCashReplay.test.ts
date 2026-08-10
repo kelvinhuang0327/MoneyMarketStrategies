@@ -35,6 +35,27 @@ function replayFixture() {
   });
 }
 
+function replayFromPositions(
+  rows: readonly { position: "LONG" | "CASH"; netReturn: number }[],
+) {
+  return simulateLongCashReplay({
+    symbol: "TEST",
+    validationThreshold: 0.5,
+    roundTripCostBps: 0,
+    initialCapital: 100,
+    rows: rows.map((row, index) => {
+      const month = String(7 + Math.floor(index / 3)).padStart(2, "0");
+      const day = (index % 3) * 8 + 2;
+      return {
+        entryDate: `2026-${month}-${String(day).padStart(2, "0")}`,
+        exitDate: `2026-${month}-${String(day + 7).padStart(2, "0")}`,
+        probabilityUp: row.position === "LONG" ? 1 : 0,
+        realizedForwardReturn: row.netReturn,
+      };
+    }),
+  });
+}
+
 describe("summarizeLongCashReplay", () => {
   it("summarizes observation, position, outcome, and existing return metrics", () => {
     const replay = replayFixture();
@@ -48,6 +69,7 @@ describe("summarizeLongCashReplay", () => {
       winningLongObservations: 1,
       losingLongObservations: 1,
       longHitRate: 0.5,
+      strategyProfitFactor: 1,
       strategyTotalReturn: replay.strategy.totalReturn,
       benchmarkTotalReturn: replay.benchmark.totalReturn,
       excessReturn: replay.excessReturn,
@@ -85,6 +107,7 @@ describe("summarizeLongCashReplay", () => {
     expect(summary.winningLongObservations).toBe(0);
     expect(summary.losingLongObservations).toBe(0);
     expect(summary.longHitRate).toBe(0);
+    expect(summary.strategyProfitFactor).toBe(0);
     expect(summary.strategyTotalReturn).toBe(replay.strategy.totalReturn);
     expect(summary.strategyUlcerIndex).toBe(0);
     expect(summary.benchmarkUlcerIndex).toBe(7.07106781);
@@ -112,6 +135,7 @@ describe("summarizeLongCashReplay", () => {
       winningLongObservations: 0,
       losingLongObservations: 0,
       longHitRate: 0,
+      strategyProfitFactor: 0,
       strategyTotalReturn: 0,
       strategyUlcerIndex: 0,
       benchmarkUlcerIndex: 0,
@@ -217,6 +241,7 @@ describe("summarizeLongCashReplay", () => {
     });
 
     const summary = summarizeLongCashReplay(replay);
+    expect(summary.strategyProfitFactor).toBe(0);
     expect(summary.strategyUlcerIndex).toBe(0);
     expect(summary.benchmarkUlcerIndex).toBe(0);
   });
@@ -234,5 +259,65 @@ describe("summarizeLongCashReplay", () => {
     });
     expect(summarizeLongCashReplay(replay)).toEqual(summarizeLongCashReplay(replay));
     expect(Object.isFrozen(summarizeLongCashReplay(replay))).toBe(true);
+  });
+
+  it("aggregates multiple winning LONG returns", () => {
+    const summary = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.1 },
+      { position: "LONG", netReturn: 0.2 },
+      { position: "LONG", netReturn: -0.1 },
+    ]));
+
+    expect(summary.strategyProfitFactor).toBe(3);
+  });
+
+  it("aggregates multiple losing LONG returns", () => {
+    const summary = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.2 },
+      { position: "LONG", netReturn: -0.1 },
+      { position: "LONG", netReturn: -0.2 },
+    ]));
+
+    expect(summary.strategyProfitFactor).toBe(0.66666667);
+  });
+
+  it("excludes CASH returns from the strategy Profit Factor", () => {
+    const summary = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.1 },
+      { position: "CASH", netReturn: 0.5 },
+      { position: "LONG", netReturn: -0.05 },
+      { position: "CASH", netReturn: -0.5 },
+    ]));
+
+    expect(summary.strategyProfitFactor).toBe(2);
+  });
+
+  it("preserves legacy zero-loss and zero-win behavior", () => {
+    const allWins = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.1 },
+      { position: "LONG", netReturn: 0.2 },
+    ]));
+    const allLosses = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: -0.1 },
+      { position: "LONG", netReturn: -0.2 },
+    ]));
+
+    expect(allWins.strategyProfitFactor).toBe(Infinity);
+    expect(allLosses.strategyProfitFactor).toBe(0);
+  });
+
+  it("ignores zero-return LONG observations in payoff aggregation", () => {
+    const summary = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0.2 },
+      { position: "LONG", netReturn: 0 },
+      { position: "LONG", netReturn: -0.1 },
+    ]));
+    const allZeroSummary = summarizeLongCashReplay(replayFromPositions([
+      { position: "LONG", netReturn: 0 },
+      { position: "LONG", netReturn: 0 },
+    ]));
+
+    expect(summary.strategyProfitFactor).toBe(2);
+    expect(allZeroSummary.strategyProfitFactor).toBe(0);
   });
 });

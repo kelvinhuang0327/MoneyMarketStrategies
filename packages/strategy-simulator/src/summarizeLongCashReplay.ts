@@ -11,6 +11,7 @@ export interface LongCashReplaySummary {
   readonly winningLongObservations: number;
   readonly losingLongObservations: number;
   readonly longHitRate: number;
+  readonly strategyProfitFactor: number;
   readonly strategyTotalReturn: number;
   readonly benchmarkTotalReturn: number;
   readonly excessReturn: number;
@@ -41,6 +42,23 @@ function calculateUlcerIndex(
     : round(Math.sqrt(squaredDrawdownTotal / capitals.length));
 }
 
+function calculateStrategyProfitFactor(
+  replay: LongCashReplayResult,
+): number {
+  const longReturns = replay.windows
+    .filter((window) => window.strategyPosition === "LONG")
+    .map((window) => window.strategyNetReturn);
+  const grossProfit = longReturns
+    .filter((value) => value > 0)
+    .reduce((sum, value) => sum + value, 0);
+  const grossLoss = Math.abs(longReturns
+    .filter((value) => value < 0)
+    .reduce((sum, value) => sum + value, 0));
+
+  if (grossLoss === 0) return grossProfit > 0 ? Infinity : 0;
+  return round(grossProfit / grossLoss);
+}
+
 export function summarizeLongCashReplay(
   replay: LongCashReplayResult,
 ): LongCashReplaySummary {
@@ -58,6 +76,7 @@ export function summarizeLongCashReplay(
     longHitRate: longObservations === 0
       ? 0
       : round(winningLongObservations / longObservations),
+    strategyProfitFactor: calculateStrategyProfitFactor(replay),
     strategyTotalReturn: replay.strategy.totalReturn,
     benchmarkTotalReturn: replay.benchmark.totalReturn,
     excessReturn: replay.excessReturn,
