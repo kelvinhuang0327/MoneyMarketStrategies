@@ -14,11 +14,31 @@ export interface LongCashReplaySummary {
   readonly strategyTotalReturn: number;
   readonly benchmarkTotalReturn: number;
   readonly excessReturn: number;
+  readonly strategyUlcerIndex: number;
+  readonly benchmarkUlcerIndex: number;
 }
 
 function round(value: number): number {
   const rounded = Number(value.toFixed(DECIMAL_PLACES));
   return Object.is(rounded, -0) ? 0 : rounded;
+}
+
+function calculateUlcerIndex(
+  initialCapital: number,
+  capitals: readonly number[],
+): number {
+  let runningPeak = initialCapital;
+  let squaredDrawdownTotal = 0;
+
+  for (const capital of capitals) {
+    if (capital > runningPeak) runningPeak = capital;
+    const drawdownPercentage = ((runningPeak - capital) / runningPeak) * 100;
+    squaredDrawdownTotal += drawdownPercentage ** 2;
+  }
+
+  return capitals.length === 0
+    ? 0
+    : round(Math.sqrt(squaredDrawdownTotal / capitals.length));
 }
 
 export function summarizeLongCashReplay(
@@ -41,5 +61,13 @@ export function summarizeLongCashReplay(
     strategyTotalReturn: replay.strategy.totalReturn,
     benchmarkTotalReturn: replay.benchmark.totalReturn,
     excessReturn: replay.excessReturn,
+    strategyUlcerIndex: calculateUlcerIndex(
+      replay.initialCapital,
+      replay.windows.map((window) => window.strategyCapital),
+    ),
+    benchmarkUlcerIndex: calculateUlcerIndex(
+      replay.initialCapital,
+      replay.windows.map((window) => window.benchmarkCapital),
+    ),
   });
 }

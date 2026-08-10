@@ -51,6 +51,8 @@ describe("summarizeLongCashReplay", () => {
       strategyTotalReturn: replay.strategy.totalReturn,
       benchmarkTotalReturn: replay.benchmark.totalReturn,
       excessReturn: replay.excessReturn,
+      strategyUlcerIndex: 11.54700538,
+      benchmarkUlcerIndex: 11.54700538,
     });
   });
 
@@ -84,6 +86,8 @@ describe("summarizeLongCashReplay", () => {
     expect(summary.losingLongObservations).toBe(0);
     expect(summary.longHitRate).toBe(0);
     expect(summary.strategyTotalReturn).toBe(replay.strategy.totalReturn);
+    expect(summary.strategyUlcerIndex).toBe(0);
+    expect(summary.benchmarkUlcerIndex).toBe(7.07106781);
   });
 
   it("handles an empty replay record set", () => {
@@ -109,7 +113,112 @@ describe("summarizeLongCashReplay", () => {
       losingLongObservations: 0,
       longHitRate: 0,
       strategyTotalReturn: 0,
+      strategyUlcerIndex: 0,
+      benchmarkUlcerIndex: 0,
     });
+  });
+
+  it("matches the legacy percentage-point RMS for a drawdown, recovery, and new high", () => {
+    const replay = simulateLongCashReplay({
+      symbol: "TEST",
+      validationThreshold: 0,
+      roundTripCostBps: 0,
+      initialCapital: 100,
+      rows: [
+        {
+          entryDate: "2026-03-02",
+          exitDate: "2026-03-09",
+          probabilityUp: 1,
+          realizedForwardReturn: 0.2,
+        },
+        {
+          entryDate: "2026-03-10",
+          exitDate: "2026-03-17",
+          probabilityUp: 1,
+          realizedForwardReturn: -0.25,
+        },
+        {
+          entryDate: "2026-03-18",
+          exitDate: "2026-03-25",
+          probabilityUp: 1,
+          realizedForwardReturn: 1 / 3,
+        },
+        {
+          entryDate: "2026-03-26",
+          exitDate: "2026-04-02",
+          probabilityUp: 1,
+          realizedForwardReturn: 1 / 3,
+        },
+      ],
+    });
+
+    expect(replay.windows.map((window) => window.strategyCapital)).toEqual([
+      120,
+      90,
+      120,
+      160,
+    ]);
+    // Legacy observes realized points only: sqrt((0² + 25² + 0² + 0²) / 4) = 12.5.
+    // Initial capital is the starting peak, not a fifth zero-drawdown observation.
+    const summary = summarizeLongCashReplay(replay);
+    expect(summary.strategyUlcerIndex).toBe(12.5);
+    expect(summary.benchmarkUlcerIndex).toBe(12.5);
+  });
+
+  it("calculates the benchmark path independently from a flat all-cash strategy", () => {
+    const replay = simulateLongCashReplay({
+      symbol: "TEST",
+      validationThreshold: 1,
+      roundTripCostBps: 0,
+      initialCapital: 100,
+      rows: [
+        {
+          entryDate: "2026-05-02",
+          exitDate: "2026-05-09",
+          probabilityUp: 0.2,
+          realizedForwardReturn: 0.2,
+        },
+        {
+          entryDate: "2026-05-10",
+          exitDate: "2026-05-17",
+          probabilityUp: 0.4,
+          realizedForwardReturn: -0.2,
+        },
+      ],
+    });
+
+    const summary = summarizeLongCashReplay(replay);
+    expect(replay.windows.map((window) => window.strategyCapital)).toEqual([100, 100]);
+    expect(replay.windows.map((window) => window.benchmarkCapital)).toEqual([120, 96]);
+    expect(summary.strategyUlcerIndex).toBe(0);
+    expect(summary.benchmarkUlcerIndex).toBe(14.14213562);
+  });
+
+  it("returns zero for a flat benchmark path", () => {
+    const replay = simulateLongCashReplay({
+      symbol: "TEST",
+      validationThreshold: 0.5,
+      roundTripCostBps: 0,
+      initialCapital: 100,
+      rows: [
+        {
+          entryDate: "2026-06-02",
+          exitDate: "2026-06-09",
+          probabilityUp: 0.8,
+          realizedForwardReturn: 0,
+        },
+        {
+          entryDate: "2026-06-10",
+          exitDate: "2026-06-17",
+          probabilityUp: 0.2,
+          realizedForwardReturn: 0,
+        },
+      ],
+    });
+
+    const summary = summarizeLongCashReplay(replay);
+    expect(summary.strategyUlcerIndex).toBe(0);
+    expect(summary.benchmarkUlcerIndex).toBe(0);
   });
 
   it("uses replay-owned positions and remains deterministic", () => {
