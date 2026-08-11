@@ -28,9 +28,12 @@ import {
   qualifyTwseSnapshot,
   ROUND_TRIP_COST_BPS,
   runTwStrategyTemporalRobustnessStudy,
+  runTwStrategyTransactionCostSensitivityStudy,
   toMarketRows,
   TWSE_QUALIFICATION_FIXTURE_PAYLOADS,
   TwStrategyTemporalRobustnessError,
+  TwStrategyTransactionCostSensitivityError,
+  validateCostGridBps,
   validateCutoffDates,
   validateTwStrategyResearchRows,
   VOLUME_ADJUSTMENT_STATUS,
@@ -53,6 +56,7 @@ const DEFAULTS = Object.freeze({
   qualificationAsOf: "2025-06-18T10:00:00.000Z",
   outDir: "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1",
   cutoffs: null,
+  roundTripCosts: null,
 });
 
 function parseArgs(argv) {
@@ -77,11 +81,15 @@ function parseArgs(argv) {
       customOutDir = true;
     } else if (key === "cutoffs") {
       args.cutoffs = value.split(",").map((s) => s.trim()).filter((s) => s.length > 0);
+    } else if (key === "round-trip-cost-bps") {
+      args.roundTripCosts = value.split(",").map((s) => s.trim()).filter((s) => s.length > 0).map(Number);
     } else throw new Error(`unrecognized flag --${key}`);
     index += 1;
   }
 
-  if (args.cutoffs && !customOutDir) {
+  if (args.roundTripCosts && !customOutDir) {
+    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-cost-sensitivity-v1/sensitivity-run1";
+  } else if (args.cutoffs && !customOutDir) {
     args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-temporal-robustness-v1";
   }
 
@@ -105,11 +113,11 @@ function round8(value) {
   return Object.is(rounded, -0) ? 0 : rounded;
 }
 
-function runScenario(symbol, marketRows, policy = TW_STABILITY_RESEARCH_POLICY_V1) {
+function runScenario(symbol, marketRows, roundTripCostBps = ROUND_TRIP_COST_BPS, policy = TW_STABILITY_RESEARCH_POLICY_V1) {
   const prep = buildScenarioFoldInputs(marketRows, { candidateThresholds: CANDIDATE_THRESHOLDS });
   const walkForward = runWalkForwardThresholdEvaluation({
     symbol,
-    roundTripCostBps: ROUND_TRIP_COST_BPS,
+    roundTripCostBps,
     initialCapital: INITIAL_CAPITAL,
     folds: prep.foldInputs,
   });
@@ -273,6 +281,69 @@ function generateTemporalMarkdownReport(output) {
   return lines.join("\n");
 }
 
+function generateSensitivityMarkdownReport(output) {
+  const policy = TW_STABILITY_RESEARCH_POLICY_V1;
+  const scenarios = output.sensitivitySummaries;
+  const lines = [
+    "# Taiwan Strategy Transaction Cost Sensitivity Study V1 Report",
+    "",
+    "## Executive Summary",
+    `- **Schema Version**: ${output.schemaVersion}`,
+    `- **Review Date**: ${output.reviewDate}`,
+    `- **Research Mode**: ${output.researchMode}`,
+    `- **Source CSV SHA256**: \`${output.source.sha256}\``,
+    `- **Source Date Range**: ${output.source.fullDateRange.min} to ${output.source.fullDateRange.max}`,
+    `- **Source Full Row Count**: ${output.source.fullRowCount}`,
+    `- **Requested Cutoff Dates**: ${output.requestedCutoffDates.join(", ")}`,
+    `- **Requested Cost Grid Bps**: ${output.requestedCostGridBps.join(", ")}`,
+    `- **Walk-Forward Stability Gate Policy ID**: \`${policy.policyId}\``,
+    `- **Policy SHA256**: \`${output.policySha256}\``,
+    `- **Study SHA256**: \`${output.studySha256}\``,
+    "",
+    "## Cost Sensitivity Summary by Scenario",
+    "",
+  ];
+
+  for (const scenarioId of output.scenarioOrder) {
+    const summary = scenarios[scenarioId];
+    lines.push(`### Scenario: ${scenarioId}`);
+    lines.push(`- **Cost Sensitivity Classification**: **${summary.costSensitivityClassification}**`);
+    lines.push(`- **Pass Count Across All Cells**: ${summary.passCountAcrossAllCells} / ${summary.costCount * summary.cutoffCount}`);
+    lines.push(`- **Fail Count Across All Cells**: ${summary.failCountAcrossAllCells} / ${summary.costCount * summary.cutoffCount}`);
+    lines.push("");
+    lines.push("| Cost (bps) | Requested Cutoff | Gate Result | Agg Excess Return | Agg Max Drawdown | Dominant Thresh Ratio | Position |");
+    lines.push("| --- | --- | --- | --- | --- | --- | --- |");
+
+    for (const cost of output.requestedCostGridBps) {
+      const costKey = String(cost);
+      for (const cutoffDate of output.requestedCutoffDates) {
+        const gateStatus = summary.gateStatusByCostAndCutoff[costKey][cutoffDate];
+        const aggExcess = summary.aggregateExcessReturnByCostAndCutoff[costKey][cutoffDate].toFixed(6);
+        const aggDrawdown = summary.aggregateMaximumDrawdownByCostAndCutoff[costKey][cutoffDate].toFixed(6);
+        const domRatio = summary.dominantThresholdRatioByCostAndCutoff[costKey][cutoffDate].toFixed(6);
+        const position = summary.operativePositionByCostAndCutoff[costKey][cutoffDate];
+
+        lines.push(
+          `| ${cost} | ${cutoffDate} | **${gateStatus}** | ${aggExcess} | ${aggDrawdown} | ${domRatio} | ${position} |`,
+        );
+      }
+    }
+    lines.push("");
+  }
+
+  lines.push(
+    "## Research Limitations & Disclaimers",
+    "",
+  );
+  for (const lim of output.limitations) {
+    lines.push(`- ${lim}`);
+  }
+  lines.push("");
+  lines.push("Note: Synthetic transaction cost sensitivity is historical evidence only and does not guarantee future market behavior.");
+  lines.push("");
+  return lines.join("\n");
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
@@ -283,6 +354,157 @@ async function main() {
   }
   const csvText = csvBytes.toString("utf8");
   const rawRows = parseTwStrategyResearchCsvText(csvText);
+
+  if (args.roundTripCosts && args.roundTripCosts.length > 0) {
+    // Transaction Cost Sensitivity Study Mode
+    const validatedCosts = validateCostGridBps(args.roundTripCosts);
+    const validatedCutoffs = validateCutoffDates(args.cutoffs || ["2025-09-30", "2025-12-31", "2026-03-31", "2026-07-01"]);
+
+    const executeCutoffCostScenarios = ({ requestedCutoffDate, resolvedDataEndDate, cutoffRawRows, roundTripCostBps }) => {
+      const validated = validateTwStrategyResearchRows(cutoffRawRows, {
+        dataEndDate: resolvedDataEndDate,
+        requiredSymbols: ["2330", "0050"],
+      });
+
+      const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
+      const qualificationSnapshot = buildTwseQualificationSnapshotFromFixture(
+        {
+          splitReference: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.splitReference, "utf8")),
+          stockDay0050: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay0050, "utf8")),
+          stockDay2330: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay2330, "utf8")),
+        },
+        args.qualificationAsOf,
+      );
+      const qualification = qualifyTwseSnapshot(qualificationSnapshot, committedObservations, args.qualificationAsOf);
+      const reconciliation = qualification["0050Reconciliation"];
+
+      const rows2330Raw = toMarketRows(validated.rows, "2330");
+      const rows0050Raw = toMarketRows(validated.rows, "0050");
+
+      const result2330RawControl = runScenario("2330", rows2330Raw, roundTripCostBps);
+      const result0050Raw = runScenario("0050", rows0050Raw, roundTripCostBps);
+
+      const adjustmentFactor = reconciliation.derivedAdjustmentFactor;
+      const effectiveDate = reconciliation.effectiveDate;
+      const rows0050Adjusted = applyBoundedAdjustment(rows0050Raw, effectiveDate, adjustmentFactor);
+      const result0050Adjusted = runScenario("0050", rows0050Adjusted, roundTripCostBps);
+
+      const scenarios = {
+        "2330_RAW_CONTROL": scenarioOutput("2330", "RAW_CONTROL", result2330RawControl, {
+          adjustmentApplied: false,
+          pointInTimeStatus: "N/A_NO_CORPORATE_ACTION",
+        }),
+        "0050_RAW": scenarioOutput("0050", "RAW", result0050Raw, {
+          adjustmentApplied: false,
+          pointInTimeStatus: "N/A_UNADJUSTED_BY_DESIGN",
+        }),
+        "0050_SOURCE_QUALIFIED_ADJUSTED": scenarioOutput(
+          "0050",
+          "SOURCE_QUALIFIED_ADJUSTED",
+          result0050Adjusted,
+          {
+            adjustmentApplied: true,
+            pointInTimeStatus: qualification.pointInTimeStatus,
+          },
+        ),
+      };
+
+      const scenarioSummaryInputs = {
+        "2330_RAW_CONTROL": {
+          cutoffDate: requestedCutoffDate,
+          overallPass: result2330RawControl.stabilityGate.overallPass === true,
+          aggregateExcessReturn: round8(result2330RawControl.walkForward.aggregateExcessReturn),
+          aggregateMaximumDrawdown: round8(result2330RawControl.walkForward.aggregateMaximumStrategyDrawdown),
+          dominantThresholdRatio: round8(result2330RawControl.stability.dominantSelectedThresholdRatio),
+          operativePosition: result2330RawControl.latestSignal.position,
+          latestSignalAsOf: result2330RawControl.latestSignal.signalAsOfFeatureDate,
+        },
+        "0050_RAW": {
+          cutoffDate: requestedCutoffDate,
+          overallPass: result0050Raw.stabilityGate.overallPass === true,
+          aggregateExcessReturn: round8(result0050Raw.walkForward.aggregateExcessReturn),
+          aggregateMaximumDrawdown: round8(result0050Raw.walkForward.aggregateMaximumStrategyDrawdown),
+          dominantThresholdRatio: round8(result0050Raw.stability.dominantSelectedThresholdRatio),
+          operativePosition: result0050Raw.latestSignal.position,
+          latestSignalAsOf: result0050Raw.latestSignal.signalAsOfFeatureDate,
+        },
+        "0050_SOURCE_QUALIFIED_ADJUSTED": {
+          cutoffDate: requestedCutoffDate,
+          overallPass: result0050Adjusted.stabilityGate.overallPass === true,
+          aggregateExcessReturn: round8(result0050Adjusted.walkForward.aggregateExcessReturn),
+          aggregateMaximumDrawdown: round8(result0050Adjusted.walkForward.aggregateMaximumStrategyDrawdown),
+          dominantThresholdRatio: round8(result0050Adjusted.stability.dominantSelectedThresholdRatio),
+          operativePosition: result0050Adjusted.latestSignal.position,
+          latestSignalAsOf: result0050Adjusted.latestSignal.signalAsOfFeatureDate,
+        },
+      };
+
+      return { scenarios, scenarioSummaryInputs };
+    };
+
+    const studyResult = runTwStrategyTransactionCostSensitivityStudy({
+      rawRows,
+      cutoffDates: validatedCutoffs,
+      roundTripCostBpsList: validatedCosts,
+      source: {
+        path: args.csvPath,
+        sha256: actualSha256,
+      },
+      policy: TW_STABILITY_RESEARCH_POLICY_V1,
+      reviewDate: args.reviewDate,
+      executeCutoffCostScenarios,
+    });
+
+    // 10 Bps Invariance Verification
+    if (validatedCosts.includes(10)) {
+      const run10bps = studyResult.temporalRunsByCost["10"];
+      if (!run10bps) {
+        throw new Error("STOP_MMS_TW_COST_SENSITIVITY_TEN_BPS_DRIFT: 10 bps temporal run missing");
+      }
+      const json10Text = JSON.stringify(run10bps, null, 2) + "\n";
+      const json10Sha256 = sha256Hex(Buffer.from(json10Text, "utf8"));
+      const md10Text = generateTemporalMarkdownReport(run10bps);
+      const md10Sha256 = sha256Hex(Buffer.from(md10Text, "utf8"));
+
+      const EXPECTED_10BPS_JSON_SHA256 = "5f9c82a66cd035d77e01d6c5051f31cffd063c042ea3e6c6367812ae2fd53af9";
+      const EXPECTED_10BPS_MD_SHA256 = "42c397a175727db3283b66a629196b6ee580772aade2b73109294238cf1899c1";
+
+      if (json10Sha256 !== EXPECTED_10BPS_JSON_SHA256 || md10Sha256 !== EXPECTED_10BPS_MD_SHA256) {
+        throw new Error(
+          `STOP_MMS_TW_COST_SENSITIVITY_TEN_BPS_DRIFT: 10 bps slice hashes mismatch. ` +
+          `JSON expected=${EXPECTED_10BPS_JSON_SHA256} actual=${json10Sha256}, ` +
+          `MD expected=${EXPECTED_10BPS_MD_SHA256} actual=${md10Sha256}`,
+        );
+      }
+
+      mkdirSync(args.outDir, { recursive: true });
+      const compatReport = {
+        status: "VERIFIED_BYTE_IDENTICAL",
+        expectedJsonSha256: EXPECTED_10BPS_JSON_SHA256,
+        expectedMarkdownSha256: EXPECTED_10BPS_MD_SHA256,
+        actualJsonSha256: json10Sha256,
+        actualMarkdownSha256: md10Sha256,
+        invarianceMatch: true,
+      };
+      writeFileSync(path.join(args.outDir, "ten_bps_compatibility_report.json"), JSON.stringify(compatReport, null, 2) + "\n");
+    }
+
+    mkdirSync(args.outDir, { recursive: true });
+    const jsonText = JSON.stringify(studyResult, null, 2) + "\n";
+    const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
+    const jsonFile = path.join(args.outDir, "tw_strategy_transaction_cost_sensitivity_study_v1.json");
+    writeFileSync(jsonFile, jsonText);
+    console.log("JSON_OUTPUT_SHA256=" + jsonSha256);
+    console.log("wrote " + jsonFile);
+
+    const mdText = generateSensitivityMarkdownReport(studyResult);
+    const mdSha256 = sha256Hex(Buffer.from(mdText, "utf8"));
+    const mdFile = path.join(args.outDir, "tw_strategy_transaction_cost_sensitivity_study_v1.md");
+    writeFileSync(mdFile, mdText);
+    console.log("MARKDOWN_OUTPUT_SHA256=" + mdSha256);
+    console.log("wrote " + mdFile);
+    return;
+  }
 
   if (args.cutoffs && args.cutoffs.length > 0) {
     // Temporal Robustness Study Mode
