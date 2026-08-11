@@ -1,5 +1,12 @@
 export { calibrateLongCashThreshold } from "./calibrateLongCashThreshold.js";
 export {
+  compareLongCashReplayWithBenchmark,
+} from "./compareLongCashReplay.js";
+export type {
+  LongCashBenchmarkComparison,
+  LongCashBenchmarkVerdict,
+} from "./compareLongCashReplay.js";
+export {
   evaluateWalkForwardStabilityGate,
   TW_STABILITY_RESEARCH_POLICY_V1,
 } from "./evaluateWalkForwardStabilityGate.js";
