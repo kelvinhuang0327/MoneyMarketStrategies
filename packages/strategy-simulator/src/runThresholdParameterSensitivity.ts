@@ -61,6 +61,7 @@ function replayCandidateThreshold(
     validationStrategyReturn: replay.strategy.totalReturn,
     validationBenchmarkReturn: replay.benchmark.totalReturn,
     validationExcessReturn: replay.excessReturn,
+    validationMaximumDrawdown: replay.strategy.maximumDrawdown,
     returnDeltaVersusSelectedThreshold: returnDelta,
     excessReturnDeltaVersusSelectedThreshold: excessReturnDelta,
     degradationVersusSelectedThreshold: Math.max(0, -returnDelta),

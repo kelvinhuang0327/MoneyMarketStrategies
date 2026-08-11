@@ -24,6 +24,17 @@ export {
 export {
   runThresholdParameterSensitivity,
 } from "./runThresholdParameterSensitivity.js";
+export {
+  analyzeThresholdParetoFrontier,
+} from "./analyzeThresholdParetoFrontier.js";
+export type {
+  ThresholdParetoDimension,
+  ThresholdParetoDimensionDirection,
+  ThresholdParetoFrontierCandidate,
+  ThresholdParetoFrontierDominatedCandidate,
+  ThresholdParetoFrontierInput,
+  ThresholdParetoFrontierResult,
+} from "./analyzeThresholdParetoFrontier.js";
 export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.js";
 export { summarizeLongCashReplay } from "./summarizeLongCashReplay.js";
 export type { LongCashReplaySummary } from "./summarizeLongCashReplay.js";

@@ -193,6 +193,7 @@ export interface ThresholdParameterSensitivityCandidateResult {
   readonly validationStrategyReturn: number;
   readonly validationBenchmarkReturn: number;
   readonly validationExcessReturn: number;
+  readonly validationMaximumDrawdown: number;
   readonly returnDeltaVersusSelectedThreshold: number;
   readonly excessReturnDeltaVersusSelectedThreshold: number;
   readonly degradationVersusSelectedThreshold: number;
