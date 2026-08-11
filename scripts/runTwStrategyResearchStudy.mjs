@@ -11,6 +11,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   ADJUSTMENT_COVERAGE,
@@ -116,6 +117,76 @@ function round8(value) {
 
 function isRecord(value) {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+export function serializeProfitFactorForResearchOutput(value) {
+  if (Number.isFinite(value)) return value;
+  if (value === Number.POSITIVE_INFINITY) return "Infinity";
+  throw new Error(
+    `STOP_MMS_REPLAY_DIAGNOSTICS_UNEXPECTED_NONFINITE_VALUE:field=strategyProfitFactor:value=${String(value)}`,
+  );
+}
+
+function serializeReplaySummaryForResearchOutput(summary) {
+  return {
+    ...summary,
+    strategyProfitFactor: serializeProfitFactorForResearchOutput(summary.strategyProfitFactor),
+  };
+}
+
+function serializeScenarioForResearchOutput(scenario) {
+  return {
+    ...scenario,
+    validationReplaySummaries: scenario.validationReplaySummaries.map(
+      serializeReplaySummaryForResearchOutput,
+    ),
+  };
+}
+
+function serializeScenarioRecordForResearchOutput(scenarios) {
+  return Object.fromEntries(
+    Object.entries(scenarios).map(([scenarioId, scenario]) => [
+      scenarioId,
+      serializeScenarioForResearchOutput(scenario),
+    ]),
+  );
+}
+
+export function serializeResearchOutputForJson(output) {
+  if (isRecord(output.scenarios)) {
+    return {
+      ...output,
+      scenarios: serializeScenarioRecordForResearchOutput(output.scenarios),
+    };
+  }
+
+  if (Array.isArray(output.cutoffRuns)) {
+    return {
+      ...output,
+      cutoffRuns: output.cutoffRuns.map((cutoffRun) => ({
+        ...cutoffRun,
+        scenarios: serializeScenarioRecordForResearchOutput(cutoffRun.scenarios),
+      })),
+    };
+  }
+
+  if (isRecord(output.temporalStudiesByCost)) {
+    return {
+      ...output,
+      temporalStudiesByCost: Object.fromEntries(
+        Object.entries(output.temporalStudiesByCost).map(([cost, study]) => [
+          cost,
+          serializeResearchOutputForJson(study),
+        ]),
+      ),
+    };
+  }
+
+  throw new Error("STOP_MMS_REPLAY_DIAGNOSTICS_OUTPUT_CONSUMER_UNRESOLVED");
+}
+
+export function formatProfitFactorForResearchMarkdown(value) {
+  return String(serializeProfitFactorForResearchOutput(value));
 }
 
 function failMissingSensitivityValue(fieldName, costKey, cutoffDate, reason) {
@@ -315,8 +386,8 @@ function generateMarkdownReport(output) {
     "",
     "Rule: LONG when probability meets or exceeds the configured threshold; otherwise CASH.",
     "",
-    "| Scenario | Fold | Threshold | Observations | LONG | CASH | Wins | Losses | Hit Rate | Strategy Return | Benchmark Return | Excess Return |",
-    "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
+    "| Scenario | Fold | Threshold | Observations | LONG | CASH | Wins | Losses | Hit Rate | Strategy Return | Benchmark Return | Excess Return | Strategy Profit Factor | Strategy Ulcer Index | Benchmark Ulcer Index | Strategy Max Drawdown Duration | Benchmark Max Drawdown Duration |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
   );
   for (const [key, sc] of Object.entries(scenarios)) {
     for (const summary of sc.validationReplaySummaries) {
@@ -325,7 +396,10 @@ function generateMarkdownReport(output) {
         + `${summary.observations} | ${summary.longObservations} | ${summary.cashObservations} | `
         + `${summary.winningLongObservations} | ${summary.losingLongObservations} | `
         + `${summary.longHitRate.toFixed(6)} | ${summary.strategyTotalReturn.toFixed(6)} | `
-        + `${summary.benchmarkTotalReturn.toFixed(6)} | ${summary.excessReturn.toFixed(6)} |`,
+        + `${summary.benchmarkTotalReturn.toFixed(6)} | ${summary.excessReturn.toFixed(6)} | `
+        + `${formatProfitFactorForResearchMarkdown(summary.strategyProfitFactor)} | `
+        + `${summary.strategyUlcerIndex} | ${summary.benchmarkUlcerIndex} | `
+        + `${summary.strategyMaxDrawdownDuration} | ${summary.benchmarkMaxDrawdownDuration} |`,
       );
     }
   }
@@ -702,7 +776,7 @@ async function main() {
     }
 
     mkdirSync(args.outDir, { recursive: true });
-    const jsonText = JSON.stringify(sensitivityResult, null, 2) + "\n";
+    const jsonText = JSON.stringify(serializeResearchOutputForJson(sensitivityResult), null, 2) + "\n";
     const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
     const jsonFile = path.join(args.outDir, "tw_strategy_transaction_cost_sensitivity_study_v1.json");
     writeFileSync(jsonFile, jsonText);
@@ -866,7 +940,7 @@ async function main() {
     }
 
     mkdirSync(args.outDir, { recursive: true });
-    const jsonText = JSON.stringify(studyResult, null, 2) + "\n";
+    const jsonText = JSON.stringify(serializeResearchOutputForJson(studyResult), null, 2) + "\n";
     const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
     const jsonFile = path.join(args.outDir, "tw_strategy_temporal_robustness_study_v1.json");
     writeFileSync(jsonFile, jsonText);
@@ -1028,7 +1102,7 @@ async function main() {
   };
 
   mkdirSync(args.outDir, { recursive: true });
-  const jsonText = JSON.stringify(output, null, 2) + "\n";
+  const jsonText = JSON.stringify(serializeResearchOutputForJson(output), null, 2) + "\n";
   const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
   const jsonFile = path.join(args.outDir, "tw_strategy_research_study_v1.json");
   writeFileSync(jsonFile, jsonText);
@@ -1043,7 +1117,9 @@ async function main() {
   console.log("wrote " + mdFile);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
