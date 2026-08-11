@@ -5,6 +5,7 @@ import {
   createFinalTestEvaluator,
   fitLogisticRegression,
   fitStandardScaler,
+  RESEARCH_FEATURE_NAMES,
   runResearchEvidenceKernel,
   selectValidationThreshold,
   splitChronologically,
@@ -37,6 +38,51 @@ function splitFixture() {
 }
 
 describe("leakage and fail-closed guards", () => {
+  it("ports the PIT-safe 20-day maximum drawdown feature", () => {
+    const closes = Array.from({ length: 26 }, (_, index) => {
+      if (index === 10) return 120;
+      if (index === 11) return 110;
+      if (index === 12) return 100;
+      if (index === 13) return 90;
+      return 100 + index * 0.1;
+    });
+    const rows: MarketDataRow[] = closes.map((close, index) => ({
+      symbol: "DRAWDOWN",
+      date: new Date(Date.UTC(2024, 0, 1 + index)).toISOString().slice(0, 10),
+      open: close,
+      high: close + 1,
+      low: close - 1,
+      close,
+      volume: 1_000 + index * 10,
+      source: "test-owned/in-memory",
+    }));
+    const originalRows = rows.map((row) => ({ ...row }));
+    const normalized = validateAndNormalizeMarketRows(rows);
+    const firstRun = buildHistoricalFeatureRows(normalized);
+    const firstFeature = firstRun[0];
+    if (firstFeature === undefined) throw new Error("drawdown fixture produced no feature row");
+
+    expect(RESEARCH_FEATURE_NAMES[4]).toBe("drawdown_20d");
+    expect(firstFeature.features[4]).toBeCloseTo(-0.25, 12);
+    expect(rows).toEqual(originalRows);
+    expect(buildHistoricalFeatureRows(normalized)).toEqual(firstRun);
+
+    const futureChanged = rows.map((row, index) =>
+      index > 20
+        ? {
+            ...row,
+            open: row.open + 500,
+            high: row.high + 500,
+            low: row.low + 500,
+            close: row.close + 500,
+          }
+        : { ...row });
+    const futureRun = buildHistoricalFeatureRows(validateAndNormalizeMarketRows(futureChanged));
+    const futureChangedFeature = futureRun[0];
+    if (futureChangedFeature === undefined) throw new Error("future fixture produced no feature row");
+    expect(futureChangedFeature.features[4]).toBeCloseTo(firstFeature.features[4], 12);
+  });
+
   it("purges a target that crosses each chronological boundary", () => {
     const split = splitFixture();
 

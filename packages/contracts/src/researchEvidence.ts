@@ -14,7 +14,7 @@ export type FeatureVector = readonly [
   return20d: number,
   volatility10d: number,
   volumeRatio20d: number,
-  intradayRangePct: number,
+  drawdown20d: number,
 ];
 
 export interface MarketDataRow {

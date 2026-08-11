@@ -5,7 +5,7 @@ export const RESEARCH_FEATURE_NAMES = Object.freeze([
   "return_20d",
   "volatility_10d",
   "volume_ratio_20d",
-  "intraday_range_pct",
+  "drawdown_20d",
 ] as const);
 
 export const FEATURE_LOOKBACK_ROWS = 20;
@@ -56,6 +56,21 @@ function featureVector(rows: readonly MarketDataRow[], index: number): FeatureVe
     fail(`zero historical volume mean at ${current.symbol}:${current.date}`);
   }
 
+  const historicalCloses20 = rows
+    .slice(index - FEATURE_LOOKBACK_ROWS + 1, index + 1)
+    .map((row) => row.close);
+  const firstHistoricalClose = historicalCloses20[0];
+  if (firstHistoricalClose === undefined) fail("historical drawdown window is incomplete");
+  let peak = firstHistoricalClose;
+  let maximumDrawdown = 0;
+  for (const close of historicalCloses20.slice(1)) {
+    if (close > peak) peak = close;
+    if (peak > 0) {
+      const drawdown = (close - peak) / peak;
+      if (drawdown < maximumDrawdown) maximumDrawdown = drawdown;
+    }
+  }
+
   const row5 = rows[index - 5];
   const row20 = rows[index - 20];
   if (row5 === undefined || row20 === undefined) fail("historical price window is incomplete");
@@ -64,7 +79,7 @@ function featureVector(rows: readonly MarketDataRow[], index: number): FeatureVe
     current.close / row20.close - 1,
     Math.sqrt(variance),
     current.volume / averageVolume20,
-    (current.high - current.low) / current.close,
+    maximumDrawdown,
   ]);
 }
 
