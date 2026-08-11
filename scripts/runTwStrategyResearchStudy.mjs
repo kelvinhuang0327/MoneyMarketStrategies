@@ -38,6 +38,8 @@ import {
   VOLUME_ADJUSTMENT_STATUS,
 } from "@mms/research-kernel";
 import {
+  analyzeThresholdParetoFrontier,
+  analyzeThresholdParetoStability,
   evaluateWalkForwardStabilityGate,
   runThresholdParameterSensitivity,
   runWalkForwardThresholdEvaluation,
@@ -234,6 +236,23 @@ function requireSensitivityNumber(value, fieldName, costKey, cutoffDate) {
   return value;
 }
 
+export function buildValidationThresholdParetoResearchOutput(thresholdParameterSensitivity) {
+  const comparableFoldResults = thresholdParameterSensitivity.foldResults.filter(
+    ({ candidateThresholdResults }) => candidateThresholdResults.length >= 2,
+  );
+
+  return {
+    validationThresholdParetoFrontier: comparableFoldResults.map((fold) => ({
+      foldId: fold.foldId,
+      candidateThresholds: fold.candidateThresholdResults.map(({ threshold }) => threshold),
+      ...analyzeThresholdParetoFrontier(fold),
+    })),
+    validationThresholdParetoStability: analyzeThresholdParetoStability({
+      foldResults: comparableFoldResults,
+    }),
+  };
+}
+
 function runScenario(
   symbol,
   marketRows,
@@ -253,6 +272,9 @@ function runScenario(
     initialCapital: INITIAL_CAPITAL,
     folds: prep.foldInputs,
   });
+  const validationThresholdPareto = buildValidationThresholdParetoResearchOutput(
+    thresholdParameterSensitivity,
+  );
   const validationReplaySummaries = walkForward.foldResults.map((fold) => ({
     foldId: fold.foldId,
     ...summarizeLongCashReplay(fold.calibrationResult.validationResult),
@@ -271,6 +293,7 @@ function runScenario(
     foldBoundaries: prep.foldBoundaries,
     walkForward,
     thresholdParameterSensitivity,
+    ...validationThresholdPareto,
     validationReplaySummaries,
     validationReplayIntegrityReports,
     stability,
@@ -294,6 +317,8 @@ function scenarioOutput(symbol, scenarioId, result, extra) {
     foldBoundaries: result.foldBoundaries,
     walkForward: result.walkForward,
     thresholdParameterSensitivity: result.thresholdParameterSensitivity,
+    validationThresholdParetoFrontier: result.validationThresholdParetoFrontier,
+    validationThresholdParetoStability: result.validationThresholdParetoStability,
     validationReplaySummaries: result.validationReplaySummaries,
     validationReplayIntegrityReports: result.validationReplayIntegrityReports,
     stability: result.stability,
@@ -325,6 +350,47 @@ function appendReplayIntegrityDiagnostics(lines, entries) {
       }
     }
     lines.push(`- **Summary**: ${report.summary}`, "");
+  }
+}
+
+function appendThresholdParetoDiagnostics(lines, scenarios) {
+  lines.push(
+    "## Validation Threshold Pareto Analysis (Diagnostic Only)",
+    "",
+    "Pareto status is computed from validation threshold-sensitivity candidates only. It is descriptive and does not select or recommend a threshold.",
+    "",
+  );
+
+  for (const [key, scenario] of Object.entries(scenarios)) {
+    const stability = scenario.validationThresholdParetoStability;
+    lines.push(
+      `### ${key}`,
+      `- **Stable frontier thresholds**: ${stability.stableFrontierThresholds.join(", ") || "None"}`,
+      `- **Mixed thresholds**: ${stability.mixedThresholds.join(", ") || "None"}`,
+      `- **Never-frontier thresholds**: ${stability.neverFrontierThresholds.join(", ") || "None"}`,
+      `- **Partial-coverage thresholds**: ${stability.partialCoverageThresholds.join(", ") || "None"}`,
+      "",
+      "| Fold | Compared Thresholds | Frontier Thresholds | Dominated Threshold | Dominated By |",
+      "| --- | --- | --- | --- | --- |",
+    );
+
+    for (const fold of scenario.validationThresholdParetoFrontier) {
+      const frontierThresholds = fold.frontierCandidates.map(({ threshold }) => threshold).join(", ");
+      if (fold.dominatedCandidates.length === 0) {
+        lines.push(
+          `| ${fold.foldId} | ${fold.candidateThresholds.join(", ")} | ${frontierThresholds} | None | None |`,
+        );
+        continue;
+      }
+      fold.dominatedCandidates.forEach((candidate, index) => {
+        lines.push(
+          `| ${fold.foldId} | ${index === 0 ? fold.candidateThresholds.join(", ") : ""} | `
+          + `${index === 0 ? frontierThresholds : ""} | ${candidate.threshold} | `
+          + `${candidate.dominatedByThresholds.join(", ")} |`,
+        );
+      });
+    }
+    lines.push("");
   }
 }
 
@@ -436,6 +502,8 @@ function generateMarkdownReport(output) {
       }
     }
   }
+
+  appendThresholdParetoDiagnostics(lines, scenarios);
 
   appendReplayIntegrityDiagnostics(
     lines,

@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  buildValidationThresholdParetoResearchOutput,
   formatProfitFactorForResearchMarkdown,
   serializeResearchOutputForJson,
 } from "./runTwStrategyResearchStudy.mjs";
@@ -27,6 +28,171 @@ function scenario(strategyProfitFactor) {
     validationReplaySummaries: [replaySummary(strategyProfitFactor)],
   };
 }
+
+function sensitivityCandidate({
+  threshold,
+  validationExcessReturn,
+  validationMaximumDrawdown,
+  isSelectedThreshold = false,
+  finalTestExcessReturn = 0,
+}) {
+  return {
+    threshold,
+    isSelectedThreshold,
+    validationStrategyReturn: validationExcessReturn,
+    validationBenchmarkReturn: 0,
+    validationExcessReturn,
+    validationMaximumDrawdown,
+    returnDeltaVersusSelectedThreshold: 0,
+    excessReturnDeltaVersusSelectedThreshold: 0,
+    degradationVersusSelectedThreshold: 0,
+    excessReturnDegradationVersusSelectedThreshold: 0,
+    finalTestExcessReturn,
+    finalTestMaximumDrawdown: 0,
+  };
+}
+
+function thresholdSensitivity(foldResults) {
+  return { foldResults };
+}
+
+function paretoSensitivityFixture() {
+  return thresholdSensitivity([
+    {
+      foldId: "fold-1",
+      selectedThreshold: 0.7,
+      candidateThresholdResults: [
+        sensitivityCandidate({
+          threshold: 0.5,
+          validationExcessReturn: 0.3,
+          validationMaximumDrawdown: 0.1,
+          finalTestExcessReturn: 999,
+        }),
+        sensitivityCandidate({
+          threshold: 0.7,
+          validationExcessReturn: 0.2,
+          validationMaximumDrawdown: 0.2,
+          isSelectedThreshold: true,
+          finalTestExcessReturn: -999,
+        }),
+      ],
+    },
+    {
+      foldId: "fold-2",
+      selectedThreshold: 0.5,
+      candidateThresholdResults: [
+        sensitivityCandidate({
+          threshold: 0.5,
+          validationExcessReturn: 0.1,
+          validationMaximumDrawdown: 0.2,
+          isSelectedThreshold: true,
+        }),
+        sensitivityCandidate({
+          threshold: 0.9,
+          validationExcessReturn: 0.05,
+          validationMaximumDrawdown: 0.3,
+        }),
+      ],
+    },
+  ]);
+}
+
+test("exposes per-fold V13 frontiers and aggregate V14 stability without changing selection", () => {
+  const source = paretoSensitivityFixture();
+  const selectedThresholdsBefore = source.foldResults.map(({ selectedThreshold }) => selectedThreshold);
+  const output = buildValidationThresholdParetoResearchOutput(source);
+
+  assert.deepEqual(
+    output.validationThresholdParetoFrontier.map(({ foldId }) => foldId),
+    ["fold-1", "fold-2"],
+  );
+  assert.deepEqual(output.validationThresholdParetoFrontier[0], {
+    foldId: "fold-1",
+    candidateThresholds: [0.5, 0.7],
+    schemaVersion: "MMS_VALIDATION_THRESHOLD_PARETO_FRONTIER_V1",
+    researchMode: "diagnostic-only",
+    dimensions: [
+      {
+        field: "validationExcessReturn",
+        direction: "MAXIMIZE",
+        source: "ThresholdParameterSensitivityCandidateResult.validationExcessReturn",
+      },
+      {
+        field: "validationMaximumDrawdown",
+        direction: "MINIMIZE",
+        source: "ThresholdParameterSensitivityCandidateResult.validationMaximumDrawdown",
+      },
+    ],
+    candidateCount: 2,
+    frontierCount: 1,
+    frontierCandidates: [{ threshold: 0.5 }],
+    dominatedCandidates: [{ threshold: 0.7, dominatedByThresholds: [0.5] }],
+  });
+
+  assert.deepEqual(output.validationThresholdParetoStability.stableFrontierThresholds, [0.5]);
+  assert.deepEqual(output.validationThresholdParetoStability.neverFrontierThresholds, []);
+  assert.deepEqual(output.validationThresholdParetoStability.mixedThresholds, []);
+  assert.deepEqual(output.validationThresholdParetoStability.partialCoverageThresholds, [0.7, 0.9]);
+  assert.deepEqual(output.validationThresholdParetoStability.thresholds, [
+    {
+      threshold: 0.5,
+      eligibleFoldCount: 2,
+      frontierFoldCount: 2,
+      dominatedFoldCount: 0,
+      frontierRate: 1,
+      hasFullCoverage: true,
+    },
+    {
+      threshold: 0.7,
+      eligibleFoldCount: 1,
+      frontierFoldCount: 0,
+      dominatedFoldCount: 1,
+      frontierRate: 0,
+      hasFullCoverage: false,
+    },
+    {
+      threshold: 0.9,
+      eligibleFoldCount: 1,
+      frontierFoldCount: 0,
+      dominatedFoldCount: 1,
+      frontierRate: 0,
+      hasFullCoverage: false,
+    },
+  ]);
+
+  assert.deepEqual(
+    source.foldResults.map(({ selectedThreshold }) => selectedThreshold),
+    selectedThresholdsBefore,
+  );
+  assert.equal(Object.hasOwn(output, "bestThreshold"), false);
+  assert.equal(Object.hasOwn(output, "recommendedThreshold"), false);
+});
+
+test("keeps Pareto output validation-only, deterministic, and JSON-compatible", () => {
+  const source = paretoSensitivityFixture();
+  const first = buildValidationThresholdParetoResearchOutput(source);
+  const second = buildValidationThresholdParetoResearchOutput(source);
+  const finalTestChanged = JSON.parse(JSON.stringify(source));
+  finalTestChanged.foldResults[0].candidateThresholdResults[0].finalTestExcessReturn = -123456;
+  finalTestChanged.foldResults[0].candidateThresholdResults[0].finalTestMaximumDrawdown = 123456;
+  const finalTestChangedOutput = buildValidationThresholdParetoResearchOutput(finalTestChanged);
+
+  assert.deepEqual(second, first);
+  assert.deepEqual(finalTestChangedOutput, first);
+
+  const serialized = serializeResearchOutputForJson({
+    scenarios: {
+      TEST: {
+        ...first,
+        validationReplaySummaries: [],
+      },
+    },
+  });
+  const parsed = JSON.parse(JSON.stringify(serialized));
+  assert.deepEqual(parsed.scenarios.TEST.validationThresholdParetoFrontier, first.validationThresholdParetoFrontier);
+  assert.deepEqual(parsed.scenarios.TEST.validationThresholdParetoStability, first.validationThresholdParetoStability);
+  assert.equal(JSON.stringify(parsed).includes("finalTest"), false);
+});
 
 test("serializes positive Infinity without mutating the source summary", () => {
   const replay = simulateLongCashReplay({
