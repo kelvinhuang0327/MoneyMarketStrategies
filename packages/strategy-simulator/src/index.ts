@@ -35,6 +35,15 @@ export type {
   ThresholdParetoFrontierInput,
   ThresholdParetoFrontierResult,
 } from "./analyzeThresholdParetoFrontier.js";
+export {
+  analyzeThresholdParetoStability,
+} from "./analyzeThresholdParetoStability.js";
+export type {
+  ThresholdParetoStabilityFoldInput,
+  ThresholdParetoStabilityInput,
+  ThresholdParetoStabilityResult,
+  ThresholdParetoStabilityThreshold,
+} from "./analyzeThresholdParetoStability.js";
 export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.js";
 export { summarizeLongCashReplay } from "./summarizeLongCashReplay.js";
 export type { LongCashReplaySummary } from "./summarizeLongCashReplay.js";
