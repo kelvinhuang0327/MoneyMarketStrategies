@@ -1,5 +1,13 @@
 export { calibrateLongCashThreshold } from "./calibrateLongCashThreshold.js";
 export {
+  analyzeLongCashReplayTimeConcentration,
+} from "./analyzeLongCashReplayTimeConcentration.js";
+export type {
+  LongCashReplayTimeConcentration,
+  LongCashReplayTimeConcentrationStatus,
+  LongCashReplayTimeCohortContribution,
+} from "./analyzeLongCashReplayTimeConcentration.js";
+export {
   compareLongCashReplayWithBenchmark,
 } from "./compareLongCashReplay.js";
 export type {
