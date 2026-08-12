@@ -13,6 +13,7 @@ import {
 } from "@mms/research-kernel";
 import {
   buildFinalTestPerSymbolEconomicEdge,
+  reconcileFinalTestEconomicEdge,
   simulateLongCashReplay,
 } from "@mms/strategy-simulator";
 
@@ -301,6 +302,60 @@ describe("Prediction & Retraining Result Contract V1", () => {
         kind: "economic_edge",
         reference: "MMS_FINAL_TEST_PER_SYMBOL_ECONOMIC_EDGE_V1",
         sha256: economicEdge.normalizedResultSha256,
+      }),
+    ]));
+  });
+
+  it("forwards additive raw-vs-adjusted reconciliation without changing aggregate metrics or promotion", () => {
+    const economicEvidence = kernelResult.finalTestEconomicEvidence;
+    if (economicEvidence === undefined) throw new Error("kernel economic evidence is missing");
+    const reconciliationEvidence = {
+      ...economicEvidence,
+      rows: economicEvidence.rows.map((row) => ({ ...row, symbol: "0050" })),
+    };
+    const reconciliation = reconcileFinalTestEconomicEdge({
+      raw: {
+        scenario: "0050_RAW",
+        sourceDataQualityClassification: "RAW_UNADJUSTED_PRICE_PATH",
+        sourceEvidenceReference: "test-owned/raw",
+        finalTestEvidence: reconciliationEvidence,
+        dataQualityFindings: [],
+        corporateActionWarnings: [],
+      },
+      adjusted: {
+        scenario: "0050_SOURCE_QUALIFIED_ADJUSTED",
+        sourceDataQualityClassification: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+        sourceEvidenceReference: "test-owned/adjusted",
+        finalTestEvidence: reconciliationEvidence,
+        dataQualityFindings: [],
+        corporateActionWarnings: [],
+      },
+      roundTripCostBps: 10,
+      initialCapital: 1_000,
+    });
+    const result = buildPredictionRetrainingResultV1(buildInput({
+      finalTestEconomicReconciliation: reconciliation,
+    }));
+
+    expect(result.finalTestEconomicReconciliation).toMatchObject({
+      schemaVersion: "MMS_0050_RAW_ADJUSTED_ECONOMIC_EDGE_RECONCILIATION_V1",
+      classification: reconciliation.classification,
+      commonWindowCheck: { status: "IDENTICAL" },
+    });
+    expect(result.finalTestMetrics).toEqual({
+      availability: "available",
+      value: kernelResult.evidence.finalTest.metrics,
+    });
+    expect(result.promotion.verdict).toBe(
+      kernelResult.promotionDecision.status === "RESEARCH_CANDIDATE"
+        ? "research_only"
+        : "do_not_promote",
+    );
+    expect(result.provenanceReferences).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        kind: "economic_edge",
+        reference: "MMS_0050_RAW_ADJUSTED_ECONOMIC_EDGE_RECONCILIATION_V1",
+        sha256: reconciliation.normalizedResultSha256,
       }),
     ]));
   });
