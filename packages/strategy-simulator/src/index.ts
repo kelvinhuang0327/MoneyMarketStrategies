@@ -47,6 +47,25 @@ export type {
 export { summarizeWalkForwardStability } from "./summarizeWalkForwardStability.js";
 export { summarizeLongCashReplay } from "./summarizeLongCashReplay.js";
 export type { LongCashReplaySummary } from "./summarizeLongCashReplay.js";
+export {
+  buildFinalTestPerSymbolEconomicEdge,
+} from "./finalTestEconomicEdge.js";
+export type {
+  FinalTestEconomicEdgeGroup,
+  FinalTestEconomicEdgeInput,
+  FinalTestEconomicEdgeResult,
+} from "./finalTestEconomicEdge.js";
+export {
+  reconcileFinalTestEconomicEdge,
+} from "./reconcileFinalTestEconomicEdge.js";
+export type {
+  FinalTestEconomicReconciliation,
+  FinalTestEconomicReconciliationClassification,
+  FinalTestEconomicReconciliationInput,
+  FinalTestEconomicReconciliationScenario,
+  FinalTestEconomicReconciliationScenarioInput,
+  FinalTestEconomicReconciliationWindowStatus,
+} from "./reconcileFinalTestEconomicEdge.js";
 export { simulateLongCashReplay } from "./simulateLongCashReplay.js";
 export { validateLongCashReplay } from "./validateLongCashReplay.js";
 export type {

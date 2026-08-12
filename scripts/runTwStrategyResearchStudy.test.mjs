@@ -2,6 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  buildCurrentUnresolvedSignal,
+  buildPredictionRetrainingResultV1FromFreshResearch,
   buildValidationThresholdParetoResearchOutput,
   formatProfitFactorForResearchMarkdown,
   serializeResearchOutputForJson,
@@ -276,4 +278,188 @@ test("rejects unsupported non-finite Profit Factor values", () => {
 test("renders the authorized Markdown Profit Factor representation", () => {
   assert.equal(formatProfitFactorForResearchMarkdown(2.5), "2.5");
   assert.equal(formatProfitFactorForResearchMarkdown(Infinity), "Infinity");
+});
+
+test("derives a current signal from the latest feature row without future labels", () => {
+  const rawRows = [];
+  for (let index = 0; index < 120; index += 1) {
+    const date = new Date(Date.UTC(2024, 0, 1 + index)).toISOString().slice(0, 10);
+    const close = 100 + Math.sin(index / 7) * 4 + index * 0.05;
+    rawRows.push({
+      symbol: "0050",
+      date,
+      open: close - 0.2,
+      high: close + 0.8,
+      low: close - 0.8,
+      close,
+      volume: 1000 + index,
+      source: "test-owned/in-memory",
+    });
+  }
+
+  const first = buildCurrentUnresolvedSignal(rawRows, 0.6);
+  const second = buildCurrentUnresolvedSignal(rawRows, 0.6);
+
+  assert.deepEqual(second, first);
+  assert.equal(first.signalAsOfFeatureDate, "2024-04-29");
+  assert.equal(first.signalAsOfTargetDate, "2024-05-06");
+  assert.equal(first.predictionHorizonRows, 5);
+  assert.equal(first.position, first.probabilityUp >= 0.6 ? "LONG" : "CASH");
+  assert.equal(Number.isFinite(first.probabilityUp), true);
+});
+
+test("adapts one fresh research output into a deterministic Contract V1 result", () => {
+  const rawRows = [];
+  for (let index = 0; index < 120; index += 1) {
+    const date = new Date(Date.UTC(2024, 0, 1 + index)).toISOString().slice(0, 10);
+    const close = 100 + Math.sin(index / 7) * 4 + index * 0.05;
+    rawRows.push({
+      symbol: "0050",
+      date,
+      open: close - 0.2,
+      high: close + 0.8,
+      low: close - 0.8,
+      close,
+      volume: 1000 + index,
+      source: "test-owned/in-memory",
+    });
+  }
+
+  const replay = simulateLongCashReplay({
+    symbol: "0050",
+    validationThreshold: 0.5,
+    roundTripCostBps: 10,
+    initialCapital: 100,
+    rows: [
+      {
+        entryDate: "2024-04-01",
+        exitDate: "2024-04-08",
+        probabilityUp: 0.7,
+        realizedForwardReturn: 0.02,
+      },
+      {
+        entryDate: "2024-04-09",
+        exitDate: "2024-04-16",
+        probabilityUp: 0.4,
+        realizedForwardReturn: -0.01,
+      },
+    ],
+  });
+  const scenario = (symbol, probabilityUp, position) => ({
+    symbol,
+    latestSignal: {
+      signalAsOfFeatureDate: "2024-04-20",
+      signalAsOfTargetDate: "2024-04-29",
+      probabilityUp,
+      operativeThreshold: 0.6,
+      position,
+    },
+    currentSignal: {
+      signalAsOfFeatureDate: "2024-04-29",
+      signalAsOfTargetDate: "2024-05-06",
+      probabilityUp: probabilityUp + 0.01,
+      operativeThreshold: 0.6,
+      position,
+      predictionHorizonRows: 5,
+    },
+    walkForward: {
+      normalizedResultSha256: "b".repeat(64),
+      foldResults: [{ calibrationResult: { validationResult: replay } }],
+    },
+  });
+  const output = {
+    schemaVersion: "MMS_TW_STRATEGY_RESEARCH_RUNNER_V1",
+    repositories: { legacyRepo: { ref: "test-ref" } },
+    source: {
+      path: "test.csv",
+      sha256: "a".repeat(64),
+      dateRange: { max: "2024-04-29" },
+    },
+    scenarios: {
+      "2330_RAW_CONTROL": scenario("2330", 0.58, "LONG"),
+      "0050_RAW": scenario("0050", 0.48, "CASH"),
+      "0050_SOURCE_QUALIFIED_ADJUSTED": scenario("0050", 0.62, "LONG"),
+    },
+    limitations: [],
+  };
+
+  const first = buildPredictionRetrainingResultV1FromFreshResearch({
+    output,
+    rawRows,
+    generatedAt: "2026-08-12T00:00:00.000Z",
+  });
+  const second = buildPredictionRetrainingResultV1FromFreshResearch({
+    output,
+    rawRows,
+    generatedAt: "2026-08-12T00:00:00.000Z",
+  });
+
+  assert.deepEqual(second, first);
+  assert.equal(first.latestPredictions.availability, "available");
+  assert.equal(first.latestPredictions.value.length, 3);
+  assert.deepEqual(first.latestPredictions.value.map(({ scenario, position }) => ({ scenario, position })), [
+    { scenario: "0050_RAW", position: "CASH" },
+    { scenario: "0050_SOURCE_QUALIFIED_ADJUSTED", position: "LONG" },
+    { scenario: "2330_RAW_CONTROL", position: "LONG" },
+  ]);
+  assert.deepEqual(first.latestPredictions.value.map(({ scenario, operativeThreshold }) => ({
+    scenario,
+    operativeThreshold,
+  })), [
+    { scenario: "0050_RAW", operativeThreshold: { availability: "available", value: 0.6 } },
+    { scenario: "0050_SOURCE_QUALIFIED_ADJUSTED", operativeThreshold: { availability: "available", value: 0.6 } },
+    { scenario: "2330_RAW_CONTROL", operativeThreshold: { availability: "available", value: 0.6 } },
+  ]);
+  assert.equal(first.currentUnresolvedPredictions.availability, "available");
+  assert.deepEqual(first.currentUnresolvedPredictions.value.map(({ scenario, resolutionStatus, predictionRole }) => ({
+    scenario,
+    resolutionStatus,
+    predictionRole,
+  })), [
+    { scenario: "0050_RAW", resolutionStatus: "unresolved", predictionRole: "current_unresolved" },
+    { scenario: "0050_SOURCE_QUALIFIED_ADJUSTED", resolutionStatus: "unresolved", predictionRole: "current_unresolved" },
+    { scenario: "2330_RAW_CONTROL", resolutionStatus: "unresolved", predictionRole: "current_unresolved" },
+  ]);
+  assert.equal(first.currentUnresolvedPredictions.value.every(({ predictionHorizon, targetDate, actualDirection, realizedReturn }) =>
+    predictionHorizon.availability === "available"
+    && predictionHorizon.value.rows === 5
+    && targetDate.availability === "available"
+    && actualDirection.availability === "unavailable"
+    && realizedReturn.availability === "unavailable"), true);
+  assert.deepEqual(first.currentPredictionUnavailable, []);
+  assert.equal(first.finalTestMetrics.availability, "available");
+  assert.equal(first.finalTestReliability.availability, "available");
+  assert.equal(
+    first.finalTestReliability.value.groups.reduce(
+      (total, group) => total + group.finalTestRowCount,
+      0,
+    ),
+    first.finalTestMetrics.value.sampleCount,
+  );
+  assert.equal(first.finalTestEconomicEdge.availability, "available");
+  assert.equal(first.finalTestEconomicEdge.value.evaluationPartition, "FINAL_TEST");
+  assert.equal(
+    first.finalTestEconomicEdge.value.groups.reduce(
+      (total, group) => total + group.finalTestRows,
+      0,
+    ),
+    first.finalTestMetrics.value.sampleCount,
+  );
+  assert.deepEqual(
+    first.finalTestEconomicEdge.value.groups.map(({ symbol }) => symbol),
+    ["0050"],
+  );
+  assert.equal(first.finalTestEconomicEdge.value.transactionCostBps, 10);
+  assert.equal(Number.isFinite(first.finalTestEconomicEdge.value.groups[0].excessReturn), true);
+  assert.deepEqual(
+    first.finalTestReliability.value.groups.map(({ groupDimension, symbol }) => ({
+      groupDimension,
+      symbol,
+    })),
+    [
+      { groupDimension: "symbol", symbol: "0050" },
+    ],
+  );
+  assert.equal(first.simulation.availability, "available");
+  assert.equal(first.simulation.value.scenario, "0050_SOURCE_QUALIFIED_ADJUSTED");
 });

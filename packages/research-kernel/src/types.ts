@@ -148,6 +148,33 @@ export interface FinalTestScoredRow {
   readonly prediction: BinaryTarget;
 }
 
+/**
+ * Additive, evaluation-only evidence for replaying the already-scored
+ * final-test rows through the canonical strategy simulator.
+ *
+ * This deliberately excludes feature vectors and model state. The model and
+ * threshold are already frozen by the final-test evaluation; only the
+ * aligned realized forward return and scored position inputs are forwarded.
+ */
+export interface FinalTestEconomicReplayRow {
+  readonly symbol: string;
+  readonly featureDate: string;
+  readonly targetDate: string;
+  readonly target: BinaryTarget;
+  readonly forwardReturn: number;
+  readonly probabilityUp: number;
+  readonly prediction: BinaryTarget;
+}
+
+export interface FinalTestEconomicEvidence {
+  readonly evaluationPartition: "FINAL_TEST";
+  readonly finalTestRowsSha256: string;
+  readonly finalTestScoredRowsSha256: string;
+  readonly frozenThreshold: number;
+  readonly finalTestRowCount: number;
+  readonly rows: readonly FinalTestEconomicReplayRow[];
+}
+
 export interface SymbolReliabilityWarningFlags {
   readonly lowSample: boolean;
   readonly poorCalibration: boolean;
@@ -175,6 +202,31 @@ export interface SymbolReliabilityStatus {
 export interface SymbolReliabilityProfile {
   readonly rows: readonly SymbolReliabilityRow[];
   readonly status: SymbolReliabilityStatus;
+}
+
+export interface FinalTestReliabilityGroup {
+  readonly groupDimension: "symbol";
+  readonly symbol: string;
+  readonly finalTestRowCount: number;
+  readonly correctPredictionCount: number;
+  readonly accuracy: number | null;
+  readonly baselineAccuracy: number | null;
+  readonly accuracyDelta: number | null;
+  readonly actualUpRate: number | null;
+  readonly predictedUpRate: number | null;
+  readonly meanProbabilityUp: number | null;
+  readonly calibrationGap: number | null;
+  readonly balancedAccuracy: number | null;
+  readonly brierScore: number | null;
+  readonly warnings: readonly string[];
+}
+
+export interface FinalTestReliabilityProfile {
+  readonly groupDimension: "symbol";
+  readonly baselineMetricName: "FINAL_TEST_MAJORITY_CLASS_ACCURACY";
+  readonly finalTestRowCount: number;
+  readonly groups: readonly FinalTestReliabilityGroup[];
+  readonly warnings: readonly string[];
 }
 
 export type ProbabilityCalibrationStatus = "missing" | "insufficient" | "ready";
@@ -304,6 +356,10 @@ export interface ResearchEvidenceKernelInput {
 export interface ResearchEvidenceKernelResult {
   readonly evidence: ExperimentRunEvidence;
   readonly promotionDecision: PromotionDecision;
+  /** Additive diagnostic output; omitted by test doubles that only model the original result. */
+  readonly finalTestReliability?: FinalTestReliabilityProfile;
+  /** Additive replay inputs; never included in MMS_RESEARCH_EVIDENCE_V1 hashing. */
+  readonly finalTestEconomicEvidence?: FinalTestEconomicEvidence;
 }
 
 export class ResearchEvidenceKernelError extends Error {

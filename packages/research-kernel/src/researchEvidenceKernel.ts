@@ -15,9 +15,54 @@ import { buildHistoricalFeatureRows, RESEARCH_FEATURE_NAMES } from "./features.j
 import { fitLogisticRegression } from "./logisticRegression.js";
 import { fitStandardScaler } from "./scaler.js";
 import type {
+  FinalTestEconomicEvidence,
+  FinalTestScoredRow,
+  FeatureRow,
   ResearchEvidenceKernelInput,
   ResearchEvidenceKernelResult,
 } from "./types.js";
+import { fail } from "./types.js";
+
+function buildFinalTestEconomicEvidence(
+  finalTestRows: readonly FeatureRow[],
+  scoredRows: readonly FinalTestScoredRow[],
+  frozenThreshold: number,
+  finalTestRowsSha256: string,
+  finalTestScoredRowsSha256: string,
+): FinalTestEconomicEvidence {
+  if (finalTestRows.length !== scoredRows.length) {
+    fail("final-test economic evidence rows and scored rows must have identical lengths");
+  }
+  const rows = finalTestRows.map((row, index) => {
+    const scored = scoredRows[index];
+    if (scored === undefined) fail("final-test economic evidence scored row is missing");
+    if (
+      row.symbol !== scored.symbol
+      || row.featureDate !== scored.featureDate
+      || row.targetDate !== scored.targetDate
+      || row.target !== scored.target
+    ) {
+      fail("final-test economic evidence rows are not aligned with the scored pass");
+    }
+    return Object.freeze({
+      symbol: row.symbol,
+      featureDate: row.featureDate,
+      targetDate: row.targetDate,
+      target: row.target,
+      forwardReturn: row.forwardReturn,
+      probabilityUp: scored.probability,
+      prediction: scored.prediction,
+    });
+  });
+  return Object.freeze({
+    evaluationPartition: "FINAL_TEST",
+    finalTestRowsSha256,
+    finalTestScoredRowsSha256,
+    frozenThreshold,
+    finalTestRowCount: finalTestRows.length,
+    rows: Object.freeze(rows),
+  });
+}
 
 export function runResearchEvidenceKernel(
   input: ResearchEvidenceKernelInput,
@@ -35,13 +80,14 @@ export function runResearchEvidenceKernel(
   const thresholdSelection = selectValidationThreshold(split.validation, scaler, model);
   const frozenThreshold = thresholdSelection.selectedThreshold;
   const finalTestEvaluator = createFinalTestEvaluator();
-  const finalTest = finalTestEvaluator.evaluate(
+  const finalTestEvaluation = finalTestEvaluator.evaluate(
     split.finalTest,
     scaler,
     model,
     frozenThreshold,
   );
   finalTestEvaluator.assertExactlyOnce();
+  const { finalTestReliability, scoredRows, ...finalTest } = finalTestEvaluation;
 
   const evidence = buildExperimentRunEvidence({
     datasetVersion,
@@ -58,5 +104,13 @@ export function runResearchEvidenceKernel(
   return Object.freeze({
     evidence,
     promotionDecision: decidePromotion(evidence),
+    finalTestReliability,
+    finalTestEconomicEvidence: buildFinalTestEconomicEvidence(
+      split.finalTest.rows,
+      scoredRows,
+      finalTest.frozenThreshold,
+      finalTest.finalTestRowsSha256,
+      finalTest.finalTestScoredRowsSha256,
+    ),
   });
 }

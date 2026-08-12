@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  buildFinalTestReliabilityProfile,
   canonicalStringify,
   decidePromotion,
   hashValue,
@@ -168,6 +169,23 @@ describe("research evidence kernel", () => {
     expect(evidence.finalTest.probabilityCalibration).toBeDefined();
     expect(evidence.finalTest.probabilityCalibration.brierScore).toBeNull();
     expect(evidence.finalTest.featureDateErrorCohortProfile).toBeDefined();
+  });
+
+  it("forwards aligned final-test economic replay evidence without changing Contract V1 evidence", () => {
+    const sourceRows = fixtureRows();
+    const before = canonicalStringify(sourceRows);
+    const result = run(sourceRows);
+    const economic = result.finalTestEconomicEvidence;
+    if (economic === undefined) throw new Error("final-test economic evidence is missing");
+
+    expect(economic.evaluationPartition).toBe("FINAL_TEST");
+    expect(economic.finalTestRowCount).toBe(result.evidence.split.finalTestRowCount);
+    expect(economic.rows).toHaveLength(result.evidence.split.finalTestRowCount);
+    expect(economic.finalTestRowsSha256).toBe(result.evidence.finalTest.finalTestRowsSha256);
+    expect(economic.finalTestScoredRowsSha256).toBe(result.evidence.finalTest.finalTestScoredRowsSha256);
+    expect(economic.rows.every(({ featureDate }) => featureDate > result.evidence.split.validationEndDate)).toBe(true);
+    expect(Object.hasOwn(result.evidence.finalTest, "scoredRows")).toBe(false);
+    expect(canonicalStringify(sourceRows)).toBe(before);
   });
 
   it("calculates hand-checked feature-date error cohorts", () => {
@@ -662,6 +680,67 @@ describe("research evidence kernel", () => {
       .toBe(false);
   });
 
+  it("calculates auditable per-symbol final-test reliability without changing source rows", () => {
+    const fixture = symbolReliabilityFixture([
+      ["ALPHA", 1, 0.8, 1],
+      ["ALPHA", 0, 0.2, 0],
+      ["ALPHA", 1, 0.4, 0],
+      ["BETA", 1, 0.7, 1],
+      ["BETA", 1, 0.9, 0],
+    ]);
+    const before = JSON.stringify(fixture);
+
+    const profile = buildFinalTestReliabilityProfile(fixture.rows, fixture.scoredRows);
+
+    expect(profile).toEqual({
+      groupDimension: "symbol",
+      baselineMetricName: "FINAL_TEST_MAJORITY_CLASS_ACCURACY",
+      finalTestRowCount: 5,
+      groups: [
+        {
+          groupDimension: "symbol",
+          symbol: "ALPHA",
+          finalTestRowCount: 3,
+          correctPredictionCount: 2,
+          accuracy: 0.66666667,
+          baselineAccuracy: 0.66666667,
+          accuracyDelta: 0,
+          actualUpRate: 0.66666667,
+          predictedUpRate: 0.33333333,
+          meanProbabilityUp: 0.46666667,
+          calibrationGap: -0.2,
+          balancedAccuracy: 0.75,
+          brierScore: 0.14666667,
+          warnings: [],
+        },
+        {
+          groupDimension: "symbol",
+          symbol: "BETA",
+          finalTestRowCount: 2,
+          correctPredictionCount: 1,
+          accuracy: 0.5,
+          baselineAccuracy: 1,
+          accuracyDelta: -0.5,
+          actualUpRate: 1,
+          predictedUpRate: 0.5,
+          meanProbabilityUp: 0.8,
+          calibrationGap: -0.2,
+          balancedAccuracy: null,
+          brierScore: 0.05,
+          warnings: [
+            "low sample count: N=2 final-test rows.",
+            "balanced accuracy unavailable: final-test outcomes contain a single class.",
+          ],
+        },
+      ],
+      warnings: [],
+    });
+    expect(JSON.stringify(fixture)).toBe(before);
+    expect(Object.isFrozen(profile)).toBe(true);
+    expect(Object.isFrozen(profile.groups)).toBe(true);
+    expect(Object.isFrozen(profile.groups[0])).toBe(true);
+  });
+
   it("returns byte-identical normalized evidence for identical explicit inputs", () => {
     const first = run();
     const second = run();
@@ -671,6 +750,9 @@ describe("research evidence kernel", () => {
       .toBe(second.evidence.normalizedEvidenceSha256);
     expect(first.evidence.finalTest.symbolReliability)
       .toEqual(second.evidence.finalTest.symbolReliability);
+    expect(first.finalTestReliability).toEqual(second.finalTestReliability);
+    expect(first.finalTestReliability?.finalTestRowCount)
+      .toBe(first.evidence.finalTest.metrics.sampleCount);
   });
 
   it("includes final-test symbol evidence in the normalized evidence hash", () => {

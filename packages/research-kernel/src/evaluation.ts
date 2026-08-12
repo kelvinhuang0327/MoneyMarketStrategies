@@ -1,10 +1,12 @@
 import { hashValue } from "./evidence.js";
+import { buildFinalTestReliabilityProfile } from "./buildFinalTestReliabilityProfile.js";
 import { buildProbabilityCalibrationProfile } from "./buildProbabilityCalibrationProfile.js";
 import { buildSymbolReliabilityProfile } from "./buildSymbolReliabilityProfile.js";
 import { predictProbability } from "./logisticRegression.js";
 import {
   fail,
   type EvaluationMetrics,
+  type FinalTestReliabilityProfile,
   type FeatureDateErrorCohort,
   type FeatureDateErrorCohortProfile,
   type FeatureRow,
@@ -314,8 +316,13 @@ export interface FinalTestEvaluator {
     scaler: StandardScalerFit,
     model: LogisticRegressionFit,
     frozenThreshold: number,
-  ): FinalTestEvidence;
+  ): FinalTestEvaluation;
   assertExactlyOnce(): 1;
+}
+
+interface FinalTestEvaluation extends FinalTestEvidence {
+  readonly finalTestReliability: FinalTestReliabilityProfile;
+  readonly scoredRows: readonly FinalTestScoredRow[];
 }
 
 export function createFinalTestEvaluator(): FinalTestEvaluator {
@@ -340,6 +347,7 @@ export function createFinalTestEvaluator(): FinalTestEvaluator {
         frozenThreshold,
         evaluatorExecutionCount: 1,
         metrics: scored.metrics,
+        scoredRows: scored.scoredRows,
         symbolReliability: buildSymbolReliabilityProfile(partition.rows, scored.scoredRows),
         probabilityCalibration: buildProbabilityCalibrationProfile(
           partition.rows,
@@ -347,6 +355,10 @@ export function createFinalTestEvaluator(): FinalTestEvaluator {
           scored.metrics.brierScore,
         ),
         featureDateErrorCohortProfile: buildFeatureDateErrorCohortProfile(
+          partition.rows,
+          scored.scoredRows,
+        ),
+        finalTestReliability: buildFinalTestReliabilityProfile(
           partition.rows,
           scored.scoredRows,
         ),

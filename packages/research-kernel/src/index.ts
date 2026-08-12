@@ -5,6 +5,7 @@ export const researchKernelBootstrapIdentity = {
 } as const;
 
 export * from "./chronologicalSplit.js";
+export * from "./buildFinalTestReliabilityProfile.js";
 export * from "./dataQuality.js";
 export * from "./evaluation.js";
 export * from "./evidence.js";
@@ -17,4 +18,3 @@ export * from "./twStrategyResearchRunner.js";
 export * from "./twStrategyTemporalRobustness.js";
 export * from "./twStrategyTransactionCostSensitivity.js";
 export * from "./types.js";
-
