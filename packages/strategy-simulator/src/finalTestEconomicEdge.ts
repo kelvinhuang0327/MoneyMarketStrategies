@@ -78,6 +78,7 @@ function compoundedGrossReturn(
 
 function validateFinalTestEvidence(
   evidence: FinalTestEconomicEvidence,
+  targetHurdle = 0,
 ): void {
   if (evidence.evaluationPartition !== "FINAL_TEST") {
     fail(`economic replay requires FINAL_TEST evidence, received ${evidence.evaluationPartition}`);
@@ -95,7 +96,7 @@ function validateFinalTestEvidence(
   }
 
   evidence.rows.forEach((row, index) => {
-    if (row.target !== (row.forwardReturn > 0 ? 1 : 0)) {
+    if (row.target !== (row.forwardReturn > targetHurdle ? 1 : 0)) {
       fail(`final-test economic row ${index} target does not match its realized forward return`);
     }
     const expectedPrediction = row.probabilityUp >= evidence.frozenThreshold ? 1 : 0;
@@ -109,6 +110,7 @@ export interface FinalTestEconomicEdgeInput {
   readonly finalTestEvidence: FinalTestEconomicEvidence;
   readonly roundTripCostBps: number;
   readonly initialCapital: number;
+  readonly targetHurdle?: number;
 }
 
 export interface FinalTestEconomicEdgeGroup {
@@ -218,7 +220,7 @@ function buildGroup(
 export function buildFinalTestPerSymbolEconomicEdge(
   input: FinalTestEconomicEdgeInput,
 ): FinalTestEconomicEdgeResult {
-  validateFinalTestEvidence(input.finalTestEvidence);
+  validateFinalTestEvidence(input.finalTestEvidence, input.targetHurdle ?? 0);
   const groupedRows = new Map<string, FinalTestEconomicReplayRow[]>();
   for (const row of input.finalTestEvidence.rows) {
     const rows = groupedRows.get(row.symbol) ?? [];

@@ -80,6 +80,26 @@ export {
 export {
   runPerSymbolGaussianNaiveBayesChallengerTemporal,
 } from "./perSymbolGaussianNaiveBayesChallengerTemporal.js";
+export {
+  runPerSymbolReturnHurdleLogisticChallengerTemporal,
+} from "./perSymbolReturnHurdleLogisticChallengerTemporal.js";
+export type {
+  ReturnHurdleAnswer,
+  ReturnHurdleChallengerSideMetrics,
+  ReturnHurdleChallengerTemporalSummary,
+  ReturnHurdleConclusion,
+  ReturnHurdleControlSideMetrics,
+  ReturnHurdleControlTemporalSummary,
+  ReturnHurdleEconomicComparison,
+  ReturnHurdleEconomicTemporalSummary,
+  ReturnHurdleLogisticControlReproduction,
+  ReturnHurdleLogisticTemporalCutoffResult,
+  ReturnHurdleLogisticTemporalGuardrails,
+  ReturnHurdleLogisticTemporalInput,
+  ReturnHurdleLogisticTemporalResult,
+  ReturnHurdleLogisticTemporalSource,
+  ReturnHurdleNextRoute,
+} from "./perSymbolReturnHurdleLogisticChallengerTemporal.js";
 export type {
   GaussianNaiveBayesAnswer,
   GaussianNaiveBayesBalancedDeltas,

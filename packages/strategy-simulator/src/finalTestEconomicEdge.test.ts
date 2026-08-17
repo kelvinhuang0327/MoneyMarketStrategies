@@ -155,4 +155,50 @@ describe("buildFinalTestPerSymbolEconomicEdge", () => {
       initialCapital: 100,
     })).toThrow(/does not match the frozen threshold/);
   });
+
+  it("validates target against targetHurdle when specified", () => {
+    const hurdleEvidence: FinalTestEconomicEvidence = {
+      evaluationPartition: "FINAL_TEST",
+      finalTestRowsSha256: "c".repeat(64),
+      finalTestScoredRowsSha256: "d".repeat(64),
+      frozenThreshold: 0.5,
+      finalTestRowCount: 2,
+      rows: [
+        {
+          symbol: "0056",
+          featureDate: "2025-01-01",
+          targetDate: "2025-01-06",
+          target: 0, // 0.0005 <= 0.001 -> target is 0 under hurdle
+          forwardReturn: 0.0005,
+          probabilityUp: 0.4,
+          prediction: 0,
+        },
+        {
+          symbol: "0056",
+          featureDate: "2025-01-07",
+          targetDate: "2025-01-13",
+          target: 1, // 0.002 > 0.001 -> target is 1 under hurdle
+          forwardReturn: 0.002,
+          probabilityUp: 0.7,
+          prediction: 1,
+        },
+      ],
+    };
+
+    // Passing targetHurdle = 0.001 succeeds
+    const result = buildFinalTestPerSymbolEconomicEdge({
+      finalTestEvidence: hurdleEvidence,
+      roundTripCostBps: 10,
+      initialCapital: 100,
+      targetHurdle: 0.001,
+    });
+    expect(result.groups.length).toBe(1);
+
+    // Default targetHurdle = 0 fails on row 0 because 0.0005 > 0 so default expects target === 1
+    expect(() => buildFinalTestPerSymbolEconomicEdge({
+      finalTestEvidence: hurdleEvidence,
+      roundTripCostBps: 10,
+      initialCapital: 100,
+    })).toThrow(/target does not match its realized forward return/);
+  });
 });

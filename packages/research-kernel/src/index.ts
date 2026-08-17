@@ -17,6 +17,7 @@ export * from "./legacyTechnicalFeatureChallenger.js";
 export * from "./logisticRegression.js";
 export * from "./perSymbolLogisticChallenger.js";
 export * from "./researchEvidenceKernel.js";
+export * from "./returnHurdleTarget.js";
 export * from "./scaler.js";
 export * from "./twseAdjustedOhlcvQualification.js";
 export * from "./twStrategyResearchRunner.js";
