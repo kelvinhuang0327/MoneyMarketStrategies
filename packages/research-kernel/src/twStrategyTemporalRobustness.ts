@@ -24,6 +24,18 @@ function fail(code: TwStrategyTemporalRobustnessErrorCode, detail?: string): nev
 
 const CANONICAL_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
+/**
+ * The repository-supported temporal replay cutoffs. Consumers must reuse this
+ * ordered set when they need the established temporal study, rather than
+ * silently introducing a new cutoff policy.
+ */
+export const SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES = Object.freeze([
+  "2025-09-30",
+  "2025-12-31",
+  "2026-03-31",
+  "2026-07-01",
+] as const);
+
 export function isCanonicalIsoDate(value: string): boolean {
   if (!CANONICAL_DATE.test(value)) return false;
   const parsed = new Date(`${value}T00:00:00.000Z`);

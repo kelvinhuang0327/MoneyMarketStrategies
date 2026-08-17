@@ -13,18 +13,11 @@ function mean(values: readonly number[]): number {
 }
 
 function vector(values: readonly number[]): FeatureVector {
-  if (values.length !== 5) fail(`expected five features, received ${values.length}`);
-  const [first, second, third, fourth, fifth] = values;
-  if (
-    first === undefined
-    || second === undefined
-    || third === undefined
-    || fourth === undefined
-    || fifth === undefined
-  ) {
-    fail("feature vector is incomplete");
+  if (values.length === 0) fail("feature vector must not be empty");
+  if (values.some((value) => !Number.isFinite(value))) {
+    fail("feature vector contains a non-finite value");
   }
-  return Object.freeze([first, second, third, fourth, fifth]);
+  return Object.freeze([...values]);
 }
 
 export function fitStandardScaler(
@@ -34,9 +27,16 @@ export function fitStandardScaler(
     fail(`scaler fit requires TRAINING rows, received ${partition.kind}`);
   }
   if (partition.rows.length === 0) fail("cannot fit scaler on zero training rows");
-  const means = vector(Array.from({ length: 5 }, (_, featureIndex) =>
+  const firstRow = partition.rows[0];
+  if (firstRow === undefined) fail("training feature row is missing");
+  const featureCount = firstRow.features.length;
+  if (featureCount === 0) fail("training feature vector must not be empty");
+  if (partition.rows.some((row) => row.features.length !== featureCount)) {
+    fail("training feature vectors differ in length");
+  }
+  const means = vector(Array.from({ length: featureCount }, (_, featureIndex) =>
     mean(partition.rows.map((row) => row.features[featureIndex] ?? fail("feature is missing")))));
-  const standardDeviations = vector(Array.from({ length: 5 }, (_, featureIndex) => {
+  const standardDeviations = vector(Array.from({ length: featureCount }, (_, featureIndex) => {
     const variance = mean(partition.rows.map((row) => {
       const value = row.features[featureIndex];
       const featureMean = means[featureIndex];
@@ -65,6 +65,9 @@ export function standardize(
   features: FeatureVector,
   scaler: StandardScalerFit,
 ): FeatureVector {
+  if (features.length !== scaler.means.length || features.length !== scaler.standardDeviations.length) {
+    fail("feature vector and scaler state differ in length");
+  }
   return vector(features.map((value, index) => {
     const featureMean = scaler.means[index];
     const deviation = scaler.standardDeviations[index];

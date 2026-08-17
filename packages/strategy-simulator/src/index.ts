@@ -56,6 +56,72 @@ export type {
   FinalTestEconomicEdgeResult,
 } from "./finalTestEconomicEdge.js";
 export {
+  buildPerSymbolLogisticChallengerEvaluation,
+  buildPerSymbolLogisticFeatureChallengerEvaluation,
+} from "./perSymbolLogisticChallenger.js";
+export {
+  runPerSymbolLogisticChallengerTemporalConfirmation,
+} from "./perSymbolLogisticChallengerTemporal.js";
+export type {
+  PerSymbolLogisticChallengerTemporalAnswer,
+  PerSymbolLogisticChallengerTemporalCutoffResult,
+  PerSymbolLogisticChallengerTemporalComparisonSummary,
+  PerSymbolLogisticChallengerControlReproduction,
+  PerSymbolLogisticChallengerTemporalInput,
+  PerSymbolLogisticChallengerTemporalNextRoute,
+  PerSymbolLogisticChallengerTemporalResult,
+  PerSymbolLogisticChallengerTemporalSource,
+  PerSymbolLogisticChallengerTemporalSummary,
+  PerSymbolLogisticChallengerTemporalGuardrails,
+} from "./perSymbolLogisticChallengerTemporal.js";
+export {
+  runPerSymbolLogisticClassBalancedChallengerTemporal,
+} from "./perSymbolLogisticClassBalancedChallengerTemporal.js";
+export {
+  runPerSymbolGaussianNaiveBayesChallengerTemporal,
+} from "./perSymbolGaussianNaiveBayesChallengerTemporal.js";
+export type {
+  GaussianNaiveBayesAnswer,
+  GaussianNaiveBayesBalancedDeltas,
+  GaussianNaiveBayesChallengerMetrics,
+  GaussianNaiveBayesConclusion,
+  GaussianNaiveBayesControlDeltas,
+  GaussianNaiveBayesControlReproduction,
+  GaussianNaiveBayesNextRoute,
+  GaussianNaiveBayesSideMetrics,
+  GaussianNaiveBayesTemporalCutoffResult,
+  GaussianNaiveBayesTemporalGuardrails,
+  GaussianNaiveBayesTemporalInput,
+  GaussianNaiveBayesTemporalResult,
+  GaussianNaiveBayesTemporalSource,
+  GaussianNaiveBayesTemporalSummary,
+} from "./perSymbolGaussianNaiveBayesChallengerTemporal.js";
+export type {
+  ClassBalancedLogisticAnswer,
+  ClassBalancedLogisticChallengerCutoff,
+  ClassBalancedLogisticConclusion,
+  ClassBalancedLogisticControlReproduction,
+  ClassBalancedLogisticDeltas,
+  ClassBalancedLogisticNextRoute,
+  ClassBalancedLogisticSideMetrics,
+  ClassBalancedLogisticTemporalCutoffResult,
+  ClassBalancedLogisticTemporalGuardrails,
+  ClassBalancedLogisticTemporalInput,
+  ClassBalancedLogisticTemporalResult,
+  ClassBalancedLogisticTemporalSource,
+  ClassBalancedLogisticTemporalSummary,
+} from "./perSymbolLogisticClassBalancedChallengerTemporal.js";
+export type {
+  BuildPerSymbolLogisticChallengerEvaluationInput,
+  BuildPerSymbolLogisticFeatureChallengerEvaluationInput,
+  ChallengerAggregateAnswer,
+  ChallengerConclusion,
+  PerSymbolLogisticChallengerComparisonGroup,
+  PerSymbolLogisticChallengerDirectionalComparison,
+  PerSymbolLogisticChallengerEvaluationResult,
+  PerSymbolLogisticChallengerIncumbentEvidence,
+} from "./perSymbolLogisticChallenger.js";
+export {
   reconcileFinalTestEconomicEdge,
 } from "./reconcileFinalTestEconomicEdge.js";
 export type {

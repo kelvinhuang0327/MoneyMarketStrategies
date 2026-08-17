@@ -14,6 +14,7 @@ import {
   runResearchEvidenceKernel,
   type LogisticRegressionConfig,
   type MarketDataRow,
+  type PerSymbolLogisticChallengerEvidence,
 } from "@mms/research-kernel";
 
 export interface RunResearchExperimentInput {
@@ -32,6 +33,8 @@ export interface RunResearchExperimentResult {
   readonly evidence: ExperimentRunEvidence;
   readonly promotionDecision: PromotionDecision;
   readonly evidenceLevel: EvidenceLevel;
+  readonly perSymbolLogisticChallenger?: PerSymbolLogisticChallengerEvidence;
+  readonly perSymbolLogisticFeatureChallenger?: PerSymbolLogisticChallengerEvidence;
 }
 
 export class ResearchExperimentRunnerError extends Error {
@@ -104,5 +107,11 @@ export function runResearchExperiment(
     evidence: kernelResult.evidence,
     promotionDecision: kernelResult.promotionDecision,
     evidenceLevel,
+    ...(kernelResult.perSymbolLogisticChallenger === undefined
+      ? {}
+      : { perSymbolLogisticChallenger: kernelResult.perSymbolLogisticChallenger }),
+    ...(kernelResult.perSymbolLogisticFeatureChallenger === undefined
+      ? {}
+      : { perSymbolLogisticFeatureChallenger: kernelResult.perSymbolLogisticFeatureChallenger }),
   });
 }

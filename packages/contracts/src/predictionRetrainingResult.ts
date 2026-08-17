@@ -54,7 +54,8 @@ export interface ResultContractProvenanceReference {
     | "research_evidence"
     | "retraining"
     | "simulation"
-    | "economic_edge";
+    | "economic_edge"
+    | "challenger";
   readonly reference: string;
   readonly sha256?: string;
 }
@@ -176,6 +177,131 @@ export interface ResultContractFinalTestEconomicEdge {
   readonly transactionCostBps: number;
   readonly initialCapital: number;
   readonly groups: readonly ResultContractFinalTestEconomicEdgeGroup[];
+  readonly warnings: readonly string[];
+  readonly guardrails: {
+    readonly providesInvestmentAdvice: false;
+    readonly supportsOrderExecution: false;
+    readonly supportsAutomaticPromotion: false;
+    readonly supportsPortfolioOptimization: false;
+    readonly supportsMultiSymbolAllocation: false;
+    readonly supportsSymbolSelection: false;
+  };
+  readonly normalizedResultSha256: string;
+}
+
+export type ResultContractChallengerAggregateAnswer = "YES" | "NO" | "MIXED";
+export type ResultContractChallengerConclusion = "SUPPORTED" | "NOT_SUPPORTED" | "MIXED";
+
+export interface ResultContractPerSymbolLogisticChallengerFit {
+  readonly fitPartition: "TRAINING";
+  readonly trainingRowsSha256: string;
+  readonly scalerFitRowCount: number;
+  readonly modelFitRowCount: number;
+  readonly scalerStateSha256: string;
+  readonly modelStateSha256: string;
+  readonly iterations: number;
+  readonly learningRate: number;
+  readonly l2: number;
+  readonly initialRegularizedLoss: number;
+  readonly finalRegularizedLoss: number;
+}
+
+export interface ResultContractPerSymbolLogisticChallengerThresholdSelection {
+  readonly selectionPartition: "VALIDATION";
+  readonly validationRowsSha256: string;
+  readonly fixedThresholdGrid: readonly number[];
+  readonly selectedThreshold: number;
+  readonly tieBreakRule: readonly string[];
+}
+
+export interface ResultContractPerSymbolLogisticChallengerSymbol {
+  readonly symbol: string;
+  readonly trainingRows: number;
+  readonly trainValidationPurgeRows: number;
+  readonly validationRows: number;
+  readonly validationFinalPurgeRows: number;
+  readonly finalTestRows: number;
+  readonly trainEndDate: string;
+  readonly validationStartDate: string;
+  readonly validationEndDate: string;
+  readonly finalTestStartDate: string;
+  readonly trainingRowsSha256: string;
+  readonly validationRowsSha256: string;
+  readonly finalTestRowsSha256: string;
+  readonly fit: ResultContractPerSymbolLogisticChallengerFit;
+  readonly thresholdSelection: ResultContractPerSymbolLogisticChallengerThresholdSelection;
+  readonly finalTestMetrics: EvaluationMetrics;
+  readonly majorityBaselineAccuracy: number;
+  readonly accuracyDelta: number;
+  readonly actualUpRate: number;
+  readonly predictedUpRate: number;
+  readonly meanProbabilityUp: number;
+  readonly warnings: readonly string[];
+}
+
+export interface ResultContractPerSymbolLogisticChallengerIncumbent {
+  readonly finalTestRows: number;
+  readonly accuracy: number | null;
+  readonly majorityBaselineAccuracy: number | null;
+  readonly excessReturn: number | null;
+  readonly strategyNetReturn: number | null;
+  readonly benchmarkNetReturn: number | null;
+  readonly strategyMaximumDrawdown: number | null;
+  readonly benchmarkMaximumDrawdown: number | null;
+  readonly tradeCount: number | null;
+}
+
+export interface ResultContractPerSymbolLogisticChallengerComparison {
+  readonly incumbentAccuracy: number | null;
+  readonly challengerAccuracy: number;
+  readonly accuracyDeltaChallengerMinusIncumbent: number | null;
+  readonly majorityBaselineAccuracy: number;
+  readonly incumbentExcessReturn: number | null;
+  readonly challengerExcessReturn: number;
+  readonly excessDeltaChallengerMinusIncumbent: number | null;
+}
+
+export interface ResultContractPerSymbolLogisticChallengerFeatureFamily {
+  readonly featureFamilyName: string;
+  readonly legacySourcePath: string;
+  readonly legacySourceSymbolOrFormula: string;
+  readonly newFeatureFields: readonly string[];
+  readonly currentIncumbentFeatureFields: readonly string[];
+  readonly whyNotDuplicative: string;
+  readonly lookbackRowsRequired: number;
+  readonly availableAtRule: string;
+  readonly missingValueRule: string;
+}
+
+export interface ResultContractPerSymbolLogisticChallengerGroup {
+  readonly symbol: string;
+  readonly challenger: ResultContractPerSymbolLogisticChallengerSymbol;
+  readonly incumbent: ResultContractPerSymbolLogisticChallengerIncumbent;
+  readonly challengerEconomic: ResultContractFinalTestEconomicEdgeGroup;
+  readonly incumbentEconomic: ResultContractFinalTestEconomicEdgeGroup | null;
+  readonly incumbentVsChallenger: ResultContractPerSymbolLogisticChallengerComparison;
+  readonly warnings: readonly string[];
+}
+
+export interface ResultContractPerSymbolLogisticChallenger {
+  readonly schemaVersion: "MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly comparisonBaseline: "POOLED_INCUMBENT" | "PER_SYMBOL_CONTROL";
+  readonly candidateDataQualityBasis: string;
+  readonly incumbentModelAlgorithm: "binary_logistic_regression";
+  readonly challengerModelAlgorithm: "binary_logistic_regression";
+  readonly featureNames: readonly string[];
+  readonly controlFeatureNames: readonly string[];
+  readonly featureFamily?: ResultContractPerSymbolLogisticChallengerFeatureFamily;
+  readonly symbols: readonly string[];
+  readonly roundTripCostBps: number;
+  readonly initialCapital: number;
+  readonly groups: readonly ResultContractPerSymbolLogisticChallengerGroup[];
+  readonly doesAnyChallengerBeatDirectionalBaseline: ResultContractChallengerAggregateAnswer;
+  readonly doesAnyChallengerBeatBuyAndHoldAfterCost: ResultContractChallengerAggregateAnswer;
+  readonly doesAnyChallengerImproveBothDirectionalAndEconomicEvidence: ResultContractChallengerAggregateAnswer;
+  readonly challengerConclusion: ResultContractChallengerConclusion;
+  readonly promotionDecision: "do_not_promote";
   readonly warnings: readonly string[];
   readonly guardrails: {
     readonly providesInvestmentAdvice: false;
@@ -362,6 +488,7 @@ export interface PredictionRetrainingResultV1 {
   readonly baselineMetrics: ResultContractField<ResultContractBaselineMetrics>;
   readonly finalTestReliability: ResultContractField<ResultContractFinalTestReliability>;
   readonly finalTestEconomicEdge: ResultContractField<ResultContractFinalTestEconomicEdge>;
+  readonly perSymbolLogisticChallenger: ResultContractField<ResultContractPerSymbolLogisticChallenger>;
   readonly finalTestEconomicReconciliation?: ResultContractFinalTestEconomicReconciliation;
   readonly latestPredictions: ResultContractField<readonly ResultContractLatestPrediction[]>;
   readonly currentUnresolvedPredictions: ResultContractField<readonly ResultContractLatestPrediction[]>;
@@ -385,6 +512,7 @@ export interface BuildPredictionRetrainingResultV1Input {
   readonly promotionDecision?: PromotionDecision;
   readonly finalTestReliability?: ResultContractFinalTestReliability;
   readonly finalTestEconomicEdge?: ResultContractFinalTestEconomicEdge;
+  readonly perSymbolLogisticChallenger?: ResultContractPerSymbolLogisticChallenger;
   readonly finalTestEconomicReconciliation?: ResultContractFinalTestEconomicReconciliation;
   readonly latestPredictions?: readonly ResultContractLatestPredictionInput[];
   readonly currentUnresolvedPredictions?: readonly ResultContractLatestPredictionInput[];
@@ -1011,6 +1139,342 @@ function normalizeFinalTestEconomicEdge(
   };
 }
 
+function normalizePerSymbolLogisticChallenger(
+  challenger: ResultContractPerSymbolLogisticChallenger,
+): ResultContractPerSymbolLogisticChallenger {
+  if (challenger.schemaVersion !== "MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_V1") {
+    fail("perSymbolLogisticChallenger.schemaVersion is unsupported");
+  }
+  if (challenger.researchMode !== "diagnostic-only") {
+    fail("perSymbolLogisticChallenger.researchMode must be diagnostic-only");
+  }
+  if (challenger.comparisonBaseline !== "POOLED_INCUMBENT"
+    && challenger.comparisonBaseline !== "PER_SYMBOL_CONTROL") {
+    fail("perSymbolLogisticChallenger.comparisonBaseline is unsupported");
+  }
+  if (challenger.incumbentModelAlgorithm !== "binary_logistic_regression"
+    || challenger.challengerModelAlgorithm !== "binary_logistic_regression") {
+    fail("perSymbolLogisticChallenger model algorithms must be binary_logistic_regression");
+  }
+  assertNonBlank("perSymbolLogisticChallenger.candidateDataQualityBasis", challenger.candidateDataQualityBasis);
+  if (challenger.featureNames.length === 0) {
+    fail("perSymbolLogisticChallenger.featureNames must not be empty");
+  }
+  if (challenger.controlFeatureNames.length === 0) {
+    fail("perSymbolLogisticChallenger.controlFeatureNames must not be empty");
+  }
+  const candidateFeatureNames = new Set(challenger.featureNames);
+  if (challenger.controlFeatureNames.some((name) => !candidateFeatureNames.has(name))) {
+    fail("perSymbolLogisticChallenger control feature names must be present in the candidate feature names");
+  }
+  if (challenger.featureFamily !== undefined) {
+    const family = challenger.featureFamily;
+    if (family.newFeatureFields.length === 0) {
+      fail("perSymbolLogisticChallenger.featureFamily.newFeatureFields must not be empty");
+    }
+    const incumbentFields = new Set(family.currentIncumbentFeatureFields);
+    const newFields = new Set(family.newFeatureFields);
+    if (newFields.size !== family.newFeatureFields.length) {
+      fail("perSymbolLogisticChallenger.featureFamily contains duplicate new fields");
+    }
+    if (family.newFeatureFields.some((name) => incumbentFields.has(name))) {
+      fail("perSymbolLogisticChallenger.featureFamily duplicates an incumbent field");
+    }
+    if (family.newFeatureFields.some((name) => !candidateFeatureNames.has(name))) {
+      fail("perSymbolLogisticChallenger.featureFamily field is absent from the candidate feature names");
+    }
+    for (const [field, value] of [
+      ["featureFamilyName", family.featureFamilyName],
+      ["legacySourcePath", family.legacySourcePath],
+      ["legacySourceSymbolOrFormula", family.legacySourceSymbolOrFormula],
+      ["whyNotDuplicative", family.whyNotDuplicative],
+      ["availableAtRule", family.availableAtRule],
+      ["missingValueRule", family.missingValueRule],
+    ] as const) assertNonBlank(`perSymbolLogisticChallenger.featureFamily.${field}`, value);
+    if (!Number.isInteger(family.lookbackRowsRequired) || family.lookbackRowsRequired <= 0) {
+      fail("perSymbolLogisticChallenger.featureFamily.lookbackRowsRequired is invalid");
+    }
+  }
+  assertFinite("perSymbolLogisticChallenger.roundTripCostBps", challenger.roundTripCostBps);
+  if (challenger.roundTripCostBps < 0) {
+    fail("perSymbolLogisticChallenger.roundTripCostBps must be non-negative");
+  }
+  assertFinite("perSymbolLogisticChallenger.initialCapital", challenger.initialCapital);
+  if (challenger.initialCapital <= 0) {
+    fail("perSymbolLogisticChallenger.initialCapital must be positive");
+  }
+  if (challenger.promotionDecision !== "do_not_promote") {
+    fail("perSymbolLogisticChallenger promotion decision must remain do_not_promote");
+  }
+  if (challenger.guardrails.providesInvestmentAdvice !== false
+    || challenger.guardrails.supportsOrderExecution !== false
+    || challenger.guardrails.supportsAutomaticPromotion !== false
+    || challenger.guardrails.supportsPortfolioOptimization !== false
+    || challenger.guardrails.supportsMultiSymbolAllocation !== false
+    || challenger.guardrails.supportsSymbolSelection !== false) {
+    fail("perSymbolLogisticChallenger guardrails must remain fail-closed");
+  }
+
+  const normalizeNullableReturn = (name: string, value: number | null): number | null => {
+    if (value !== null) assertFinite(name, value);
+    return value;
+  };
+  const normalizeEconomicGroup = (
+    group: ResultContractFinalTestEconomicEdgeGroup | null,
+    path: string,
+  ): ResultContractFinalTestEconomicEdgeGroup | null => {
+    if (group === null) return null;
+    assertNonBlank(`${path}.symbol`, group.symbol);
+    if (!Number.isInteger(group.finalTestRows) || group.finalTestRows <= 0) {
+      fail(`${path}.finalTestRows must be a positive integer`);
+    }
+    assertNonBlank(`${path}.evaluationStartDate`, group.evaluationStartDate);
+    assertNonBlank(`${path}.evaluationEndDate`, group.evaluationEndDate);
+    if (group.evaluationStartDate > group.evaluationEndDate) {
+      fail(`${path} evaluation window is reversed`);
+    }
+    assertProbability(`${path}.operativeThreshold`, group.operativeThreshold);
+    if (group.thresholdSelectionSource !== "VALIDATION") {
+      fail(`${path}.thresholdSelectionSource must be VALIDATION`);
+    }
+    assertFinite(`${path}.transactionCostBps`, group.transactionCostBps);
+    if (group.transactionCostBps < 0) fail(`${path}.transactionCostBps must be non-negative`);
+    if (group.strategyPolicy !== "VALIDATION_THRESHOLD_LONG_CASH") {
+      fail(`${path}.strategyPolicy is unsupported`);
+    }
+    if (group.benchmarkPolicy !== "ALWAYS_LONG_BENCHMARK") {
+      fail(`${path}.benchmarkPolicy is unsupported`);
+    }
+    for (const field of [
+      "strategyGrossReturn",
+      "strategyNetReturn",
+      "benchmarkGrossReturn",
+      "benchmarkNetReturn",
+      "excessReturn",
+      "strategyMaximumDrawdown",
+      "benchmarkMaximumDrawdown",
+    ] as const) {
+      assertFinite(`${path}.${field}`, group[field]);
+    }
+    for (const field of [
+      "tradeCount",
+      "longWindowCount",
+      "cashWindowCount",
+      "replayWindowCount",
+      "skippedOverlapCount",
+    ] as const) {
+      if (!Number.isInteger(group[field]) || group[field] < 0) {
+        fail(`${path}.${field} must be a non-negative integer`);
+      }
+    }
+    if (group.replayWindowCount + group.skippedOverlapCount !== group.finalTestRows) {
+      fail(`${path} replay cardinality does not match final-test rows`);
+    }
+    return {
+      ...group,
+      warnings: normalizeMessages(group.warnings),
+    };
+  };
+
+  const seenSymbols = new Set<string>();
+  const groups = challenger.groups.map((group, index) => {
+    const path = `perSymbolLogisticChallenger.groups[${index}]`;
+    assertNonBlank(`${path}.symbol`, group.symbol);
+    if (seenSymbols.has(group.symbol)) fail(`perSymbolLogisticChallenger groups contain duplicate symbol ${group.symbol}`);
+    seenSymbols.add(group.symbol);
+    if (group.challenger.symbol !== group.symbol) fail(`${path}.challenger.symbol must match group.symbol`);
+    const candidate = group.challenger;
+    for (const [field, value] of [
+      ["trainingRows", candidate.trainingRows],
+      ["validationRows", candidate.validationRows],
+      ["finalTestRows", candidate.finalTestRows],
+    ] as const) {
+      if (!Number.isInteger(value) || value <= 0) fail(`${path}.challenger.${field} must be a positive integer`);
+    }
+    for (const [field, value] of [
+      ["trainValidationPurgeRows", candidate.trainValidationPurgeRows],
+      ["validationFinalPurgeRows", candidate.validationFinalPurgeRows],
+    ] as const) {
+      if (!Number.isInteger(value) || value < 0) fail(`${path}.challenger.${field} must be a non-negative integer`);
+    }
+    for (const field of [
+      "trainEndDate",
+      "validationStartDate",
+      "validationEndDate",
+      "finalTestStartDate",
+      "trainingRowsSha256",
+      "validationRowsSha256",
+      "finalTestRowsSha256",
+    ] as const) assertNonBlank(`${path}.challenger.${field}`, candidate[field]);
+    if (candidate.trainEndDate >= candidate.validationStartDate
+      || candidate.validationEndDate >= candidate.finalTestStartDate) {
+      fail(`${path}.challenger chronological boundaries are invalid`);
+    }
+
+    const fit = candidate.fit;
+    if (fit.fitPartition !== "TRAINING") fail(`${path}.challenger.fit.fitPartition must be TRAINING`);
+    assertNonBlank(`${path}.challenger.fit.trainingRowsSha256`, fit.trainingRowsSha256);
+    assertNonBlank(`${path}.challenger.fit.scalerStateSha256`, fit.scalerStateSha256);
+    assertNonBlank(`${path}.challenger.fit.modelStateSha256`, fit.modelStateSha256);
+    if (fit.trainingRowsSha256 !== candidate.trainingRowsSha256) {
+      fail(`${path}.challenger fit rows must match challenger training rows`);
+    }
+    if (fit.scalerFitRowCount !== candidate.trainingRows || fit.modelFitRowCount !== candidate.trainingRows) {
+      fail(`${path}.challenger fit row counts must match challenger training rows`);
+    }
+    if (!Number.isInteger(fit.iterations) || fit.iterations <= 0) fail(`${path}.challenger.fit.iterations is invalid`);
+    assertFinite(`${path}.challenger.fit.learningRate`, fit.learningRate);
+    if (fit.learningRate <= 0) fail(`${path}.challenger.fit.learningRate must be positive`);
+    assertFinite(`${path}.challenger.fit.l2`, fit.l2);
+    if (fit.l2 < 0) fail(`${path}.challenger.fit.l2 must be non-negative`);
+    assertFinite(`${path}.challenger.fit.initialRegularizedLoss`, fit.initialRegularizedLoss);
+    assertFinite(`${path}.challenger.fit.finalRegularizedLoss`, fit.finalRegularizedLoss);
+
+    const threshold = candidate.thresholdSelection;
+    if (threshold.selectionPartition !== "VALIDATION") {
+      fail(`${path}.challenger.thresholdSelection must use VALIDATION`);
+    }
+    if (threshold.validationRowsSha256 !== candidate.validationRowsSha256) {
+      fail(`${path}.challenger threshold rows must match challenger validation rows`);
+    }
+    assertNonBlank(`${path}.challenger.thresholdSelection.validationRowsSha256`, threshold.validationRowsSha256);
+    if (threshold.fixedThresholdGrid.length === 0) fail(`${path}.challenger threshold grid is empty`);
+    threshold.fixedThresholdGrid.forEach((value, thresholdIndex) => {
+      assertProbability(`${path}.challenger.thresholdSelection.fixedThresholdGrid[${thresholdIndex}]`, value);
+    });
+    assertProbability(`${path}.challenger.thresholdSelection.selectedThreshold`, threshold.selectedThreshold);
+    if (!threshold.fixedThresholdGrid.includes(threshold.selectedThreshold)) {
+      fail(`${path}.challenger selected threshold is not in its fixed grid`);
+    }
+
+    const metrics = candidate.finalTestMetrics;
+    if (metrics.sampleCount !== candidate.finalTestRows) {
+      fail(`${path}.challenger final-test metric count does not match final-test rows`);
+    }
+    for (const [field, value] of [
+      ["accuracy", metrics.accuracy],
+      ["balancedAccuracy", metrics.balancedAccuracy],
+      ["majorityBaseline", metrics.majorityBaseline],
+      ["brierScore", metrics.brierScore],
+      ["logLoss", metrics.logLoss],
+    ] as const) assertFinite(`${path}.challenger.finalTestMetrics.${field}`, value);
+    assertProbability(`${path}.challenger.majorityBaselineAccuracy`, candidate.majorityBaselineAccuracy);
+    assertFinite(`${path}.challenger.accuracyDelta`, candidate.accuracyDelta);
+    assertFinite(`${path}.challenger.actualUpRate`, candidate.actualUpRate);
+    assertFinite(`${path}.challenger.predictedUpRate`, candidate.predictedUpRate);
+    assertFinite(`${path}.challenger.meanProbabilityUp`, candidate.meanProbabilityUp);
+    assertNonBlank(`${path}.challenger.finalTestRowsSha256`, candidate.finalTestRowsSha256);
+
+    const incumbent = group.incumbent;
+    if (!Number.isInteger(incumbent.finalTestRows) || incumbent.finalTestRows < 0) {
+      fail(`${path}.incumbent.finalTestRows is invalid`);
+    }
+    assertNullableProbability(`${path}.incumbent.accuracy`, incumbent.accuracy);
+    assertNullableProbability(`${path}.incumbent.majorityBaselineAccuracy`, incumbent.majorityBaselineAccuracy);
+    for (const field of [
+      "excessReturn",
+      "strategyNetReturn",
+      "benchmarkNetReturn",
+      "strategyMaximumDrawdown",
+      "benchmarkMaximumDrawdown",
+    ] as const) normalizeNullableReturn(`${path}.incumbent.${field}`, incumbent[field]);
+    if (incumbent.tradeCount !== null
+      && (!Number.isInteger(incumbent.tradeCount) || incumbent.tradeCount < 0)) {
+      fail(`${path}.incumbent.tradeCount is invalid`);
+    }
+
+    const comparison = group.incumbentVsChallenger;
+    assertNullableProbability(`${path}.incumbentVsChallenger.incumbentAccuracy`, comparison.incumbentAccuracy);
+    assertProbability(`${path}.incumbentVsChallenger.challengerAccuracy`, comparison.challengerAccuracy);
+    normalizeNullableReturn(
+      `${path}.incumbentVsChallenger.accuracyDeltaChallengerMinusIncumbent`,
+      comparison.accuracyDeltaChallengerMinusIncumbent,
+    );
+    assertProbability(`${path}.incumbentVsChallenger.majorityBaselineAccuracy`, comparison.majorityBaselineAccuracy);
+    normalizeNullableReturn(`${path}.incumbentVsChallenger.incumbentExcessReturn`, comparison.incumbentExcessReturn);
+    assertFinite(`${path}.incumbentVsChallenger.challengerExcessReturn`, comparison.challengerExcessReturn);
+    normalizeNullableReturn(
+      `${path}.incumbentVsChallenger.excessDeltaChallengerMinusIncumbent`,
+      comparison.excessDeltaChallengerMinusIncumbent,
+    );
+
+    const challengerEconomic = normalizeEconomicGroup(group.challengerEconomic, `${path}.challengerEconomic`);
+    const incumbentEconomic = normalizeEconomicGroup(group.incumbentEconomic, `${path}.incumbentEconomic`);
+    if (challengerEconomic === null || challengerEconomic.symbol !== group.symbol) {
+      fail(`${path}.challengerEconomic must match group.symbol`);
+    }
+    if (incumbentEconomic !== null && incumbentEconomic.symbol !== group.symbol) {
+      fail(`${path}.incumbentEconomic must match group.symbol`);
+    }
+    return {
+      symbol: group.symbol,
+      challenger: {
+        ...candidate,
+        fit: { ...fit },
+        thresholdSelection: {
+          selectionPartition: threshold.selectionPartition,
+          validationRowsSha256: threshold.validationRowsSha256,
+          fixedThresholdGrid: [...threshold.fixedThresholdGrid],
+          selectedThreshold: threshold.selectedThreshold,
+          tieBreakRule: normalizeMessages(threshold.tieBreakRule),
+        },
+        finalTestMetrics: { ...metrics },
+        warnings: normalizeMessages(candidate.warnings),
+      },
+      incumbent: { ...incumbent },
+      challengerEconomic,
+      incumbentEconomic,
+      incumbentVsChallenger: { ...comparison },
+      warnings: normalizeMessages(group.warnings),
+    };
+  }).sort((left, right) => left.symbol.localeCompare(right.symbol));
+
+  if (groups.length !== challenger.symbols.length
+    || groups.some((group, index) => group.symbol !== challenger.symbols.slice().sort().at(index))) {
+    fail("perSymbolLogisticChallenger symbols do not match its groups");
+  }
+  const normalized = {
+    schemaVersion: challenger.schemaVersion,
+    researchMode: challenger.researchMode,
+    comparisonBaseline: challenger.comparisonBaseline,
+    candidateDataQualityBasis: challenger.candidateDataQualityBasis,
+    incumbentModelAlgorithm: challenger.incumbentModelAlgorithm,
+    challengerModelAlgorithm: challenger.challengerModelAlgorithm,
+    featureNames: [...challenger.featureNames],
+    controlFeatureNames: [...challenger.controlFeatureNames],
+    ...(challenger.featureFamily === undefined
+      ? {}
+      : {
+        featureFamily: {
+          ...challenger.featureFamily,
+          newFeatureFields: [...challenger.featureFamily.newFeatureFields],
+          currentIncumbentFeatureFields: [...challenger.featureFamily.currentIncumbentFeatureFields],
+        },
+      }),
+    symbols: groups.map(({ symbol }) => symbol),
+    roundTripCostBps: challenger.roundTripCostBps,
+    initialCapital: challenger.initialCapital,
+    groups,
+    doesAnyChallengerBeatDirectionalBaseline: challenger.doesAnyChallengerBeatDirectionalBaseline,
+    doesAnyChallengerBeatBuyAndHoldAfterCost: challenger.doesAnyChallengerBeatBuyAndHoldAfterCost,
+    doesAnyChallengerImproveBothDirectionalAndEconomicEvidence:
+      challenger.doesAnyChallengerImproveBothDirectionalAndEconomicEvidence,
+    challengerConclusion: challenger.challengerConclusion,
+    promotionDecision: "do_not_promote" as const,
+    warnings: normalizeMessages(challenger.warnings),
+    guardrails: {
+      providesInvestmentAdvice: false,
+      supportsOrderExecution: false,
+      supportsAutomaticPromotion: false,
+      supportsPortfolioOptimization: false,
+      supportsMultiSymbolAllocation: false,
+      supportsSymbolSelection: false,
+    } as const,
+    normalizedResultSha256: challenger.normalizedResultSha256,
+  };
+  return normalized;
+}
+
 function normalizeFinalTestEconomicReconciliation(
   reconciliation: ResultContractFinalTestEconomicReconciliation,
 ): ResultContractFinalTestEconomicReconciliation {
@@ -1414,6 +1878,15 @@ export function buildPredictionRetrainingResultV1(
     )
     : available(normalizeFinalTestEconomicEdge(input.finalTestEconomicEdge));
 
+  const perSymbolLogisticChallenger: ResultContractField<ResultContractPerSymbolLogisticChallenger> =
+    input.perSymbolLogisticChallenger === undefined
+      ? unavailableFor(
+        "perSymbolLogisticChallenger",
+        "No per-symbol logistic challenger evidence was supplied.",
+        unavailableFields,
+      )
+      : available(normalizePerSymbolLogisticChallenger(input.perSymbolLogisticChallenger));
+
   let latestPredictions: ResultContractField<readonly ResultContractLatestPrediction[]>;
   if (input.latestPredictions === undefined || input.latestPredictions.length === 0) {
     latestPredictions = unavailableFor(
@@ -1505,6 +1978,13 @@ export function buildPredictionRetrainingResultV1(
       sha256: input.finalTestEconomicEdge.normalizedResultSha256,
     });
   }
+  if (input.perSymbolLogisticChallenger !== undefined) {
+    provenanceReferences.push({
+      kind: "challenger",
+      reference: input.perSymbolLogisticChallenger.schemaVersion,
+      sha256: input.perSymbolLogisticChallenger.normalizedResultSha256,
+    });
+  }
   if (input.finalTestEconomicReconciliation !== undefined) {
     provenanceReferences.push({
       kind: "economic_edge",
@@ -1531,6 +2011,7 @@ export function buildPredictionRetrainingResultV1(
     baselineMetrics,
     finalTestReliability,
     finalTestEconomicEdge,
+    perSymbolLogisticChallenger,
     ...(finalTestEconomicReconciliation === undefined ? {} : { finalTestEconomicReconciliation }),
     latestPredictions,
     currentUnresolvedPredictions,

@@ -7,6 +7,8 @@ import {
   type PartitionKind,
   type RowPartition,
   type StandardScalerFit,
+  type TrainingClassWeightComputation,
+  type TrainingClassWeights,
 } from "./types.js";
 
 export const DEFAULT_LOGISTIC_REGRESSION_CONFIG: LogisticRegressionConfig = Object.freeze({
@@ -53,19 +55,89 @@ function dot(left: readonly number[], right: readonly number[]): number {
   }, 0);
 }
 
+export interface FitLogisticRegressionOptions {
+  readonly classWeights?: TrainingClassWeights;
+}
+
+export function computeTrainingClassWeights(
+  untrustedPartition: RowPartition<PartitionKind>,
+): TrainingClassWeightComputation {
+  if (untrustedPartition.kind !== "TRAINING") {
+    fail(`class weights require TRAINING rows, received ${untrustedPartition.kind}`);
+  }
+  const partition = untrustedPartition as RowPartition<"TRAINING">;
+  const trainingRowCount = partition.rows.length;
+  if (trainingRowCount === 0) fail("cannot compute class weights on zero training rows");
+  const trainingUpRows = partition.rows.filter((row) => row.target === 1).length;
+  const trainingDownRows = trainingRowCount - trainingUpRows;
+  if (trainingUpRows === 0 || trainingDownRows === 0) {
+    return Object.freeze({
+      status: "unavailable" as const,
+      reason: `training partition contains only one class (up=${trainingUpRows}, down=${trainingDownRows})`,
+      sourcePartition: "TRAINING",
+      trainingRowCount,
+      trainingUpRows,
+      trainingDownRows,
+    });
+  }
+  return Object.freeze({
+    status: "available" as const,
+    weights: Object.freeze({
+      sourcePartition: "TRAINING",
+      trainingRowCount,
+      trainingUpRows,
+      trainingDownRows,
+      weightUp: trainingRowCount / (2 * trainingUpRows),
+      weightDown: trainingRowCount / (2 * trainingDownRows),
+    }),
+  });
+}
+
+function assertClassWeightsMatchPartition(
+  partition: RowPartition<"TRAINING">,
+  classWeights: TrainingClassWeights,
+): void {
+  if (classWeights.sourcePartition !== "TRAINING") {
+    fail("class weights must be derived from the TRAINING partition");
+  }
+  const computed = computeTrainingClassWeights(partition);
+  if (computed.status === "unavailable") {
+    fail(`class weights are unavailable: ${computed.reason}`);
+  }
+  if (
+    classWeights.trainingRowCount !== computed.weights.trainingRowCount
+    || classWeights.trainingUpRows !== computed.weights.trainingUpRows
+    || classWeights.trainingDownRows !== computed.weights.trainingDownRows
+    || classWeights.weightUp !== computed.weights.weightUp
+    || classWeights.weightDown !== computed.weights.weightDown
+  ) {
+    fail("supplied class weights do not match TRAINING labels");
+  }
+}
+
+function observationClassWeight(
+  target: 0 | 1,
+  classWeights: TrainingClassWeights | undefined,
+): number {
+  if (classWeights === undefined) return 1;
+  return target === 1 ? classWeights.weightUp : classWeights.weightDown;
+}
+
 function regularizedLoss(
   partition: RowPartition<"TRAINING">,
   weights: readonly number[],
   scaler: StandardScalerFit,
   config: LogisticRegressionConfig,
+  classWeights: TrainingClassWeights | undefined,
 ): number {
   const epsilon = 1e-12;
   const dataLoss = partition.rows.reduce((sum, row) => {
     const probability = sigmoid(dot(weights, [1, ...standardize(row.features, scaler)]));
-    return sum - (
+    const observationLoss = -(
       row.target * Math.log(probability + epsilon)
       + (1 - row.target) * Math.log(1 - probability + epsilon)
     );
+    return sum + observationClassWeight(row.target, classWeights) * observationLoss;
   }, 0) / partition.rows.length;
   const penalty = weights.slice(1).reduce((sum, weight) => sum + weight ** 2, 0);
   return dataLoss + (config.l2 / 2) * penalty;
@@ -75,6 +147,7 @@ export function fitLogisticRegression(
   untrustedPartition: RowPartition<PartitionKind>,
   scaler: StandardScalerFit,
   partialConfig: Partial<LogisticRegressionConfig> = {},
+  options: FitLogisticRegressionOptions = {},
 ): LogisticRegressionFit {
   if (untrustedPartition.kind !== "TRAINING") {
     fail(`model fit requires TRAINING rows, received ${untrustedPartition.kind}`);
@@ -89,17 +162,35 @@ export function fitLogisticRegression(
     fail("model rows do not match the training-only scaler fit");
   }
   const config = normalizeLogisticRegressionConfig(partialConfig);
-  const weights = [0, 0, 0, 0, 0, 0];
-  const initialRegularizedLoss = regularizedLoss(partition, weights, scaler, config);
+  const classWeights = options.classWeights;
+  if (classWeights !== undefined) {
+    assertClassWeightsMatchPartition(partition, classWeights);
+  }
+  const featureCount = partition.rows[0]?.features.length;
+  if (featureCount === undefined || featureCount === 0) {
+    fail("training feature vector must not be empty");
+  }
+  if (partition.rows.some((row) => row.features.length !== featureCount)) {
+    fail("training feature vectors differ in length");
+  }
+  const weights = Array.from({ length: featureCount + 1 }, () => 0);
+  const initialRegularizedLoss = regularizedLoss(
+    partition,
+    weights,
+    scaler,
+    config,
+    classWeights,
+  );
   for (let iteration = 0; iteration < config.iterations; iteration += 1) {
-    const gradient = [0, 0, 0, 0, 0, 0];
+    const gradient = Array.from({ length: weights.length }, () => 0);
     for (const row of partition.rows) {
       const inputs = [1, ...standardize(row.features, scaler)];
       const error = sigmoid(dot(weights, inputs)) - row.target;
+      const observationWeight = observationClassWeight(row.target, classWeights);
       for (let index = 0; index < gradient.length; index += 1) {
         const input = inputs[index];
         if (input === undefined) fail("model input vector is incomplete");
-        gradient[index] = (gradient[index] ?? 0) + error * input;
+        gradient[index] = (gradient[index] ?? 0) + observationWeight * error * input;
       }
     }
     for (let index = 0; index < weights.length; index += 1) {
@@ -111,41 +202,29 @@ export function fitLogisticRegression(
         * (gradientValue / partition.rows.length + regularization);
     }
   }
-  const [
-    intercept,
-    first,
-    second,
-    third,
-    fourth,
-    fifth,
-  ] = weights;
-  if (
-    intercept === undefined
-    || first === undefined
-    || second === undefined
-    || third === undefined
-    || fourth === undefined
-    || fifth === undefined
-  ) {
-    fail("trained model weight vector is incomplete");
-  }
-  const typedWeights = Object.freeze([
-    intercept,
-    first,
-    second,
-    third,
-    fourth,
-    fifth,
-  ] as const);
-  const finalRegularizedLoss = regularizedLoss(partition, typedWeights, scaler, config);
+  const typedWeights = Object.freeze([...weights]);
+  const finalRegularizedLoss = regularizedLoss(
+    partition,
+    typedWeights,
+    scaler,
+    config,
+    classWeights,
+  );
   if (!(finalRegularizedLoss < initialRegularizedLoss)) {
     fail("training did not reduce regularized loss");
   }
-  const state = {
-    weights: typedWeights,
-    fitRowIdentitySha256: partition.rowIdentitySha256,
-    config,
-  };
+  const state = classWeights === undefined
+    ? {
+      weights: typedWeights,
+      fitRowIdentitySha256: partition.rowIdentitySha256,
+      config,
+    }
+    : {
+      weights: typedWeights,
+      fitRowIdentitySha256: partition.rowIdentitySha256,
+      config,
+      classWeights,
+    };
   return Object.freeze({
     fitPartition: "TRAINING",
     weights: typedWeights,
@@ -154,12 +233,13 @@ export function fitLogisticRegression(
     initialRegularizedLoss,
     finalRegularizedLoss,
     config,
+    ...(classWeights === undefined ? {} : { classWeights }),
     stateSha256: hashValue(state),
   });
 }
 
 export function predictProbability(
-  features: readonly [number, number, number, number, number],
+  features: readonly number[],
   scaler: StandardScalerFit,
   model: LogisticRegressionFit,
 ): number {

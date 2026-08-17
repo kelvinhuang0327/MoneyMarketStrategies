@@ -10,6 +10,7 @@ import {
   type FeatureDateErrorCohort,
   type FeatureDateErrorCohortProfile,
   type FeatureRow,
+  type FeatureVector,
   type FinalTestEvidence,
   type FinalTestScoredRow,
   type LogisticRegressionFit,
@@ -19,6 +20,8 @@ import {
   type ThresholdCandidateEvidence,
   type ThresholdSelectionEvidence,
 } from "./types.js";
+
+export type ProbabilityPredictor = (features: FeatureVector) => number;
 
 export const VALIDATION_THRESHOLD_GRID = Object.freeze([
   0.45,
@@ -63,11 +66,10 @@ function assertFitCompatibility(
   }
 }
 
-function scorePartition(
+export function scorePartitionWithPredictor(
   partition: RowPartition<PartitionKind>,
-  scaler: StandardScalerFit,
-  model: LogisticRegressionFit,
   threshold: number,
+  predict: ProbabilityPredictor,
 ): {
   readonly metrics: EvaluationMetrics;
   readonly scoredRows: readonly FinalTestScoredRow[];
@@ -77,7 +79,6 @@ function scorePartition(
   if (!Number.isFinite(threshold) || threshold < 0 || threshold > 1) {
     fail(`threshold is outside [0, 1]: ${threshold}`);
   }
-  assertFitCompatibility(scaler, model);
   let truePositive = 0;
   let trueNegative = 0;
   let falsePositive = 0;
@@ -87,7 +88,10 @@ function scorePartition(
   const scoredRows: FinalTestScoredRow[] = [];
   const epsilon = 1e-12;
   for (const row of partition.rows) {
-    const probability = predictProbability(row.features, scaler, model);
+    const probability = predict(row.features);
+    if (!Number.isFinite(probability) || probability < 0 || probability > 1) {
+      fail(`predicted probability is outside [0, 1]: ${probability}`);
+    }
     const prediction = probability >= threshold ? 1 : 0;
     if (prediction === 1 && row.target === 1) truePositive += 1;
     if (prediction === 0 && row.target === 0) trueNegative += 1;
@@ -279,10 +283,9 @@ function candidateIsBetter(
   return candidate.threshold < incumbent.threshold;
 }
 
-export function selectValidationThreshold(
+export function selectValidationThresholdFromPredictor(
   untrustedPartition: RowPartition<PartitionKind>,
-  scaler: StandardScalerFit,
-  model: LogisticRegressionFit,
+  predict: ProbabilityPredictor,
 ): ThresholdSelectionEvidence {
   if (untrustedPartition.kind !== "VALIDATION") {
     fail(`threshold selection requires VALIDATION rows, received ${untrustedPartition.kind}`);
@@ -290,7 +293,7 @@ export function selectValidationThreshold(
   const partition = untrustedPartition as RowPartition<"VALIDATION">;
   const candidates = VALIDATION_THRESHOLD_GRID.map((threshold) => Object.freeze({
     threshold,
-    metrics: scorePartition(partition, scaler, model, threshold).metrics,
+    metrics: scorePartitionWithPredictor(partition, threshold, predict).metrics,
   }));
   const first = candidates[0];
   if (first === undefined) fail("fixed validation threshold grid is empty");
@@ -310,6 +313,18 @@ export function selectValidationThreshold(
   });
 }
 
+export function selectValidationThreshold(
+  untrustedPartition: RowPartition<PartitionKind>,
+  scaler: StandardScalerFit,
+  model: LogisticRegressionFit,
+): ThresholdSelectionEvidence {
+  assertFitCompatibility(scaler, model);
+  return selectValidationThresholdFromPredictor(
+    untrustedPartition,
+    (features) => predictProbability(features, scaler, model),
+  );
+}
+
 export interface FinalTestEvaluator {
   evaluate(
     partition: RowPartition<PartitionKind>,
@@ -325,8 +340,75 @@ interface FinalTestEvaluation extends FinalTestEvidence {
   readonly scoredRows: readonly FinalTestScoredRow[];
 }
 
-export function createFinalTestEvaluator(): FinalTestEvaluator {
+export interface ProbabilityFinalTestEvaluator {
+  evaluate(
+    partition: RowPartition<PartitionKind>,
+    frozenThreshold: number,
+    predict: ProbabilityPredictor,
+  ): FinalTestEvaluation;
+  assertExactlyOnce(): 1;
+}
+
+function buildFinalTestEvaluation(
+  partition: RowPartition<"FINAL_TEST">,
+  frozenThreshold: number,
+  scored: ReturnType<typeof scorePartitionWithPredictor>,
+): FinalTestEvaluation {
+  return Object.freeze({
+    evaluationPartition: "FINAL_TEST",
+    finalTestRowsSha256: partition.rowIdentitySha256,
+    finalTestScoredRowsSha256: scored.scoredRowsSha256,
+    frozenThreshold,
+    evaluatorExecutionCount: 1,
+    metrics: scored.metrics,
+    scoredRows: scored.scoredRows,
+    symbolReliability: buildSymbolReliabilityProfile(partition.rows, scored.scoredRows),
+    probabilityCalibration: buildProbabilityCalibrationProfile(
+      partition.rows,
+      scored.scoredRows,
+      scored.metrics.brierScore,
+    ),
+    featureDateErrorCohortProfile: buildFeatureDateErrorCohortProfile(
+      partition.rows,
+      scored.scoredRows,
+    ),
+    finalTestReliability: buildFinalTestReliabilityProfile(
+      partition.rows,
+      scored.scoredRows,
+    ),
+  });
+}
+
+export function createFinalTestEvaluatorFromPredictor(): ProbabilityFinalTestEvaluator {
   let executionCount = 0;
+  return Object.freeze({
+    evaluate(
+      partition: RowPartition<PartitionKind>,
+      frozenThreshold: number,
+      predict: ProbabilityPredictor,
+    ) {
+      if (partition.kind !== "FINAL_TEST") {
+        fail(`final-test evaluation requires FINAL_TEST rows, received ${partition.kind}`);
+      }
+      if (executionCount !== 0) fail("final-test evaluation was attempted more than once");
+      executionCount += 1;
+      return buildFinalTestEvaluation(
+        partition as RowPartition<"FINAL_TEST">,
+        frozenThreshold,
+        scorePartitionWithPredictor(partition, frozenThreshold, predict),
+      );
+    },
+    assertExactlyOnce() {
+      if (executionCount !== 1) {
+        fail(`final-test evaluation count differs: expected 1, received ${executionCount}`);
+      }
+      return 1;
+    },
+  });
+}
+
+export function createFinalTestEvaluator(): FinalTestEvaluator {
+  const inner = createFinalTestEvaluatorFromPredictor();
   return Object.freeze({
     evaluate(
       partition: RowPartition<PartitionKind>,
@@ -334,41 +416,15 @@ export function createFinalTestEvaluator(): FinalTestEvaluator {
       model: LogisticRegressionFit,
       frozenThreshold: number,
     ) {
-      if (partition.kind !== "FINAL_TEST") {
-        fail(`final-test evaluation requires FINAL_TEST rows, received ${partition.kind}`);
-      }
-      if (executionCount !== 0) fail("final-test evaluation was attempted more than once");
-      executionCount += 1;
-      const scored = scorePartition(partition, scaler, model, frozenThreshold);
-      return Object.freeze({
-        evaluationPartition: "FINAL_TEST",
-        finalTestRowsSha256: partition.rowIdentitySha256,
-        finalTestScoredRowsSha256: scored.scoredRowsSha256,
+      assertFitCompatibility(scaler, model);
+      return inner.evaluate(
+        partition,
         frozenThreshold,
-        evaluatorExecutionCount: 1,
-        metrics: scored.metrics,
-        scoredRows: scored.scoredRows,
-        symbolReliability: buildSymbolReliabilityProfile(partition.rows, scored.scoredRows),
-        probabilityCalibration: buildProbabilityCalibrationProfile(
-          partition.rows,
-          scored.scoredRows,
-          scored.metrics.brierScore,
-        ),
-        featureDateErrorCohortProfile: buildFeatureDateErrorCohortProfile(
-          partition.rows,
-          scored.scoredRows,
-        ),
-        finalTestReliability: buildFinalTestReliabilityProfile(
-          partition.rows,
-          scored.scoredRows,
-        ),
-      });
+        (features) => predictProbability(features, scaler, model),
+      );
     },
     assertExactlyOnce() {
-      if (executionCount !== 1) {
-        fail(`final-test evaluation count differs: expected 1, received ${executionCount}`);
-      }
-      return 1;
+      return inner.assertExactlyOnce();
     },
   });
 }

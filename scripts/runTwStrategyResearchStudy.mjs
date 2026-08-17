@@ -26,6 +26,7 @@ import {
   FEATURE_LOOKBACK_ROWS,
   fitModelOnFeatureRows,
   INITIAL_CAPITAL,
+  LEGACY_TECHNICAL_FEATURE_FAMILY,
   LEGACY_ML_RETRAINING_STATUS,
   parseCommittedQualificationObservationsFromText,
   parseTwStrategyResearchCsvText,
@@ -41,6 +42,7 @@ import {
   TWSE_QUALIFICATION_FIXTURE_PAYLOADS,
   validateCutoffDates,
   validateRoundTripCostBpsGrid,
+  SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES,
   validateTwStrategyResearchRows,
   VOLUME_ADJUSTMENT_STATUS,
 } from "@mms/research-kernel";
@@ -48,7 +50,12 @@ import {
   analyzeThresholdParetoFrontier,
   analyzeThresholdParetoStability,
   buildFinalTestPerSymbolEconomicEdge,
+  buildPerSymbolLogisticChallengerEvaluation,
+  buildPerSymbolLogisticFeatureChallengerEvaluation,
   evaluateWalkForwardStabilityGate,
+  runPerSymbolLogisticChallengerTemporalConfirmation,
+  runPerSymbolLogisticClassBalancedChallengerTemporal,
+  runPerSymbolGaussianNaiveBayesChallengerTemporal,
   runThresholdParameterSensitivity,
   runWalkForwardThresholdEvaluation,
   reconcileFinalTestEconomicEdge,
@@ -70,7 +77,12 @@ const DEFAULTS = Object.freeze({
   outDir: "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1",
   cutoffs: null,
   roundTripCostBps: null,
+  challengerTemporal: false,
+  balancedLogisticChallenger: false,
+  gnbChallenger: false,
 });
+
+const SUPPORTED_SYMBOLS = Object.freeze(["0050", "0056", "2317", "2330", "2454"]);
 
 function parseArgs(argv) {
   const args = { ...DEFAULTS };
@@ -80,6 +92,18 @@ function parseArgs(argv) {
     const flag = argv[index];
     if (!flag.startsWith("--")) continue;
     const key = flag.slice(2);
+    if (key === "challenger-temporal") {
+      args.challengerTemporal = true;
+      continue;
+    }
+    if (key === "balanced-logistic-challenger") {
+      args.balancedLogisticChallenger = true;
+      continue;
+    }
+    if (key === "gaussian-naive-bayes-challenger" || key === "gnb-challenger") {
+      args.gnbChallenger = true;
+      continue;
+    }
     const value = argv[index + 1];
     if (value === undefined) throw new Error(`missing value for --${key}`);
     if (key === "legacy-repo") args.legacyRepo = value;
@@ -104,6 +128,12 @@ function parseArgs(argv) {
     args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-cost-sensitivity-v1/sensitivity-run1";
   } else if (args.cutoffs && !customOutDir) {
     args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-temporal-robustness-v1";
+  } else if (args.gnbChallenger && !customOutDir) {
+    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/gnb-challenger-v1";
+  } else if (args.balancedLogisticChallenger && !customOutDir) {
+    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/balanced-logistic-challenger-v1";
+  } else if (args.challengerTemporal && !customOutDir) {
+    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/temporal-challenger-v1";
   }
 
   return args;
@@ -561,6 +591,7 @@ export function buildPredictionRetrainingResultV1FromFreshResearch({
   generatedAt,
   researchEvidenceResult: suppliedResearchEvidenceResult,
   finalTestEconomicReconciliation,
+  perSymbolLogisticChallenger: suppliedPerSymbolLogisticChallenger,
 }) {
   const marketRows = toCanonicalMarketRows(rawRows);
   const evidenceResult = suppliedResearchEvidenceResult ?? runResearchEvidenceKernel({
@@ -603,6 +634,27 @@ export function buildPredictionRetrainingResultV1FromFreshResearch({
       roundTripCostBps: ROUND_TRIP_COST_BPS,
       initialCapital: INITIAL_CAPITAL,
     });
+  const perSymbolLogisticChallenger = suppliedPerSymbolLogisticChallenger
+    ?? (evidenceResult.perSymbolLogisticFeatureChallenger !== undefined
+      && evidenceResult.perSymbolLogisticChallenger !== undefined
+      ? buildPerSymbolLogisticFeatureChallengerEvaluation({
+        control: evidenceResult.perSymbolLogisticChallenger,
+        challenger: evidenceResult.perSymbolLogisticFeatureChallenger,
+        candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+        roundTripCostBps: ROUND_TRIP_COST_BPS,
+        initialCapital: INITIAL_CAPITAL,
+      })
+      : evidenceResult.perSymbolLogisticChallenger === undefined
+      || finalTestEconomicEvidence === undefined
+      ? undefined
+      : buildPerSymbolLogisticChallengerEvaluation({
+        challenger: evidenceResult.perSymbolLogisticChallenger,
+        incumbentEvidence: evidenceResult.evidence,
+        incumbentFinalTestEconomicEvidence: finalTestEconomicEvidence,
+        candidateDataQualityBasis: "RAW_CONTROL_ONLY",
+        roundTripCostBps: ROUND_TRIP_COST_BPS,
+        initialCapital: INITIAL_CAPITAL,
+      }));
   const simulationScenarioId = "0050_SOURCE_QUALIFIED_ADJUSTED";
   const simulation = contractSimulation(simulationScenarioId, output.scenarios[simulationScenarioId]);
   const warnings = [
@@ -666,6 +718,7 @@ export function buildPredictionRetrainingResultV1FromFreshResearch({
       : { finalTestReliability: evidenceResult.finalTestReliability }),
     ...(finalTestEconomicEdge === undefined ? {} : { finalTestEconomicEdge }),
     ...(finalTestEconomicReconciliation === undefined ? {} : { finalTestEconomicReconciliation }),
+    ...(perSymbolLogisticChallenger === undefined ? {} : { perSymbolLogisticChallenger }),
     ...(latestPredictions.length === 0 ? {} : { latestPredictions }),
     ...(currentUnresolvedPredictions.length === 0 ? {} : { currentUnresolvedPredictions }),
     currentPredictionUnavailable,
@@ -785,6 +838,39 @@ function appendFinalTestEconomicReconciliation(lines, reconciliation) {
     }
     lines.push("");
   }
+}
+
+function appendPerSymbolLogisticChallenger(lines, challenger) {
+  if (challenger === undefined) return;
+  lines.push(
+    "## Per-Symbol Logistic Challenger (Diagnostic Only)",
+    "",
+    `- **Candidate Data-Quality Basis**: ${challenger.candidateDataQualityBasis}`,
+    `- **Directional Baseline Check**: **${challenger.doesAnyChallengerBeatDirectionalBaseline}**`,
+    `- **Buy-and-Hold After Cost Check**: **${challenger.doesAnyChallengerBeatBuyAndHoldAfterCost}**`,
+    `- **Both Directional and Economic Improvement Check**: **${challenger.doesAnyChallengerImproveBothDirectionalAndEconomicEvidence}**`,
+    `- **Challenger Conclusion**: **${challenger.challengerConclusion}**`,
+    `- **Promotion Decision**: **${challenger.promotionDecision}**`,
+    "",
+    "| Symbol | Train | Validation | Final Test | Threshold | Challenger Acc. | Majority Baseline | Incumbent Acc. | Acc. Delta | Challenger Net | Benchmark Net | Challenger Excess | Incumbent Excess | Excess Delta | Max DD | Trades | Warnings |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+  );
+  for (const group of challenger.groups) {
+    const candidate = group.challenger;
+    const comparison = group.incumbentVsChallenger;
+    lines.push(
+      `| ${group.symbol} | ${candidate.trainingRows} | ${candidate.validationRows} | ${candidate.finalTestRows} | `
+      + `${candidate.thresholdSelection.selectedThreshold.toFixed(6)} | ${candidate.finalTestMetrics.accuracy.toFixed(6)} | `
+      + `${candidate.majorityBaselineAccuracy.toFixed(6)} | ${comparison.incumbentAccuracy?.toFixed(6) ?? "UNAVAILABLE"} | `
+      + `${comparison.accuracyDeltaChallengerMinusIncumbent?.toFixed(6) ?? "UNAVAILABLE"} | `
+      + `${group.challengerEconomic.strategyNetReturn.toFixed(6)} | ${group.challengerEconomic.benchmarkNetReturn.toFixed(6)} | `
+      + `${group.challengerEconomic.excessReturn.toFixed(6)} | ${comparison.incumbentExcessReturn?.toFixed(6) ?? "UNAVAILABLE"} | `
+      + `${comparison.excessDeltaChallengerMinusIncumbent?.toFixed(6) ?? "UNAVAILABLE"} | `
+      + `${group.challengerEconomic.strategyMaximumDrawdown.toFixed(6)} | ${group.challengerEconomic.tradeCount} | `
+      + `${group.warnings.join(" ")} |`,
+    );
+  }
+  lines.push("");
 }
 
 function generateMarkdownReport(output) {
@@ -914,6 +1000,7 @@ function generateMarkdownReport(output) {
       output.rawVsAdjusted0050FinalTestEconomicReconciliation,
     );
   }
+  appendPerSymbolLogisticChallenger(lines, output.perSymbolLogisticChallenger);
 
   lines.push(
     "## Research Limitations & Disclaimers",
@@ -1106,6 +1193,112 @@ function generateSensitivityMarkdownReport(output) {
   return lines.join("\n");
 }
 
+function generatePerSymbolLogisticChallengerTemporalMarkdown(output) {
+  const lines = [
+    "# 0056 Per-Symbol Logistic Challenger Temporal Confirmation V1",
+    "",
+    "## Executive Summary",
+    `- **Classification**: ${output.classification}`,
+    `- **Review Date**: ${output.reviewDate}`,
+    `- **Data As Of**: ${output.source.dataAsOf}`,
+    `- **Symbol**: ${output.symbol}`,
+    `- **Control Feature Set**: ${output.controlFeatureNames.join(", ")}`,
+    `- **Challenger Feature Set**: ${output.featureNames.join(", ")}`,
+    `- **Frozen Feature Family**: ${output.featureFamily.featureFamilyName}`,
+    `- **Legacy Source**: ${output.featureFamily.legacySourcePath}`,
+    `- **Legacy Formula**: ${output.featureFamily.legacySourceSymbolOrFormula}`,
+    `- **Legacy Source SHA256**: ${output.legacyFeatureSource?.sha256 ?? "NOT_SUPPLIED"}`,
+    `- **Round-Trip Cost (bps)**: ${output.roundTripCostBps}`,
+    `- **Promotion Decision**: ${output.promotionDecision}`,
+    `- **Does Economic Edge Repeat Across Time**: ${output.does0056EconomicEdgeRepeatAcrossTime}`,
+    `- **Ever Beats Directional Baseline**: ${output.does0056EverBeatDirectionalBaseline}`,
+    `- **CEO Next Route**: ${output.ceoNextRoute}`,
+    "",
+    "## Per-Cutoff Results",
+    "",
+    "| Cutoff | As Of | Train Rows | Train Purge | Validation Rows | Validation Purge | Final-Test Rows | Threshold | Accuracy | Majority Baseline | Accuracy Delta | Balanced Accuracy | Log Loss | Brier | Strategy Net | Benchmark Net | Excess | Strategy Max DD | Benchmark Max DD | Trades | Warnings |",
+    "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | --- |",
+  ];
+
+  for (const run of output.cutoffRuns) {
+    const candidate = run.challenger;
+    const economic = run.challengerEconomic;
+    const warnings = run.warnings.length === 0 ? "None" : run.warnings.join("; ");
+    lines.push(
+      `| ${run.cutoff} | ${run.asOf} | ${candidate.trainingRows} | ${candidate.trainValidationPurgeRows} | `
+      + `${candidate.validationRows} | ${candidate.validationFinalPurgeRows} | ${candidate.finalTestRows} | `
+      + `${candidate.thresholdSelection.selectedThreshold.toFixed(6)} | ${candidate.finalTestMetrics.accuracy.toFixed(6)} | `
+      + `${candidate.majorityBaselineAccuracy.toFixed(6)} | ${candidate.accuracyDelta.toFixed(6)} | `
+      + `${candidate.finalTestMetrics.balancedAccuracy.toFixed(6)} | ${candidate.finalTestMetrics.logLoss.toFixed(6)} | `
+      + `${candidate.finalTestMetrics.brierScore.toFixed(6)} | ${economic.strategyNetReturn.toFixed(6)} | `
+      + `${economic.benchmarkNetReturn.toFixed(6)} | ${economic.excessReturn.toFixed(6)} | `
+      + `${economic.strategyMaximumDrawdown.toFixed(6)} | ${economic.benchmarkMaximumDrawdown.toFixed(6)} | `
+      + `${economic.tradeCount} | ${warnings} |`,
+    );
+  }
+
+  lines.push(
+    "",
+    "## Control vs Challenger Directional and Economic Comparison",
+    "",
+    "| Cutoff | Control Accuracy | Challenger Accuracy | Accuracy Delta | Control Excess | Challenger Excess | Excess Delta |",
+    "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+  );
+  for (const run of output.cutoffRuns) {
+    const comparison = run.controlVsChallenger;
+    lines.push(
+      `| ${run.cutoff} | ${run.control.finalTestMetrics.accuracy.toFixed(8)} | ${run.challenger.finalTestMetrics.accuracy.toFixed(8)} | `
+      + `${comparison.accuracyDeltaChallengerMinusIncumbent?.toFixed(8) ?? "UNAVAILABLE"} | `
+      + `${run.controlEconomic.excessReturn.toFixed(8)} | ${run.challengerEconomic.excessReturn.toFixed(8)} | `
+      + `${comparison.excessDeltaChallengerMinusIncumbent?.toFixed(8) ?? "UNAVAILABLE"} |`,
+    );
+  }
+
+  const summary = output.temporalSummary;
+  const controlSummary = output.controlTemporalSummary;
+  const reproduction = output.controlReproduction;
+  lines.push(
+    "",
+    "## Temporal Summary (Descriptive Only)",
+    "",
+    `- **Cutoff Count**: ${summary.temporalCutoffCount}`,
+    `- **Positive Excess Cutoffs**: ${summary.positiveExcessCutoffCount}`,
+    `- **Non-Positive Excess Cutoffs**: ${summary.nonPositiveExcessCutoffCount}`,
+    `- **Positive Excess Fraction**: ${summary.positiveExcessFraction.toFixed(6)}`,
+    `- **Median Excess Return**: ${summary.medianExcessReturn.toFixed(6)}`,
+    `- **Minimum Excess Return**: ${summary.minimumExcessReturn.toFixed(6)}`,
+    `- **Maximum Excess Return**: ${summary.maximumExcessReturn.toFixed(6)}`,
+    `- **Latest Excess Return**: ${summary.latestExcessReturn.toFixed(6)}`,
+    `- **Median Accuracy Delta vs Baseline**: ${summary.medianAccuracyDeltaVsBaseline.toFixed(6)}`,
+    `- **Cutoffs Beating Directional Baseline**: ${summary.cutoffsBeatingDirectionalBaseline}`,
+    `- **Observed Thresholds**: ${summary.observedThresholds.map((value) => value.toFixed(6)).join(", ")}`,
+    `- **Threshold Range**: ${summary.thresholdRange.minimum.toFixed(6)} to ${summary.thresholdRange.maximum.toFixed(6)}`,
+    "",
+    "## Control Reproduction",
+    "",
+    `- **Status**: **${reproduction.status}**`,
+    `- **Control Positive Excess Cutoffs**: ${controlSummary.positiveExcessCutoffCount}`,
+    `- **Control Directional Baseline Wins**: ${controlSummary.numberOfCutoffsBeatingDirectionalBaseline}`,
+    `- **Control Median Excess**: ${controlSummary.medianExcessReturn.toFixed(8)}`,
+    `- **Control Latest Excess**: ${controlSummary.latestExcessReturn.toFixed(8)}`,
+    `- **Challenger Accuracy Wins vs Control**: ${output.comparisonSummary.challengerAccuracyWinsVsControl}`,
+    `- **Challenger Economic Wins vs Control**: ${output.comparisonSummary.challengerEconomicWinsVsControl}`,
+    `- **Challenger Improves Both vs Control**: ${output.comparisonSummary.challengerImprovesBothVsControl}`,
+    "",
+    "## Contract Boundaries",
+    "",
+    "- Training-only scaler and logistic fit; validation-only threshold selection; untouched FINAL_TEST evaluation.",
+    "- Canonical long/cash simulator with same-window ALWAYS_LONG buy-and-hold benchmark and canonical 10 bps costs.",
+    "- No final-test-driven tuning; the control remains unchanged and the additive feature family was frozen before final-test inspection; no symbol selection, ranking, promotion, or execution.",
+    "",
+    "## Warnings",
+    "",
+  );
+  for (const warning of output.warnings) lines.push(`- ${warning}`);
+  lines.push("");
+  return lines.join("\n");
+}
+
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
@@ -1117,15 +1310,298 @@ async function main() {
   const csvText = csvBytes.toString("utf8");
   const rawRows = parseTwStrategyResearchCsvText(csvText);
 
+  if (args.gnbChallenger) {
+    if (args.challengerTemporal || args.balancedLogisticChallenger) {
+      throw new Error("STOP_MMS_0056_GNB_CHALLENGER_MODE_MIXED");
+    }
+    if (args.roundTripCostBps && args.roundTripCostBps.length > 0) {
+      throw new Error("STOP_MMS_0056_GNB_TEMPORAL_COST_OVERRIDE_UNSUPPORTED");
+    }
+    const validated = validateTwStrategyResearchRows(rawRows, {
+      dataEndDate: args.dataEndDate,
+      requiredSymbols: SUPPORTED_SYMBOLS,
+    });
+    if (validated.dateRange.max !== args.dataEndDate) {
+      throw new Error(
+        `STOP_MMS_0056_GNB_TEMPORAL_DATA_AS_OF_MISMATCH:expected=${args.dataEndDate}:actual=${validated.dateRange.max}`,
+      );
+    }
+    const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
+    const qualificationSnapshot = buildTwseQualificationSnapshotFromFixture(
+      {
+        splitReference: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.splitReference, "utf8")),
+        stockDay0050: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay0050, "utf8")),
+        stockDay2330: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay2330, "utf8")),
+      },
+      args.qualificationAsOf,
+    );
+    const qualification = qualifyTwseSnapshot(
+      qualificationSnapshot,
+      committedObservations,
+      args.qualificationAsOf,
+    );
+    const reconciliation = qualification["0050Reconciliation"];
+    const temporalRawRows = rawRows.map((row) => {
+      if (row.symbol !== "0050") return row;
+      const marketRow = toMarketRows([row], "0050")[0];
+      if (marketRow === undefined) {
+        throw new Error(`STOP_MMS_0056_GNB_TEMPORAL_ADJUSTED_ROW_MISSING:${row.date}`);
+      }
+      const adjustedRow = applyBoundedAdjustment(
+        [marketRow],
+        reconciliation.effectiveDate,
+        reconciliation.derivedAdjustmentFactor,
+      )[0];
+      if (adjustedRow === undefined) {
+        throw new Error(`STOP_MMS_0056_GNB_TEMPORAL_ADJUSTED_ROW_UNRESOLVED:${row.date}`);
+      }
+      return {
+        ...row,
+        open: adjustedRow.open,
+        high: adjustedRow.high,
+        low: adjustedRow.low,
+        close: adjustedRow.close,
+      };
+    });
+    const cutoffDates = validateCutoffDates(
+      args.cutoffs ?? SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES,
+    );
+    const temporalResult = runPerSymbolGaussianNaiveBayesChallengerTemporal({
+      rawRows: temporalRawRows,
+      cutoffDates,
+      source: {
+        path: args.csvPath,
+        sha256: actualSha256,
+      },
+      datasetVersion: {
+        datasetId: "p194_twstock_ohlcv_export",
+        version: args.ref,
+        source: "twstock/twse",
+      },
+      reviewDate: args.reviewDate,
+      candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+      roundTripCostBps: ROUND_TRIP_COST_BPS,
+      initialCapital: INITIAL_CAPITAL,
+    });
+    mkdirSync(args.outDir, { recursive: true });
+    const jsonText = JSON.stringify(temporalResult, null, 2) + "\n";
+    const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
+    const jsonFile = path.join(
+      args.outDir,
+      "mms_0056_gaussian_naive_bayes_challenger_temporal_v1.json",
+    );
+    writeFileSync(jsonFile, jsonText);
+    console.log("JSON_OUTPUT_SHA256=" + jsonSha256);
+    console.log("wrote " + jsonFile);
+    console.log("CONTROL_REPRODUCTION=" + temporalResult.controlReproduction.status);
+    console.log("PROMOTION_DECISION=" + temporalResult.promotionDecision);
+    console.log("GNB_CHALLENGER_CONCLUSION=" + temporalResult.gnbChallengerConclusion);
+    return;
+  }
+
+  if (args.balancedLogisticChallenger) {
+    if (args.challengerTemporal) {
+      throw new Error("STOP_MMS_0056_BALANCED_LOGISTIC_FEATURE_CHALLENGER_MIXED");
+    }
+    if (args.roundTripCostBps && args.roundTripCostBps.length > 0) {
+      throw new Error("STOP_MMS_0056_BALANCED_TEMPORAL_COST_OVERRIDE_UNSUPPORTED");
+    }
+    const validated = validateTwStrategyResearchRows(rawRows, {
+      dataEndDate: args.dataEndDate,
+      requiredSymbols: SUPPORTED_SYMBOLS,
+    });
+    if (validated.dateRange.max !== args.dataEndDate) {
+      throw new Error(
+        `STOP_MMS_0056_BALANCED_TEMPORAL_DATA_AS_OF_MISMATCH:expected=${args.dataEndDate}:actual=${validated.dateRange.max}`,
+      );
+    }
+    const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
+    const qualificationSnapshot = buildTwseQualificationSnapshotFromFixture(
+      {
+        splitReference: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.splitReference, "utf8")),
+        stockDay0050: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay0050, "utf8")),
+        stockDay2330: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay2330, "utf8")),
+      },
+      args.qualificationAsOf,
+    );
+    const qualification = qualifyTwseSnapshot(
+      qualificationSnapshot,
+      committedObservations,
+      args.qualificationAsOf,
+    );
+    const reconciliation = qualification["0050Reconciliation"];
+    const temporalRawRows = rawRows.map((row) => {
+      if (row.symbol !== "0050") return row;
+      const marketRow = toMarketRows([row], "0050")[0];
+      if (marketRow === undefined) {
+        throw new Error(`STOP_MMS_0056_BALANCED_TEMPORAL_ADJUSTED_ROW_MISSING:${row.date}`);
+      }
+      const adjustedRow = applyBoundedAdjustment(
+        [marketRow],
+        reconciliation.effectiveDate,
+        reconciliation.derivedAdjustmentFactor,
+      )[0];
+      if (adjustedRow === undefined) {
+        throw new Error(`STOP_MMS_0056_BALANCED_TEMPORAL_ADJUSTED_ROW_UNRESOLVED:${row.date}`);
+      }
+      return {
+        ...row,
+        open: adjustedRow.open,
+        high: adjustedRow.high,
+        low: adjustedRow.low,
+        close: adjustedRow.close,
+      };
+    });
+    const cutoffDates = validateCutoffDates(
+      args.cutoffs ?? SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES,
+    );
+    const temporalResult = runPerSymbolLogisticClassBalancedChallengerTemporal({
+      rawRows: temporalRawRows,
+      cutoffDates,
+      source: {
+        path: args.csvPath,
+        sha256: actualSha256,
+      },
+      datasetVersion: {
+        datasetId: "p194_twstock_ohlcv_export",
+        version: args.ref,
+        source: "twstock/twse",
+      },
+      reviewDate: args.reviewDate,
+      candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+      roundTripCostBps: ROUND_TRIP_COST_BPS,
+      initialCapital: INITIAL_CAPITAL,
+    });
+
+    mkdirSync(args.outDir, { recursive: true });
+    const jsonText = JSON.stringify(temporalResult, null, 2) + "\n";
+    const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
+    const jsonFile = path.join(
+      args.outDir,
+      "mms_0056_class_balanced_logistic_challenger_temporal_v1.json",
+    );
+    writeFileSync(jsonFile, jsonText);
+    console.log("JSON_OUTPUT_SHA256=" + jsonSha256);
+    console.log("wrote " + jsonFile);
+    console.log("CONTROL_REPRODUCTION=" + temporalResult.controlReproduction.status);
+    console.log("PROMOTION_DECISION=" + temporalResult.promotionDecision);
+    console.log("CLASS_BALANCED_CHALLENGER_CONCLUSION=" + temporalResult.classBalancedChallengerConclusion);
+    return;
+  }
+
+  if (args.challengerTemporal) {
+    const legacyFeatureSourceBytes = readPinnedGitBlob(
+      args.legacyRepo,
+      args.ref,
+      LEGACY_TECHNICAL_FEATURE_FAMILY.legacySourcePath,
+    );
+    const legacyFeatureSourceSha256 = sha256Hex(legacyFeatureSourceBytes);
+    if (args.roundTripCostBps && args.roundTripCostBps.length > 0) {
+      throw new Error("STOP_MMS_0056_TEMPORAL_COST_OVERRIDE_UNSUPPORTED");
+    }
+    const validated = validateTwStrategyResearchRows(rawRows, {
+      dataEndDate: args.dataEndDate,
+      requiredSymbols: SUPPORTED_SYMBOLS,
+    });
+    if (validated.dateRange.max !== args.dataEndDate) {
+      throw new Error(
+        `STOP_MMS_0056_TEMPORAL_DATA_AS_OF_MISMATCH:expected=${args.dataEndDate}:actual=${validated.dateRange.max}`,
+      );
+    }
+    const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
+    const qualificationSnapshot = buildTwseQualificationSnapshotFromFixture(
+      {
+        splitReference: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.splitReference, "utf8")),
+        stockDay0050: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay0050, "utf8")),
+        stockDay2330: sha256Hex(Buffer.from(TWSE_QUALIFICATION_FIXTURE_PAYLOADS.stockDay2330, "utf8")),
+      },
+      args.qualificationAsOf,
+    );
+    const qualification = qualifyTwseSnapshot(
+      qualificationSnapshot,
+      committedObservations,
+      args.qualificationAsOf,
+    );
+    const reconciliation = qualification["0050Reconciliation"];
+    const temporalRawRows = rawRows.map((row) => {
+      if (row.symbol !== "0050") return row;
+      const marketRow = toMarketRows([row], "0050")[0];
+      if (marketRow === undefined) {
+        throw new Error(`STOP_MMS_0056_TEMPORAL_ADJUSTED_ROW_MISSING:${row.date}`);
+      }
+      const adjustedRow = applyBoundedAdjustment(
+        [marketRow],
+        reconciliation.effectiveDate,
+        reconciliation.derivedAdjustmentFactor,
+      )[0];
+      if (adjustedRow === undefined) {
+        throw new Error(`STOP_MMS_0056_TEMPORAL_ADJUSTED_ROW_UNRESOLVED:${row.date}`);
+      }
+      return {
+        ...row,
+        open: adjustedRow.open,
+        high: adjustedRow.high,
+        low: adjustedRow.low,
+        close: adjustedRow.close,
+      };
+    });
+    const cutoffDates = validateCutoffDates(
+      args.cutoffs ?? SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES,
+    );
+    const temporalResult = runPerSymbolLogisticChallengerTemporalConfirmation({
+      rawRows: temporalRawRows,
+      cutoffDates,
+      source: {
+        path: args.csvPath,
+        sha256: actualSha256,
+      },
+      datasetVersion: {
+        datasetId: "p194_twstock_ohlcv_export",
+        version: args.ref,
+        source: "twstock/twse",
+      },
+      reviewDate: args.reviewDate,
+      candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+      roundTripCostBps: ROUND_TRIP_COST_BPS,
+      initialCapital: INITIAL_CAPITAL,
+      legacyFeatureSource: {
+        path: LEGACY_TECHNICAL_FEATURE_FAMILY.legacySourcePath,
+        sha256: legacyFeatureSourceSha256,
+      },
+    });
+
+    mkdirSync(args.outDir, { recursive: true });
+    const jsonText = JSON.stringify(temporalResult, null, 2) + "\n";
+    const jsonSha256 = sha256Hex(Buffer.from(jsonText, "utf8"));
+    const jsonFile = path.join(
+      args.outDir,
+      "mms_0056_per_symbol_logistic_challenger_temporal_confirmation_v1.json",
+    );
+    writeFileSync(jsonFile, jsonText);
+    console.log("JSON_OUTPUT_SHA256=" + jsonSha256);
+    console.log("wrote " + jsonFile);
+
+    const mdText = generatePerSymbolLogisticChallengerTemporalMarkdown(temporalResult);
+    const mdSha256 = sha256Hex(Buffer.from(mdText, "utf8"));
+    const mdFile = path.join(
+      args.outDir,
+      "mms_0056_per_symbol_logistic_challenger_temporal_confirmation_v1.md",
+    );
+    writeFileSync(mdFile, mdText);
+    console.log("MARKDOWN_OUTPUT_SHA256=" + mdSha256);
+    console.log("wrote " + mdFile);
+    return;
+  }
+
   if (args.roundTripCostBps && args.roundTripCostBps.length > 0) {
     // Transaction Cost Sensitivity Study Mode
-    const validatedCutoffs = validateCutoffDates(args.cutoffs || ["2025-09-30", "2025-12-31", "2026-03-31", "2026-07-01"]);
+    const validatedCutoffs = validateCutoffDates(args.cutoffs || SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES);
     const validatedCosts = validateRoundTripCostBpsGrid(args.roundTripCostBps);
 
     const executeCutoffScenariosAtCost = ({ requestedCutoffDate, resolvedDataEndDate, cutoffRawRows, roundTripCostBps }) => {
       const validated = validateTwStrategyResearchRows(cutoffRawRows, {
         dataEndDate: resolvedDataEndDate,
-        requiredSymbols: ["2330", "0050"],
+        requiredSymbols: SUPPORTED_SYMBOLS,
       });
 
       const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
@@ -1267,7 +1743,7 @@ async function main() {
     const executeCutoffScenarios = ({ requestedCutoffDate, resolvedDataEndDate, cutoffRawRows }) => {
       const validated = validateTwStrategyResearchRows(cutoffRawRows, {
         dataEndDate: resolvedDataEndDate,
-        requiredSymbols: ["2330", "0050"],
+        requiredSymbols: SUPPORTED_SYMBOLS,
       });
 
       const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
@@ -1364,7 +1840,7 @@ async function main() {
     if (finalCutoffDate === "2026-07-01") {
       const canonicalValidated = validateTwStrategyResearchRows(rawRows, {
         dataEndDate: args.dataEndDate,
-        requiredSymbols: ["2330", "0050"],
+        requiredSymbols: SUPPORTED_SYMBOLS,
       });
       const canonical2330 = runScenario("2330", toMarketRows(canonicalValidated.rows, "2330"));
       const canonical0050Raw = runScenario("0050", toMarketRows(canonicalValidated.rows, "0050"));
@@ -1427,7 +1903,7 @@ async function main() {
   // Single Canonical Research Study Mode (Default)
   const validated = validateTwStrategyResearchRows(rawRows, {
     dataEndDate: args.dataEndDate,
-    requiredSymbols: ["2330", "0050"],
+    requiredSymbols: SUPPORTED_SYMBOLS,
   });
 
   const committedObservations = parseCommittedQualificationObservationsFromText(csvText);
@@ -1544,6 +2020,19 @@ async function main() {
     initialCapital: INITIAL_CAPITAL,
   });
 
+  if (adjustedResearchEvidenceResult.perSymbolLogisticChallenger === undefined
+    || adjustedResearchEvidenceResult.finalTestEconomicEvidence === undefined) {
+    throw new Error("STOP_MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_EVIDENCE_UNRESOLVED");
+  }
+  const perSymbolLogisticChallenger = buildPerSymbolLogisticChallengerEvaluation({
+    challenger: adjustedResearchEvidenceResult.perSymbolLogisticChallenger,
+    incumbentEvidence: adjustedResearchEvidenceResult.evidence,
+    incumbentFinalTestEconomicEvidence: adjustedResearchEvidenceResult.finalTestEconomicEvidence,
+    candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+    roundTripCostBps: ROUND_TRIP_COST_BPS,
+    initialCapital: INITIAL_CAPITAL,
+  });
+
   const rawVsAdjustedDeltas = {
     dataQualityFindingCountDelta:
       result0050Adjusted.dataQualityFindings.length - result0050Raw.dataQualityFindings.length,
@@ -1625,6 +2114,7 @@ async function main() {
     },
     rawVsAdjusted0050Deltas: rawVsAdjustedDeltas,
     rawVsAdjusted0050FinalTestEconomicReconciliation: finalTestEconomicReconciliation,
+    perSymbolLogisticChallenger,
     legacyMlRetrainingStatus: LEGACY_ML_RETRAINING_STATUS,
     promotionDecision: PROMOTION_DECISION,
     promotionReason: PROMOTION_REASON,
@@ -1640,6 +2130,7 @@ async function main() {
         + "five-trading-row horizon.",
       "No promotion, ranking, or investment-advice claim is made; stability diagnostics and gate "
         + "evaluations are reported for research review only.",
+      "Per-symbol challenger evaluation uses SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH for 0050; RAW 0050 remains control provenance only.",
     ],
     blockedScenarios: [],
   };
@@ -1659,12 +2150,23 @@ async function main() {
   console.log("MARKDOWN_OUTPUT_SHA256=" + mdSha256);
   console.log("wrote " + mdFile);
 
+  const challengerJsonText = JSON.stringify(perSymbolLogisticChallenger, null, 2) + "\n";
+  const challengerJsonSha256 = sha256Hex(Buffer.from(challengerJsonText, "utf8"));
+  const challengerJsonFile = path.join(
+    args.outDir,
+    "mms_per_symbol_logistic_challenger_v1.json",
+  );
+  writeFileSync(challengerJsonFile, challengerJsonText);
+  console.log("PER_SYMBOL_LOGISTIC_CHALLENGER_JSON_SHA256=" + challengerJsonSha256);
+  console.log("wrote " + challengerJsonFile);
+
   const predictionRetrainingResult = buildPredictionRetrainingResultV1FromFreshResearch({
     output,
     rawRows,
     generatedAt: new Date().toISOString(),
     researchEvidenceResult: rawResearchEvidenceResult,
     finalTestEconomicReconciliation,
+    perSymbolLogisticChallenger,
   });
   const predictionRetrainingJsonText = JSON.stringify(predictionRetrainingResult, null, 2) + "\n";
   const predictionRetrainingJsonSha256 = sha256Hex(Buffer.from(predictionRetrainingJsonText, "utf8"));

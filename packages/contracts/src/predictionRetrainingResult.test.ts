@@ -13,6 +13,8 @@ import {
 } from "@mms/research-kernel";
 import {
   buildFinalTestPerSymbolEconomicEdge,
+  buildPerSymbolLogisticChallengerEvaluation,
+  buildPerSymbolLogisticFeatureChallengerEvaluation,
   reconcileFinalTestEconomicEdge,
   simulateLongCashReplay,
 } from "@mms/strategy-simulator";
@@ -356,6 +358,97 @@ describe("Prediction & Retraining Result Contract V1", () => {
         kind: "economic_edge",
         reference: "MMS_0050_RAW_ADJUSTED_ECONOMIC_EDGE_RECONCILIATION_V1",
         sha256: reconciliation.normalizedResultSha256,
+      }),
+    ]));
+  });
+
+  it("forwards per-symbol logistic challenger evidence without enabling promotion", () => {
+    const challenger = kernelResult.perSymbolLogisticChallenger;
+    const economicEvidence = kernelResult.finalTestEconomicEvidence;
+    if (challenger === undefined || economicEvidence === undefined) {
+      throw new Error("per-symbol challenger evidence is missing");
+    }
+    const challengerResult = buildPerSymbolLogisticChallengerEvaluation({
+      challenger,
+      incumbentEvidence: kernelResult.evidence,
+      incumbentFinalTestEconomicEvidence: economicEvidence,
+      candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+      roundTripCostBps: 10,
+      initialCapital: 1_000,
+    });
+    const result = buildPredictionRetrainingResultV1(buildInput({
+      perSymbolLogisticChallenger: challengerResult,
+    }));
+
+    expect(result.perSymbolLogisticChallenger).toMatchObject({
+      availability: "available",
+      value: {
+        schemaVersion: "MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_V1",
+        candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+        groups: [expect.objectContaining({ symbol: "SYNTH" })],
+        promotionDecision: "do_not_promote",
+      },
+    });
+    expect(result.promotion.automaticPromotion).toBe(false);
+    expect(result.promotion.manualApprovalRequired).toBe(true);
+    expect(result.provenanceReferences).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        kind: "challenger",
+        reference: "MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_V1",
+        sha256: challengerResult.normalizedResultSha256,
+      }),
+    ]));
+  });
+
+  it("forwards the additive legacy feature challenger against its unchanged control", () => {
+    const control = kernelResult.perSymbolLogisticChallenger;
+    const challenger = kernelResult.perSymbolLogisticFeatureChallenger;
+    if (control === undefined || challenger === undefined) {
+      throw new Error("legacy feature challenger evidence is missing");
+    }
+    const resultValue = buildPerSymbolLogisticFeatureChallengerEvaluation({
+      control,
+      challenger,
+      candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+      roundTripCostBps: 10,
+      initialCapital: 1_000,
+    });
+    const result = buildPredictionRetrainingResultV1(buildInput({
+      perSymbolLogisticChallenger: resultValue,
+    }));
+
+    expect(result.perSymbolLogisticChallenger).toMatchObject({
+      availability: "available",
+      value: {
+        comparisonBaseline: "PER_SYMBOL_CONTROL",
+        controlFeatureNames: [
+          "return_5d",
+          "return_20d",
+          "volatility_10d",
+          "volume_ratio_20d",
+          "drawdown_20d",
+        ],
+        featureNames: [
+          "return_5d",
+          "return_20d",
+          "volatility_10d",
+          "volume_ratio_20d",
+          "drawdown_20d",
+          "breakout_20d_high",
+        ],
+        featureFamily: {
+          featureFamilyName: "legacy_breakout_20d_high",
+          newFeatureFields: ["breakout_20d_high"],
+        },
+        promotionDecision: "do_not_promote",
+      },
+    });
+    expect(result.promotion.automaticPromotion).toBe(false);
+    expect(result.provenanceReferences).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        kind: "challenger",
+        reference: "MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_V1",
+        sha256: resultValue.normalizedResultSha256,
       }),
     ]));
   });

@@ -1,6 +1,11 @@
 export type BinaryTarget = 0 | 1;
 
-export type FeatureVector = readonly [number, number, number, number, number];
+/**
+ * Numeric feature vectors are variable-width so diagnostic challengers can
+ * add a frozen feature family without changing the incumbent five-field
+ * contract.
+ */
+export type FeatureVector = readonly number[];
 
 export interface MarketDataRow {
   readonly symbol: string;
@@ -112,14 +117,38 @@ export interface LogisticRegressionConfig {
   readonly l2: number;
 }
 
+export interface TrainingClassWeights {
+  readonly sourcePartition: "TRAINING";
+  readonly trainingRowCount: number;
+  readonly trainingUpRows: number;
+  readonly trainingDownRows: number;
+  readonly weightUp: number;
+  readonly weightDown: number;
+}
+
+export type TrainingClassWeightComputation =
+  | {
+    readonly status: "available";
+    readonly weights: TrainingClassWeights;
+  }
+  | {
+    readonly status: "unavailable";
+    readonly reason: string;
+    readonly sourcePartition: "TRAINING";
+    readonly trainingRowCount: number;
+    readonly trainingUpRows: number;
+    readonly trainingDownRows: number;
+  };
+
 export interface LogisticRegressionFit {
   readonly fitPartition: "TRAINING";
-  readonly weights: readonly [number, number, number, number, number, number];
+  readonly weights: readonly number[];
   readonly fitRowCount: number;
   readonly fitRowIdentitySha256: string;
   readonly initialRegularizedLoss: number;
   readonly finalRegularizedLoss: number;
   readonly config: LogisticRegressionConfig;
+  readonly classWeights?: TrainingClassWeights;
   readonly stateSha256: string;
 }
 
@@ -173,6 +202,89 @@ export interface FinalTestEconomicEvidence {
   readonly frozenThreshold: number;
   readonly finalTestRowCount: number;
   readonly rows: readonly FinalTestEconomicReplayRow[];
+}
+
+export interface PerSymbolLogisticChallengerFitEvidence {
+  readonly fitPartition: "TRAINING";
+  readonly trainingRowsSha256: string;
+  readonly scalerFitRowCount: number;
+  readonly modelFitRowCount: number;
+  readonly scalerStateSha256: string;
+  readonly modelStateSha256: string;
+  readonly iterations: number;
+  readonly learningRate: number;
+  readonly l2: number;
+  readonly initialRegularizedLoss: number;
+  readonly finalRegularizedLoss: number;
+  readonly classBalancing?: {
+    readonly mode: "training_inverse_frequency";
+    readonly sourcePartition: "TRAINING";
+    readonly trainingUpRows: number;
+    readonly trainingDownRows: number;
+    readonly weightUp: number;
+    readonly weightDown: number;
+  };
+}
+
+export interface PerSymbolLogisticChallengerFeatureFamily {
+  readonly featureFamilyName: string;
+  readonly legacySourcePath: string;
+  readonly legacySourceSymbolOrFormula: string;
+  readonly newFeatureFields: readonly string[];
+  readonly currentIncumbentFeatureFields: readonly string[];
+  readonly whyNotDuplicative: string;
+  readonly lookbackRowsRequired: number;
+  readonly availableAtRule: string;
+  readonly missingValueRule: string;
+}
+
+export interface PerSymbolLogisticChallengerSymbolEvidence {
+  readonly symbol: string;
+  readonly trainingRows: number;
+  readonly trainValidationPurgeRows: number;
+  readonly validationRows: number;
+  readonly validationFinalPurgeRows: number;
+  readonly finalTestRows: number;
+  readonly trainEndDate: string;
+  readonly validationStartDate: string;
+  readonly validationEndDate: string;
+  readonly finalTestStartDate: string;
+  readonly trainingRowsSha256: string;
+  readonly validationRowsSha256: string;
+  readonly finalTestRowsSha256: string;
+  readonly fit: PerSymbolLogisticChallengerFitEvidence;
+  readonly thresholdSelection: ThresholdSelectionEvidence;
+  readonly finalTest: FinalTestEvidence;
+  readonly finalTestEconomicEvidence: FinalTestEconomicEvidence;
+  readonly finalTestMetrics: EvaluationMetrics;
+  readonly majorityBaselineAccuracy: number;
+  readonly accuracyDelta: number;
+  readonly actualUpRate: number;
+  readonly predictedUpRate: number;
+  readonly meanProbabilityUp: number;
+  readonly warnings: readonly string[];
+}
+
+export interface PerSymbolLogisticChallengerEvidence {
+  readonly schemaVersion: "MMS_PER_SYMBOL_LOGISTIC_CHALLENGER_V1";
+  readonly researchMode: "diagnostic-only";
+  readonly modelAlgorithm: "binary_logistic_regression";
+  readonly featureNames: readonly string[];
+  readonly featureRowsSha256: string;
+  readonly featureFamily?: PerSymbolLogisticChallengerFeatureFamily;
+  readonly classBalancing?: "disabled" | "training_inverse_frequency";
+  readonly symbols: readonly string[];
+  readonly groups: readonly PerSymbolLogisticChallengerSymbolEvidence[];
+  readonly warnings: readonly string[];
+  readonly guardrails: {
+    readonly providesInvestmentAdvice: false;
+    readonly supportsOrderExecution: false;
+    readonly supportsAutomaticPromotion: false;
+    readonly supportsPortfolioOptimization: false;
+    readonly supportsMultiSymbolAllocation: false;
+    readonly supportsSymbolSelection: false;
+  };
+  readonly normalizedResultSha256: string;
 }
 
 export interface SymbolReliabilityWarningFlags {
@@ -360,6 +472,10 @@ export interface ResearchEvidenceKernelResult {
   readonly finalTestReliability?: FinalTestReliabilityProfile;
   /** Additive replay inputs; never included in MMS_RESEARCH_EVIDENCE_V1 hashing. */
   readonly finalTestEconomicEvidence?: FinalTestEconomicEvidence;
+  /** Additive per-symbol challenger evidence; never included in incumbent hashing. */
+  readonly perSymbolLogisticChallenger?: PerSymbolLogisticChallengerEvidence;
+  /** Additive legacy-feature challenger evidence; never included in incumbent hashing. */
+  readonly perSymbolLogisticFeatureChallenger?: PerSymbolLogisticChallengerEvidence;
 }
 
 export class ResearchEvidenceKernelError extends Error {
