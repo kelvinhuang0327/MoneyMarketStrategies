@@ -1,0 +1,92 @@
+{
+  "schemaVersion": "MMS_0056_TWSE_T86_INSTITUTIONAL_FLOWS_MANIFEST_V1",
+  "officialSourceIdentity": "TWSE_T86_DAILY_INSTITUTIONAL_REPORT",
+  "targetSymbol": "0056",
+  "requiredDateInterval": {
+    "start": "2020-01-02",
+    "end": "2026-08-11"
+  },
+  "observedDateInterval": {
+    "firstTradeDate": "2020-01-02",
+    "lastTradeDate": "2026-08-11"
+  },
+  "rowCount": 1604,
+  "fieldDefinitions": {
+    "symbol": "Target security ticker symbol (0056)",
+    "tradeDate": "Official TWSE trade date in ISO YYYY-MM-DD format",
+    "foreignBuyShares": "Total foreign & mainland China investor buy volume in shares (including foreign dealers)",
+    "foreignSellShares": "Total foreign & mainland China investor sell volume in shares (including foreign dealers)",
+    "foreignNetShares": "Total foreign & mainland China investor net volume in shares (foreignBuyShares - foreignSellShares)",
+    "investmentTrustBuyShares": "Investment trust (local mutual funds) buy volume in shares",
+    "investmentTrustSellShares": "Investment trust (local mutual funds) sell volume in shares",
+    "investmentTrustNetShares": "Investment trust net volume in shares (investmentTrustBuyShares - investmentTrustSellShares)",
+    "dealerSelfBuyShares": "Dealer proprietary trading buy volume in shares (excluding hedging)",
+    "dealerSelfSellShares": "Dealer proprietary trading sell volume in shares (excluding hedging)",
+    "dealerSelfNetShares": "Dealer proprietary trading net volume in shares (dealerSelfBuyShares - dealerSelfSellShares)",
+    "dealerHedgeBuyShares": "Dealer hedging buy volume in shares",
+    "dealerHedgeSellShares": "Dealer hedging sell volume in shares",
+    "dealerHedgeNetShares": "Dealer hedging net volume in shares (dealerHedgeBuyShares - dealerHedgeSellShares)",
+    "institutionalTotalNetShares": "Combined net volume across foreign, investment trust, and all dealer accounts (foreignNetShares + investmentTrustNetShares + dealerSelfNetShares + dealerHedgeNetShares)",
+    "sourceIdentity": "Official provenance identifier (TWSE_T86_DAILY_INSTITUTIONAL_REPORT)",
+    "sourceRetrievedAt": "ISO UTC timestamp when the official record was retrieved (provenance metadata only)"
+  },
+  "strictPitRule": "tradeDate < featureDate",
+  "acquisitionTimestampProvenanceOnly": "2026-08-18T06:50:00.000Z",
+  "csvSha256": "de7ba543ded92141b8971bf752a4b4ff36a11732bf7769399f8faa16bd7480f1",
+  "dataQualityMetrics": {
+    "requestedTradingDates": 1604,
+    "successfulOfficialReportDates": 1604,
+    "symbolRowsFound": 1604,
+    "missingTradingDates": 0,
+    "duplicateDates": 0,
+    "malformedNumericRows": 0,
+    "chronologicalOrdering": "PASS",
+    "nullCounts": {
+      "symbol": 0,
+      "tradeDate": 0,
+      "foreignBuyShares": 0,
+      "foreignSellShares": 0,
+      "foreignNetShares": 0,
+      "investmentTrustBuyShares": 0,
+      "investmentTrustSellShares": 0,
+      "investmentTrustNetShares": 0,
+      "dealerSelfBuyShares": 0,
+      "dealerSelfSellShares": 0,
+      "dealerSelfNetShares": 0,
+      "dealerHedgeBuyShares": 0,
+      "dealerHedgeSellShares": 0,
+      "dealerHedgeNetShares": 0,
+      "institutionalTotalNetShares": 0,
+      "sourceIdentity": 0,
+      "sourceRetrievedAt": 0
+    }
+  },
+  "temporalContextCoverage": {
+    "2025-09-30": {
+      "priorTradingDaysAvailable": 1396,
+      "minimumRequired": 20,
+      "passed": true,
+      "latestPriorTradeDate": "2025-09-26"
+    },
+    "2025-12-31": {
+      "priorTradingDaysAvailable": 1458,
+      "minimumRequired": 20,
+      "passed": true,
+      "latestPriorTradeDate": "2025-12-30"
+    },
+    "2026-03-31": {
+      "priorTradingDaysAvailable": 1513,
+      "minimumRequired": 20,
+      "passed": true,
+      "latestPriorTradeDate": "2026-03-30"
+    },
+    "2026-07-01": {
+      "priorTradingDaysAvailable": 1575,
+      "minimumRequired": 20,
+      "passed": true,
+      "latestPriorTradeDate": "2026-06-30"
+    }
+  },
+  "revisionSemantics": "TWSE T86 statistics are based on the day's original transaction activity and are not recomputed using later broker error-account / account-correction adjustments.",
+  "qualificationClassification": "MMS_0056_T86_PIT_SOURCE_QUALIFIED"
+}

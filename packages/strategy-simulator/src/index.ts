@@ -86,6 +86,24 @@ export {
 export {
   runPerSymbolMarketRegimeLogisticChallengerTemporal,
 } from "./perSymbolMarketRegimeLogisticChallengerTemporal.js";
+export {
+  runPerSymbolT86InstitutionalFlowLogisticChallengerTemporal,
+} from "./perSymbolT86InstitutionalFlowLogisticChallengerTemporal.js";
+export type {
+  T86Decision,
+  T86InstitutionalFlowComparisonSummaryVsControl,
+  T86InstitutionalFlowControlReproduction,
+  T86InstitutionalFlowCutoffContextSummary,
+  T86InstitutionalFlowDeltasVsControl,
+  T86InstitutionalFlowSideMetrics,
+  T86InstitutionalFlowTemporalCutoffResult,
+  T86InstitutionalFlowTemporalGuardrails,
+  T86InstitutionalFlowTemporalInput,
+  T86InstitutionalFlowTemporalResult,
+  T86InstitutionalFlowTemporalSource,
+  T86InstitutionalFlowTemporalSummary,
+  T86NextRoute,
+} from "./perSymbolT86InstitutionalFlowLogisticChallengerTemporal.js";
 export type {
   MarketRegimeAnswer,
   MarketRegimeComparisonSummaryVsControl,

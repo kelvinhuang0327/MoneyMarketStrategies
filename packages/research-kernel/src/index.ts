@@ -22,6 +22,8 @@ export * from "./researchEvidenceKernel.js";
 export * from "./returnHurdleTarget.js";
 export * from "./scaler.js";
 export * from "./twseAdjustedOhlcvQualification.js";
+export * from "./twseT86InstitutionalFlows.js";
+export * from "./twseT86InstitutionalFlowFeatureChallenger.js";
 export * from "./twStrategyResearchRunner.js";
 export * from "./twStrategyTemporalRobustness.js";
 export * from "./twStrategyTransactionCostSensitivity.js";
