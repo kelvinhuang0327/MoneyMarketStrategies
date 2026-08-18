@@ -83,6 +83,26 @@ export {
 export {
   runPerSymbolReturnHurdleLogisticChallengerTemporal,
 } from "./perSymbolReturnHurdleLogisticChallengerTemporal.js";
+export {
+  runPerSymbolDirectReturnLinearChallengerTemporal,
+} from "./perSymbolDirectReturnLinearChallengerTemporal.js";
+export type {
+  DirectReturnAnswer,
+  DirectReturnChallengerSideMetrics,
+  DirectReturnConclusion,
+  DirectReturnControlReproduction,
+  DirectReturnControlSideMetrics,
+  DirectReturnEconomicComparison,
+  DirectReturnEconomicTemporalSummary,
+  DirectReturnLinearTemporalCutoffResult,
+  DirectReturnLinearTemporalGuardrails,
+  DirectReturnLinearTemporalInput,
+  DirectReturnLinearTemporalResult,
+  DirectReturnLinearTemporalSource,
+  DirectReturnNextRoute,
+  DirectReturnRegressionMetrics,
+  DirectReturnTemporalSummary,
+} from "./perSymbolDirectReturnLinearChallengerTemporal.js";
 export type {
   ReturnHurdleAnswer,
   ReturnHurdleChallengerSideMetrics,

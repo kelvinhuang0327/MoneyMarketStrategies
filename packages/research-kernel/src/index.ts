@@ -14,6 +14,7 @@ export * from "./features.js";
 export * from "./gaussianNaiveBayes.js";
 export * from "./gaussianNaiveBayesChallenger.js";
 export * from "./legacyTechnicalFeatureChallenger.js";
+export * from "./linearRegression.js";
 export * from "./logisticRegression.js";
 export * from "./perSymbolLogisticChallenger.js";
 export * from "./researchEvidenceKernel.js";
