@@ -84,6 +84,25 @@ export {
   runPerSymbolReturnHurdleLogisticChallengerTemporal,
 } from "./perSymbolReturnHurdleLogisticChallengerTemporal.js";
 export {
+  runPerSymbolMarketRegimeLogisticChallengerTemporal,
+} from "./perSymbolMarketRegimeLogisticChallengerTemporal.js";
+export type {
+  MarketRegimeAnswer,
+  MarketRegimeComparisonSummaryVsControl,
+  MarketRegimeConclusion,
+  MarketRegimeControlReproduction,
+  MarketRegimeCutoffContextSummary,
+  MarketRegimeDeltasVsControl,
+  MarketRegimeNextRoute,
+  MarketRegimeSideMetrics,
+  MarketRegimeTemporalCutoffResult,
+  MarketRegimeTemporalGuardrails,
+  MarketRegimeTemporalInput,
+  MarketRegimeTemporalResult,
+  MarketRegimeTemporalSource,
+  MarketRegimeTemporalSummary,
+} from "./perSymbolMarketRegimeLogisticChallengerTemporal.js";
+export {
   runPerSymbolDirectReturnLinearChallengerTemporal,
 } from "./perSymbolDirectReturnLinearChallengerTemporal.js";
 export type {

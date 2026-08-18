@@ -16,6 +16,7 @@ export * from "./gaussianNaiveBayesChallenger.js";
 export * from "./legacyTechnicalFeatureChallenger.js";
 export * from "./linearRegression.js";
 export * from "./logisticRegression.js";
+export * from "./marketRegimeContextFeatureChallenger.js";
 export * from "./perSymbolLogisticChallenger.js";
 export * from "./researchEvidenceKernel.js";
 export * from "./returnHurdleTarget.js";

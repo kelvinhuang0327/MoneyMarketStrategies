@@ -1,4 +1,8 @@
 import assert from "node:assert/strict";
+import { execFileSync } from "node:child_process";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 import { test } from "node:test";
 
 import {
@@ -462,4 +466,41 @@ test("adapts one fresh research output into a deterministic Contract V1 result",
   );
   assert.equal(first.simulation.availability, "available");
   assert.equal(first.simulation.value.scenario, "0050_SOURCE_QUALIFIED_ADJUSTED");
+});
+
+test("runs market regime challenger via CLI and produces valid JSON artifact", () => {
+  const tempDir = mkdtempSync(path.join(tmpdir(), "mms-market-regime-test-"));
+  try {
+    const stdout = execFileSync(
+      process.execPath,
+      [
+        "scripts/runTwStrategyResearchStudy.mjs",
+        "--market-regime-challenger",
+        "--out-dir",
+        tempDir,
+      ],
+      {
+        cwd: "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies",
+        encoding: "utf8",
+        timeout: 120_000,
+      },
+    );
+
+    assert.equal(stdout.includes("CONTROL_REPRODUCTION=PASS"), true);
+    assert.equal(stdout.includes("PROMOTION_DECISION=do_not_promote"), true);
+    assert.equal(stdout.includes("MARKET_REGIME_CHALLENGER_CONCLUSION=NOT_SUPPORTED"), true);
+
+    const artifactPath = path.join(
+      tempDir,
+      "mms_0056_market_regime_context_challenger_temporal_v1.json",
+    );
+    const json = JSON.parse(readFileSync(artifactPath, "utf8"));
+    assert.equal(json.schemaVersion, "MMS_0056_MARKET_REGIME_CONTEXT_CHALLENGER_TEMPORAL_V1");
+    assert.equal(json.symbol, "0056");
+    assert.equal(json.cutoffRuns.length, 4);
+    assert.equal(json.controlReproduction.status, "PASS");
+    assert.equal(json.marketRegimeChallengerConclusion, "NOT_SUPPORTED");
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
 });
