@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import {
   buildPredictionRetrainingResultV1,
   readLatestPredictionsArtifact,
+  readPredictionRetrainingResultArtifact,
+  PredictionRetrainingResultContractError,
   type BuildPredictionRetrainingResultV1Input,
   type LegacyLatestPredictionArtifact,
 } from "./predictionRetrainingResult.js";
@@ -576,5 +578,320 @@ describe("Prediction & Retraining Result Contract V1", () => {
     expect(JSON.stringify(input)).toBe(before);
     expect(result).not.toBe(input);
     expect(result.guardrails.providesInvestmentRecommendation).toBe(false);
+  });
+});
+
+describe("readPredictionRetrainingResultArtifact", () => {
+  it("round-trips valid builder output from JSON string and parsed object", () => {
+    const original = buildPredictionRetrainingResultV1(buildInput({
+      currentUnresolvedPredictions: [{
+        scenario: "SYNTH_CURRENT",
+        symbol: "SYNTH",
+        featureDate: "2024-05-06",
+        probabilityUp: 0.61,
+        predictedDirection: "up",
+        operativeThreshold: 0.6,
+        position: "LONG",
+        targetDate: "2024-05-13",
+        predictionRole: "current_unresolved",
+        resolutionStatus: "unresolved",
+        predictionHorizon: { unit: "trading_rows", rows: 5 },
+      }],
+      currentPredictionUnavailable: [{
+        scenario: "MISSING_SCENARIO",
+        reason: "No eligible current feature row was available.",
+      }],
+    }));
+
+    const serialized = JSON.stringify(original);
+    const fromString = readPredictionRetrainingResultArtifact(serialized);
+    expect(fromString).toEqual(original);
+
+    const parsed = JSON.parse(serialized);
+    const fromObject = readPredictionRetrainingResultArtifact(parsed);
+    expect(fromObject).toEqual(original);
+  });
+
+  it("ensures deep freeze and defensive cloning from parsed object input", () => {
+    const original = buildPredictionRetrainingResultV1(buildInput());
+    const parsed = JSON.parse(JSON.stringify(original)) as Record<string, unknown>;
+
+    const result = readPredictionRetrainingResultArtifact(parsed);
+
+    expect(Object.isFrozen(result)).toBe(true);
+    expect(Object.isFrozen(result.partitions)).toBe(true);
+    expect(Object.isFrozen(result.promotion)).toBe(true);
+    expect(Object.isFrozen(result.guardrails)).toBe(true);
+    expect(Object.isFrozen(result.provenanceReferences)).toBe(true);
+
+    // Mutate caller input
+    parsed["runId"] = "TAMPERED_RUN_ID";
+    const partitions = parsed["partitions"] as Record<string, unknown>;
+    const purgeRowCounts = partitions["purgeRowCounts"] as Record<string, unknown>;
+    const trainValidation = purgeRowCounts["trainValidation"] as Record<string, unknown>;
+    trainValidation["value"] = 9999;
+    const guardrails = parsed["guardrails"] as Record<string, unknown>;
+    guardrails["providesInvestmentRecommendation"] = true;
+
+    expect(result.runId).toBe(original.runId);
+    expect(result.partitions.purgeRowCounts.trainValidation).toEqual(
+      original.partitions.purgeRowCounts.trainValidation,
+    );
+    expect(result.guardrails.providesInvestmentRecommendation).toBe(false);
+  });
+
+  it("fails closed with PredictionRetrainingResultContractError on malformed JSON string", () => {
+    expect(() => readPredictionRetrainingResultArtifact("{invalid json"))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact("{invalid json"))
+      .toThrow(/malformed JSON input/);
+  });
+
+  it("fails closed on non-object or invalid input types", () => {
+    expect(() => readPredictionRetrainingResultArtifact(null))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact(12345))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact([]))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact(true))
+      .toThrow(PredictionRetrainingResultContractError);
+  });
+
+  it("fails closed on schema version mismatch, missing, or blank", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput())));
+
+    expect(() => readPredictionRetrainingResultArtifact({ ...valid, schemaVersion: "INVALID_VERSION" }))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact({ ...valid, schemaVersion: "" }))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact({ ...valid, schemaVersion: undefined }))
+      .toThrow(PredictionRetrainingResultContractError);
+    expect(() => readPredictionRetrainingResultArtifact({ ...valid, schemaVersion: 123 }))
+      .toThrow(PredictionRetrainingResultContractError);
+  });
+
+  it("fails closed on guardrail tampering", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput())));
+
+    expect(() => readPredictionRetrainingResultArtifact({
+      ...valid,
+      guardrails: { ...valid.guardrails, providesInvestmentRecommendation: true },
+    })).toThrow(PredictionRetrainingResultContractError);
+
+    expect(() => readPredictionRetrainingResultArtifact({
+      ...valid,
+      guardrails: { ...valid.guardrails, supportsOrderExecution: true },
+    })).toThrow(PredictionRetrainingResultContractError);
+
+    expect(() => readPredictionRetrainingResultArtifact({
+      ...valid,
+      guardrails: { ...valid.guardrails, supportsAutomaticPromotion: true },
+    })).toThrow(PredictionRetrainingResultContractError);
+
+    expect(() => readPredictionRetrainingResultArtifact({
+      ...valid,
+      promotion: { ...valid.promotion, automaticPromotion: true },
+    })).toThrow(PredictionRetrainingResultContractError);
+
+    expect(() => readPredictionRetrainingResultArtifact({
+      ...valid,
+      promotion: { ...valid.promotion, manualApprovalRequired: false },
+    })).toThrow(PredictionRetrainingResultContractError);
+  });
+
+  it("fails closed on invalid promotion verdict", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput())));
+
+    for (const invalidVerdict of ["BUY", "SELL", "STRONG_BUY", "AUTO_PROMOTE", "EXECUTE", ""]) {
+      expect(() => readPredictionRetrainingResultArtifact({
+        ...valid,
+        promotion: { ...valid.promotion, verdict: invalidVerdict },
+      })).toThrow(PredictionRetrainingResultContractError);
+    }
+  });
+
+  it("fails closed on missing required load-bearing fields", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput())));
+
+    const requiredFields = [
+      "runId",
+      "generatedAt",
+      "dataAsOf",
+      "dataset",
+      "model",
+      "retraining",
+      "partitions",
+      "thresholdSelection",
+      "finalTestMetrics",
+      "baselineMetrics",
+      "finalTestReliability",
+      "finalTestEconomicEdge",
+      "perSymbolLogisticChallenger",
+      "latestPredictions",
+      "currentUnresolvedPredictions",
+      "currentPredictionUnavailable",
+      "simulation",
+      "promotion",
+      "warnings",
+      "unavailableFields",
+      "provenanceReferences",
+      "guardrails",
+    ] as const;
+
+    for (const field of requiredFields) {
+      const tampered = { ...valid };
+      delete (tampered as Record<string, unknown>)[field];
+      expect(() => readPredictionRetrainingResultArtifact(tampered))
+        .toThrow(PredictionRetrainingResultContractError);
+    }
+  });
+
+  it("fails closed on non-finite or out-of-domain numeric evidence", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput())));
+
+    // Non-finite numbers in metrics / simulation
+    const tamperedNaN = JSON.parse(JSON.stringify(valid));
+    tamperedNaN.finalTestMetrics.value.accuracy = Number.NaN;
+    expect(() => readPredictionRetrainingResultArtifact(tamperedNaN))
+      .toThrow(PredictionRetrainingResultContractError);
+
+    const tamperedInf = JSON.parse(JSON.stringify(valid));
+    tamperedInf.simulation.value.excessReturn = Number.POSITIVE_INFINITY;
+    expect(() => readPredictionRetrainingResultArtifact(tamperedInf))
+      .toThrow(PredictionRetrainingResultContractError);
+
+    // Probability out of [0, 1] range
+    const tamperedProbHigh = JSON.parse(JSON.stringify(valid));
+    tamperedProbHigh.thresholdSelection.value.selectedThreshold = 1.25;
+    expect(() => readPredictionRetrainingResultArtifact(tamperedProbHigh))
+      .toThrow(PredictionRetrainingResultContractError);
+
+    const tamperedProbLow = JSON.parse(JSON.stringify(valid));
+    tamperedProbLow.thresholdSelection.value.selectedThreshold = -0.05;
+    expect(() => readPredictionRetrainingResultArtifact(tamperedProbLow))
+      .toThrow(PredictionRetrainingResultContractError);
+  });
+
+  it("preserves deterministic output across repeated reads", () => {
+    const valid = buildPredictionRetrainingResultV1(buildInput());
+    const serialized = JSON.stringify(valid);
+
+    const first = readPredictionRetrainingResultArtifact(serialized);
+    const second = readPredictionRetrainingResultArtifact(serialized);
+
+    expect(JSON.stringify(first)).toBe(JSON.stringify(second));
+    expect(first).toEqual(second);
+  });
+
+  it("round-trips rich research artifacts with all optional evidence components", () => {
+    const reliability = kernelResult.finalTestReliability;
+    if (reliability === undefined) throw new Error("kernel reliability fixture is missing");
+    const economicEvidence = kernelResult.finalTestEconomicEvidence;
+    if (economicEvidence === undefined) throw new Error("kernel economic evidence is missing");
+
+    const economicEdge = buildFinalTestPerSymbolEconomicEdge({
+      finalTestEvidence: economicEvidence,
+      roundTripCostBps: 10,
+      initialCapital: 1_000,
+    });
+
+    const reconciliationEvidence = {
+      ...economicEvidence,
+      rows: economicEvidence.rows.map((row) => ({ ...row, symbol: "0050" })),
+    };
+    const reconciliation = reconcileFinalTestEconomicEdge({
+      raw: {
+        scenario: "0050_RAW",
+        sourceDataQualityClassification: "RAW_UNADJUSTED_PRICE_PATH",
+        sourceEvidenceReference: "test-owned/raw",
+        finalTestEvidence: reconciliationEvidence,
+        dataQualityFindings: [],
+        corporateActionWarnings: [],
+      },
+      adjusted: {
+        scenario: "0050_SOURCE_QUALIFIED_ADJUSTED",
+        sourceDataQualityClassification: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+        sourceEvidenceReference: "test-owned/adjusted",
+        finalTestEvidence: reconciliationEvidence,
+        dataQualityFindings: [],
+        corporateActionWarnings: [],
+      },
+      roundTripCostBps: 10,
+      initialCapital: 1_000,
+    });
+
+    const challenger = kernelResult.perSymbolLogisticChallenger;
+    if (challenger === undefined) throw new Error("challenger fixture is missing");
+    const challengerResult = buildPerSymbolLogisticChallengerEvaluation({
+      challenger,
+      incumbentEvidence: kernelResult.evidence,
+      incumbentFinalTestEconomicEvidence: economicEvidence,
+      candidateDataQualityBasis: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
+      roundTripCostBps: 10,
+      initialCapital: 1_000,
+    });
+
+    const rich = buildPredictionRetrainingResultV1(buildInput({
+      finalTestReliability: reliability,
+      finalTestEconomicEdge: economicEdge,
+      finalTestEconomicReconciliation: reconciliation,
+      perSymbolLogisticChallenger: challengerResult,
+    }));
+
+    const serialized = JSON.stringify(rich);
+    const read = readPredictionRetrainingResultArtifact(serialized);
+    expect(read).toEqual(rich);
+  });
+
+  it("fails closed when unresolved prediction in reader input contains future outcome", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput({
+      currentUnresolvedPredictions: [{
+        scenario: "SYNTH_CURRENT",
+        symbol: "SYNTH",
+        featureDate: "2024-05-06",
+        probabilityUp: 0.61,
+        predictedDirection: "up",
+        operativeThreshold: 0.6,
+        position: "LONG",
+        targetDate: "2024-05-13",
+        predictionRole: "current_unresolved",
+        resolutionStatus: "unresolved",
+        predictionHorizon: { unit: "trading_rows", rows: 5 },
+      }],
+    })))) as Record<string, unknown>;
+
+    const currentUnresolved = valid["currentUnresolvedPredictions"] as Record<string, unknown>;
+    const value = currentUnresolved["value"] as unknown[];
+    const firstPred = value[0] as Record<string, unknown>;
+    firstPred["actualDirection"] = { availability: "available", value: "up" };
+
+    expect(() => readPredictionRetrainingResultArtifact(valid))
+      .toThrow(/unresolved predictions must not contain actualDirection/);
+  });
+
+  it("fails closed when partition chronological order is inverted", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput()))) as Record<string, unknown>;
+    const partitions = valid["partitions"] as Record<string, unknown>;
+    const training = partitions["training"] as Record<string, unknown>;
+    const validation = partitions["validation"] as Record<string, unknown>;
+    const trainEndDate = training["endDate"] as Record<string, unknown>;
+    const valStartDate = validation["startDate"] as Record<string, unknown>;
+
+    // Invert: trainEndDate >= valStartDate
+    trainEndDate["value"] = "2025-01-01";
+    valStartDate["value"] = "2024-01-01";
+
+    expect(() => readPredictionRetrainingResultArtifact(valid))
+      .toThrow(/training endDate must precede validation startDate/);
+  });
+
+  it("fails closed when ResultContractField has invalid availability", () => {
+    const valid = JSON.parse(JSON.stringify(buildPredictionRetrainingResultV1(buildInput()))) as Record<string, unknown>;
+    const dataAsOf = valid["dataAsOf"] as Record<string, unknown>;
+    dataAsOf["availability"] = "maybe";
+
+    expect(() => readPredictionRetrainingResultArtifact(valid))
+      .toThrow(/dataAsOf\.availability must be 'available' or 'unavailable'/);
   });
 });

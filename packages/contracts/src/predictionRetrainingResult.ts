@@ -1,8 +1,9 @@
-import type {
-  EvaluationMetrics,
-  ExperimentRunEvidence,
-  PromotionDecision,
-  PromotionStatus,
+import {
+  PROMOTION_STATUSES,
+  type EvaluationMetrics,
+  type ExperimentRunEvidence,
+  type PromotionDecision,
+  type PromotionStatus,
 } from "./researchEvidence.js";
 
 export const PREDICTION_RETRAINING_RESULT_SCHEMA_VERSION =
@@ -2022,6 +2023,797 @@ export function buildPredictionRetrainingResultV1(
     unavailableFields: normalizeUnavailableFields(unavailableFields),
     provenanceReferences: normalizeProvenanceReferences(provenanceReferences),
     guardrails: PREDICTION_RETRAINING_RESULT_GUARDRAILS,
+  };
+
+  return deepFreezeClone(result);
+}
+
+function assertObject(name: string, value: unknown): Record<string, unknown> {
+  if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    fail(`${name} must be a non-null object`);
+  }
+  return value as Record<string, unknown>;
+}
+
+function assertArray(name: string, value: unknown): unknown[] {
+  if (!Array.isArray(value)) {
+    fail(`${name} must be an array`);
+  }
+  return value;
+}
+
+function assertString(name: string, value: unknown): string {
+  if (typeof value !== "string") {
+    fail(`${name} must be a string`);
+  }
+  assertNonBlank(name, value);
+  return value;
+}
+
+function assertNumber(name: string, value: unknown): number {
+  if (typeof value !== "number") {
+    fail(`${name} must be a number`);
+  }
+  assertFinite(name, value);
+  return value;
+}
+
+function assertInteger(name: string, value: unknown, min = 0): number {
+  const num = assertNumber(name, value);
+  if (!Number.isInteger(num) || num < min) {
+    fail(`${name} must be an integer >= ${min}`);
+  }
+  return num;
+}
+
+function assertProbabilityValue(name: string, value: unknown): number {
+  const num = assertNumber(name, value);
+  assertProbability(name, num);
+  return num;
+}
+
+function validateResultContractField<T>(
+  raw: unknown,
+  path: string,
+  validator: (val: unknown, p: string) => T,
+): ResultContractField<T> {
+  const obj = assertObject(path, raw);
+  const availability = obj["availability"];
+  if (availability === "available") {
+    if (!("value" in obj)) {
+      fail(`${path} is available but missing value`);
+    }
+    return { availability: "available", value: validator(obj["value"], `${path}.value`) };
+  }
+  if (availability === "unavailable") {
+    const reason = assertString(`${path}.reason`, obj["reason"]);
+    return { availability: "unavailable", reason };
+  }
+  fail(`${path}.availability must be 'available' or 'unavailable'`);
+}
+
+function validateDatasetIdentity(
+  raw: unknown,
+  path = "dataset",
+): ResultContractDatasetIdentity {
+  const obj = assertObject(path, raw);
+  return {
+    datasetId: assertString(`${path}.datasetId`, obj["datasetId"]),
+    version: assertString(`${path}.version`, obj["version"]),
+    source: assertString(`${path}.source`, obj["source"]),
+    datasetSha256: assertString(`${path}.datasetSha256`, obj["datasetSha256"]),
+    featureRowsSha256: assertString(`${path}.featureRowsSha256`, obj["featureRowsSha256"]),
+  };
+}
+
+function validateModelProvenance(
+  raw: unknown,
+  path = "model",
+): ResultContractModelProvenance {
+  const obj = assertObject(path, raw);
+  return {
+    researchVersion: validateResultContractField(
+      obj["researchVersion"],
+      `${path}.researchVersion`,
+      (v, p) => assertString(p, v),
+    ),
+    modelVersion: validateResultContractField(
+      obj["modelVersion"],
+      `${path}.modelVersion`,
+      (v, p) => assertString(p, v),
+    ),
+    algorithm: validateResultContractField(
+      obj["algorithm"],
+      `${path}.algorithm`,
+      (v, p) => assertString(p, v),
+    ),
+    fitPartition: validateResultContractField(
+      obj["fitPartition"],
+      `${path}.fitPartition`,
+      (v, p) => {
+        if (v !== "TRAINING") fail(`${p} must be 'TRAINING'`);
+        return "TRAINING" as const;
+      },
+    ),
+    trainingRowsSha256: validateResultContractField(
+      obj["trainingRowsSha256"],
+      `${path}.trainingRowsSha256`,
+      (v, p) => assertString(p, v),
+    ),
+  };
+}
+
+function validateRetrainingProvenance(
+  raw: unknown,
+  path = "retraining",
+): ResultContractRetrainingProvenance {
+  const obj = assertObject(path, raw);
+  const runId = assertString(`${path}.runId`, obj["runId"]);
+  if (obj["executed"] !== true) {
+    fail(`${path}.executed must be true`);
+  }
+  if (obj["fitPartition"] !== "TRAINING") {
+    fail(`${path}.fitPartition must be 'TRAINING'`);
+  }
+  const trainingRowCount = assertInteger(`${path}.trainingRowCount`, obj["trainingRowCount"], 0);
+  const trainingRowsSha256 = assertString(`${path}.trainingRowsSha256`, obj["trainingRowsSha256"]);
+  const modelStateSha256 = validateResultContractField(
+    obj["modelStateSha256"],
+    `${path}.modelStateSha256`,
+    (v, p) => assertString(p, v),
+  );
+
+  return {
+    runId,
+    executed: true,
+    fitPartition: "TRAINING",
+    trainingRowCount,
+    trainingRowsSha256,
+    modelStateSha256,
+  };
+}
+
+function validatePartitionEvidence(
+  raw: unknown,
+  path: string,
+): ResultContractPartitionEvidence {
+  const obj = assertObject(path, raw);
+  return {
+    startDate: validateResultContractField(obj["startDate"], `${path}.startDate`, (v, p) => assertString(p, v)),
+    endDate: validateResultContractField(obj["endDate"], `${path}.endDate`, (v, p) => assertString(p, v)),
+    rowCount: validateResultContractField(obj["rowCount"], `${path}.rowCount`, (v, p) => assertInteger(p, v, 0)),
+    rowsSha256: validateResultContractField(obj["rowsSha256"], `${path}.rowsSha256`, (v, p) => assertString(p, v)),
+  };
+}
+
+function validatePartitionBoundaries(
+  raw: unknown,
+  path = "partitions",
+): ResultContractPartitionBoundaries {
+  const obj = assertObject(path, raw);
+  const training = validatePartitionEvidence(obj["training"], `${path}.training`);
+  const validation = validatePartitionEvidence(obj["validation"], `${path}.validation`);
+  const finalTest = validatePartitionEvidence(obj["finalTest"], `${path}.finalTest`);
+
+  if (
+    training.endDate.availability === "available"
+    && validation.startDate.availability === "available"
+    && training.endDate.value >= validation.startDate.value
+  ) {
+    fail(`${path}.training endDate must precede validation startDate`);
+  }
+  if (
+    validation.endDate.availability === "available"
+    && finalTest.startDate.availability === "available"
+    && validation.endDate.value >= finalTest.startDate.value
+  ) {
+    fail(`${path}.validation endDate must precede finalTest startDate`);
+  }
+
+  const purgeObj = assertObject(`${path}.purgeRowCounts`, obj["purgeRowCounts"]);
+  return {
+    training,
+    validation,
+    finalTest,
+    purgeRowCounts: {
+      trainValidation: validateResultContractField(
+        purgeObj["trainValidation"],
+        `${path}.purgeRowCounts.trainValidation`,
+        (v, p) => assertInteger(p, v, 0),
+      ),
+      validationFinal: validateResultContractField(
+        purgeObj["validationFinal"],
+        `${path}.purgeRowCounts.validationFinal`,
+        (v, p) => assertInteger(p, v, 0),
+      ),
+    },
+  };
+}
+
+function validateThresholdSelection(
+  raw: unknown,
+  path = "thresholdSelection",
+): ResultContractThresholdSelection {
+  const obj = assertObject(path, raw);
+  const selectedThreshold = assertProbabilityValue(`${path}.selectedThreshold`, obj["selectedThreshold"]);
+  if (obj["selectionSource"] !== "VALIDATION") {
+    fail(`${path}.selectionSource must be 'VALIDATION'`);
+  }
+  const selectionRowsSha256 = assertString(`${path}.selectionRowsSha256`, obj["selectionRowsSha256"]);
+  const candidateThresholds = assertArray(`${path}.candidateThresholds`, obj["candidateThresholds"]).map((c, i) =>
+    assertProbabilityValue(`${path}.candidateThresholds[${i}]`, c),
+  );
+  const tieBreakRule = assertArray(`${path}.tieBreakRule`, obj["tieBreakRule"]).map((t, i) =>
+    assertString(`${path}.tieBreakRule[${i}]`, t),
+  );
+
+  return {
+    selectedThreshold,
+    selectionSource: "VALIDATION",
+    selectionRowsSha256,
+    candidateThresholds: [...candidateThresholds].sort((a, b) => a - b),
+    tieBreakRule,
+  };
+}
+
+function validateEvaluationMetrics(raw: unknown, path: string): EvaluationMetrics {
+  const obj = assertObject(path, raw);
+  const sampleCount = assertInteger(`${path}.sampleCount`, obj["sampleCount"], 0);
+  const positiveCount = assertInteger(`${path}.positiveCount`, obj["positiveCount"], 0);
+  const negativeCount = assertInteger(`${path}.negativeCount`, obj["negativeCount"], 0);
+  const predictedPositiveCount = assertInteger(`${path}.predictedPositiveCount`, obj["predictedPositiveCount"], 0);
+  const predictedNegativeCount = assertInteger(`${path}.predictedNegativeCount`, obj["predictedNegativeCount"], 0);
+  const accuracy = assertNumber(`${path}.accuracy`, obj["accuracy"]);
+  const balancedAccuracy = assertNumber(`${path}.balancedAccuracy`, obj["balancedAccuracy"]);
+  const majorityBaseline = assertNumber(`${path}.majorityBaseline`, obj["majorityBaseline"]);
+  const precision = assertNumber(`${path}.precision`, obj["precision"]);
+  const recall = assertNumber(`${path}.recall`, obj["recall"]);
+  const specificity = assertNumber(`${path}.specificity`, obj["specificity"]);
+  const brierScore = assertNumber(`${path}.brierScore`, obj["brierScore"]);
+  const logLoss = assertNumber(`${path}.logLoss`, obj["logLoss"]);
+
+  const cmObj = assertObject(`${path}.confusionMatrix`, obj["confusionMatrix"]);
+  const truePositive = assertInteger(`${path}.confusionMatrix.truePositive`, cmObj["truePositive"], 0);
+  const trueNegative = assertInteger(`${path}.confusionMatrix.trueNegative`, cmObj["trueNegative"], 0);
+  const falsePositive = assertInteger(`${path}.confusionMatrix.falsePositive`, cmObj["falsePositive"], 0);
+  const falseNegative = assertInteger(`${path}.confusionMatrix.falseNegative`, cmObj["falseNegative"], 0);
+
+  return {
+    sampleCount,
+    positiveCount,
+    negativeCount,
+    predictedPositiveCount,
+    predictedNegativeCount,
+    accuracy,
+    balancedAccuracy,
+    majorityBaseline,
+    precision,
+    recall,
+    specificity,
+    brierScore,
+    logLoss,
+    confusionMatrix: {
+      truePositive,
+      trueNegative,
+      falsePositive,
+      falseNegative,
+    },
+  };
+}
+
+function validateBaselineMetrics(
+  raw: unknown,
+  path = "baselineMetrics",
+): ResultContractBaselineMetrics {
+  const obj = assertObject(path, raw);
+  if (obj["metricName"] !== "FINAL_TEST_MAJORITY_CLASS_ACCURACY") {
+    fail(`${path}.metricName must be 'FINAL_TEST_MAJORITY_CLASS_ACCURACY'`);
+  }
+  const majorityClassAccuracy = assertProbabilityValue(
+    `${path}.majorityClassAccuracy`,
+    obj["majorityClassAccuracy"],
+  );
+  return {
+    metricName: "FINAL_TEST_MAJORITY_CLASS_ACCURACY",
+    majorityClassAccuracy,
+  };
+}
+
+function validateSimulationSummary(raw: unknown, path: string): ResultContractSimulationSummary {
+  const obj = assertObject(path, raw);
+  const sourceSchemaVersion = assertString(`${path}.sourceSchemaVersion`, obj["sourceSchemaVersion"]);
+  let scenario: string | undefined;
+  if (obj["scenario"] !== undefined) {
+    scenario = assertString(`${path}.scenario`, obj["scenario"]);
+  }
+  const symbol = assertString(`${path}.symbol`, obj["symbol"]);
+  const evaluatedThreshold = assertNumber(`${path}.evaluatedThreshold`, obj["evaluatedThreshold"]);
+  const roundTripCostBps = assertNumber(`${path}.roundTripCostBps`, obj["roundTripCostBps"]);
+  const initialCapital = assertNumber(`${path}.initialCapital`, obj["initialCapital"]);
+  const strategy = normalizeSimulationPath(
+    `${path}.strategy`,
+    assertObject(`${path}.strategy`, obj["strategy"]) as unknown as ResultContractSimulationPathSummary,
+  );
+  const benchmark = normalizeSimulationPath(
+    `${path}.benchmark`,
+    assertObject(`${path}.benchmark`, obj["benchmark"]) as unknown as ResultContractSimulationPathSummary,
+  );
+  const excessReturn = assertNumber(`${path}.excessReturn`, obj["excessReturn"]);
+  const sourceResultSha256 = validateResultContractField(
+    obj["sourceResultSha256"],
+    `${path}.sourceResultSha256`,
+    (v, p) => assertString(p, v),
+  );
+
+  return {
+    sourceSchemaVersion,
+    ...(scenario === undefined ? {} : { scenario }),
+    symbol,
+    evaluatedThreshold,
+    roundTripCostBps,
+    initialCapital,
+    strategy,
+    benchmark,
+    excessReturn,
+    sourceResultSha256,
+  };
+}
+
+function validatePromotion(raw: unknown, path = "promotion"): ResultContractPromotion {
+  const obj = assertObject(path, raw);
+  const verdict = obj["verdict"];
+  if (verdict !== "do_not_promote" && verdict !== "research_only") {
+    fail(`${path}.verdict must be 'do_not_promote' or 'research_only'`);
+  }
+
+  let upstreamStatus: PromotionStatus | null = null;
+  if (obj["upstreamStatus"] !== null) {
+    const status = assertString(`${path}.upstreamStatus`, obj["upstreamStatus"]);
+    if (!PROMOTION_STATUSES.includes(status as PromotionStatus)) {
+      fail(`${path}.upstreamStatus is unsupported`);
+    }
+    upstreamStatus = status as PromotionStatus;
+  }
+
+  if (obj["automaticPromotion"] !== false) {
+    fail(`${path}.automaticPromotion must be false`);
+  }
+  if (obj["manualApprovalRequired"] !== true) {
+    fail(`${path}.manualApprovalRequired must be true`);
+  }
+
+  const reasons = assertArray(`${path}.reasons`, obj["reasons"]).map((r, i) =>
+    assertString(`${path}.reasons[${i}]`, r),
+  );
+
+  return {
+    verdict,
+    upstreamStatus,
+    automaticPromotion: false,
+    manualApprovalRequired: true,
+    reasons: normalizeMessages(reasons),
+  };
+}
+
+function validateGuardrails(
+  raw: unknown,
+  path = "guardrails",
+): typeof PREDICTION_RETRAINING_RESULT_GUARDRAILS {
+  const obj = assertObject(path, raw);
+  if (obj["providesInvestmentRecommendation"] !== false) {
+    fail(`${path}.providesInvestmentRecommendation must be false`);
+  }
+  if (obj["supportsOrderExecution"] !== false) {
+    fail(`${path}.supportsOrderExecution must be false`);
+  }
+  if (obj["supportsAutomaticPromotion"] !== false) {
+    fail(`${path}.supportsAutomaticPromotion must be false`);
+  }
+  return PREDICTION_RETRAINING_RESULT_GUARDRAILS;
+}
+
+function validateResultContractPrediction(
+  raw: unknown,
+  path: string,
+  requiredRole?: ResultContractPredictionRole,
+): ResultContractLatestPrediction {
+  const obj = assertObject(path, raw);
+  let scenario: string | undefined;
+  if (obj["scenario"] !== undefined) {
+    scenario = assertString(`${path}.scenario`, obj["scenario"]);
+  }
+  const symbol = assertString(`${path}.symbol`, obj["symbol"]);
+  const featureDate = assertString(`${path}.featureDate`, obj["featureDate"]);
+  const probabilityUp = assertProbabilityValue(`${path}.probabilityUp`, obj["probabilityUp"]);
+  if (obj["predictedDirection"] !== "up" && obj["predictedDirection"] !== "down") {
+    fail(`${path}.predictedDirection must be 'up' or 'down'`);
+  }
+  const predictedDirection = obj["predictedDirection"];
+
+  const operativeThreshold = validateResultContractField(
+    obj["operativeThreshold"],
+    `${path}.operativeThreshold`,
+    (v, p) => assertProbabilityValue(p, v),
+  );
+
+  let position: "LONG" | "CASH" | undefined;
+  if (obj["position"] !== undefined) {
+    if (obj["position"] !== "LONG" && obj["position"] !== "CASH") {
+      fail(`${path}.position must be 'LONG' or 'CASH'`);
+    }
+    position = obj["position"];
+  }
+
+  const targetDate = validateResultContractField(
+    obj["targetDate"],
+    `${path}.targetDate`,
+    (v, p) => assertString(p, v),
+  );
+
+  const close = validateResultContractField(
+    obj["close"],
+    `${path}.close`,
+    (v, p) => assertNumber(p, v),
+  );
+
+  const role = obj["predictionRole"];
+  if (role !== "resolved_historical" && role !== "current_unresolved") {
+    fail(`${path}.predictionRole is invalid`);
+  }
+  if (requiredRole !== undefined && role !== requiredRole) {
+    fail(`${path}.predictionRole must be ${requiredRole}`);
+  }
+
+  const resolutionStatus = obj["resolutionStatus"];
+  if (resolutionStatus !== "resolved" && resolutionStatus !== "unresolved") {
+    fail(`${path}.resolutionStatus is invalid`);
+  }
+
+  if (
+    (role === "current_unresolved" && resolutionStatus !== "unresolved")
+    || (role === "resolved_historical" && resolutionStatus !== "resolved")
+  ) {
+    fail(`${path} prediction role and resolution status are inconsistent`);
+  }
+
+  const predictionHorizon = validateResultContractField(
+    obj["predictionHorizon"],
+    `${path}.predictionHorizon`,
+    (v, p) => {
+      const hObj = assertObject(p, v);
+      if (hObj["unit"] !== "trading_rows") fail(`${p}.unit must be trading_rows`);
+      const rows = assertInteger(`${p}.rows`, hObj["rows"], 1);
+      return { unit: "trading_rows" as const, rows };
+    },
+  );
+
+  const actualDirection = validateResultContractField(
+    obj["actualDirection"],
+    `${path}.actualDirection`,
+    (v, p) => {
+      if (v !== "up" && v !== "down") fail(`${p} must be 'up' or 'down'`);
+      return v;
+    },
+  );
+
+  const realizedReturn = validateResultContractField(
+    obj["realizedReturn"],
+    `${path}.realizedReturn`,
+    (v, p) => assertNumber(p, v),
+  );
+
+  if (resolutionStatus === "unresolved") {
+    if (actualDirection.availability !== "unavailable") {
+      fail(`${path} unresolved predictions must not contain actualDirection`);
+    }
+    if (realizedReturn.availability !== "unavailable") {
+      fail(`${path} unresolved predictions must not contain realizedReturn`);
+    }
+  }
+
+  return {
+    ...(scenario === undefined ? {} : { scenario }),
+    symbol,
+    featureDate,
+    probabilityUp,
+    predictedDirection,
+    operativeThreshold,
+    ...(position === undefined ? {} : { position }),
+    targetDate,
+    close,
+    predictionRole: role,
+    resolutionStatus,
+    predictionHorizon,
+    actualDirection,
+    realizedReturn,
+  };
+}
+
+function validateUnavailableFieldsList(
+  raw: unknown,
+  path = "unavailableFields",
+): readonly ResultContractUnavailableField[] {
+  const arr = assertArray(path, raw);
+  const fields = arr.map((item, index) => {
+    const obj = assertObject(`${path}[${index}]`, item);
+    return {
+      path: assertString(`${path}[${index}].path`, obj["path"]),
+      reason: assertString(`${path}[${index}].reason`, obj["reason"]),
+    };
+  });
+  return normalizeUnavailableFields(fields);
+}
+
+function validateProvenanceReferencesList(
+  raw: unknown,
+  path = "provenanceReferences",
+): readonly ResultContractProvenanceReference[] {
+  const arr = assertArray(path, raw);
+  const validKinds = new Set([
+    "dataset",
+    "latest_predictions",
+    "current_predictions",
+    "research_evidence",
+    "retraining",
+    "simulation",
+    "economic_edge",
+    "challenger",
+  ]);
+  const refs = arr.map((item, index) => {
+    const obj = assertObject(`${path}[${index}]`, item);
+    const kind = assertString(`${path}[${index}].kind`, obj["kind"]);
+    if (!validKinds.has(kind)) {
+      fail(`${path}[${index}].kind is invalid`);
+    }
+    const reference = assertString(`${path}[${index}].reference`, obj["reference"]);
+    let sha256: string | undefined;
+    if (obj["sha256"] !== undefined) {
+      sha256 = assertString(`${path}[${index}].sha256`, obj["sha256"]);
+    }
+    return {
+      kind: kind as ResultContractProvenanceReference["kind"],
+      reference,
+      ...(sha256 === undefined ? {} : { sha256 }),
+    };
+  });
+  return normalizeProvenanceReferences(refs);
+}
+
+function validatePredictionUnavailableList(
+  raw: unknown,
+  path = "currentPredictionUnavailable",
+): readonly ResultContractPredictionUnavailable[] {
+  const arr = assertArray(path, raw);
+  const entries = arr.map((item, index) => {
+    const obj = assertObject(`${path}[${index}]`, item);
+    return {
+      scenario: assertString(`${path}[${index}].scenario`, obj["scenario"]),
+      reason: assertString(`${path}[${index}].reason`, obj["reason"]),
+    };
+  });
+  const dummyUnavailable: ResultContractUnavailableField[] = [];
+  return normalizePredictionUnavailable(entries, dummyUnavailable);
+}
+
+export function readPredictionRetrainingResultArtifact(
+  input: string | unknown,
+): PredictionRetrainingResultV1 {
+  let parsed: unknown;
+  if (typeof input === "string") {
+    try {
+      parsed = JSON.parse(input);
+    } catch (error) {
+      fail(`malformed JSON input: ${(error as Error).message}`);
+    }
+  } else {
+    parsed = input;
+  }
+
+  const root = assertObject("PredictionRetrainingResult artifact", parsed);
+
+  if (root["schemaVersion"] !== PREDICTION_RETRAINING_RESULT_SCHEMA_VERSION) {
+    fail(`schemaVersion must be ${PREDICTION_RETRAINING_RESULT_SCHEMA_VERSION}`);
+  }
+
+  const runId = assertString("runId", root["runId"]);
+  const generatedAt = assertString("generatedAt", root["generatedAt"]);
+
+  const dataAsOf = validateResultContractField(
+    root["dataAsOf"],
+    "dataAsOf",
+    (v, p) => assertString(p, v),
+  );
+
+  const dataset = validateResultContractField(
+    root["dataset"],
+    "dataset",
+    (v, p) => validateDatasetIdentity(v, p),
+  );
+
+  const model = validateModelProvenance(root["model"], "model");
+
+  const retraining = validateResultContractField(
+    root["retraining"],
+    "retraining",
+    (v, p) => validateRetrainingProvenance(v, p),
+  );
+
+  const partitions = validatePartitionBoundaries(root["partitions"], "partitions");
+
+  const thresholdSelection = validateResultContractField(
+    root["thresholdSelection"],
+    "thresholdSelection",
+    (v, p) => validateThresholdSelection(v, p),
+  );
+
+  const finalTestMetrics = validateResultContractField(
+    root["finalTestMetrics"],
+    "finalTestMetrics",
+    (v, p) => validateEvaluationMetrics(v, p),
+  );
+
+  const baselineMetrics = validateResultContractField(
+    root["baselineMetrics"],
+    "baselineMetrics",
+    (v, p) => validateBaselineMetrics(v, p),
+  );
+
+  const finalTestReliability = validateResultContractField(
+    root["finalTestReliability"],
+    "finalTestReliability",
+    (v) => normalizeFinalTestReliability(v as ResultContractFinalTestReliability),
+  );
+
+  const finalTestEconomicEdge = validateResultContractField(
+    root["finalTestEconomicEdge"],
+    "finalTestEconomicEdge",
+    (v) => normalizeFinalTestEconomicEdge(v as ResultContractFinalTestEconomicEdge),
+  );
+
+  const perSymbolLogisticChallenger = validateResultContractField(
+    root["perSymbolLogisticChallenger"],
+    "perSymbolLogisticChallenger",
+    (v) => normalizePerSymbolLogisticChallenger(v as ResultContractPerSymbolLogisticChallenger),
+  );
+
+  let finalTestEconomicReconciliation: ResultContractFinalTestEconomicReconciliation | undefined;
+  if (root["finalTestEconomicReconciliation"] !== undefined) {
+    finalTestEconomicReconciliation = normalizeFinalTestEconomicReconciliation(
+      root["finalTestEconomicReconciliation"] as ResultContractFinalTestEconomicReconciliation,
+    );
+  }
+
+  const latestPredictions = validateResultContractField(
+    root["latestPredictions"],
+    "latestPredictions",
+    (v, p) => {
+      const arr = assertArray(p, v);
+      return arr
+        .map((item, index) => validateResultContractPrediction(item, `${p}[${index}]`))
+        .sort((left, right) => comparePredictions(
+          {
+            ...(left.scenario === undefined ? {} : { scenario: left.scenario }),
+            symbol: left.symbol,
+            featureDate: left.featureDate,
+            probabilityUp: left.probabilityUp,
+            predictedDirection: left.predictedDirection,
+            ...(left.operativeThreshold.availability === "available"
+              ? { operativeThreshold: left.operativeThreshold.value }
+              : {}),
+            ...(left.position === undefined ? {} : { position: left.position }),
+            ...(left.targetDate.availability === "available"
+              ? { targetDate: left.targetDate.value }
+              : {}),
+          },
+          {
+            ...(right.scenario === undefined ? {} : { scenario: right.scenario }),
+            symbol: right.symbol,
+            featureDate: right.featureDate,
+            probabilityUp: right.probabilityUp,
+            predictedDirection: right.predictedDirection,
+            ...(right.operativeThreshold.availability === "available"
+              ? { operativeThreshold: right.operativeThreshold.value }
+              : {}),
+            ...(right.position === undefined ? {} : { position: right.position }),
+            ...(right.targetDate.availability === "available"
+              ? { targetDate: right.targetDate.value }
+              : {}),
+          },
+        ));
+    },
+  );
+
+  const currentUnresolvedPredictions = validateResultContractField(
+    root["currentUnresolvedPredictions"],
+    "currentUnresolvedPredictions",
+    (v, p) => {
+      const arr = assertArray(p, v);
+      return arr
+        .map((item, index) => validateResultContractPrediction(item, `${p}[${index}]`, "current_unresolved"))
+        .sort((left, right) => comparePredictions(
+          {
+            ...(left.scenario === undefined ? {} : { scenario: left.scenario }),
+            symbol: left.symbol,
+            featureDate: left.featureDate,
+            probabilityUp: left.probabilityUp,
+            predictedDirection: left.predictedDirection,
+            ...(left.operativeThreshold.availability === "available"
+              ? { operativeThreshold: left.operativeThreshold.value }
+              : {}),
+            ...(left.position === undefined ? {} : { position: left.position }),
+            ...(left.targetDate.availability === "available"
+              ? { targetDate: left.targetDate.value }
+              : {}),
+          },
+          {
+            ...(right.scenario === undefined ? {} : { scenario: right.scenario }),
+            symbol: right.symbol,
+            featureDate: right.featureDate,
+            probabilityUp: right.probabilityUp,
+            predictedDirection: right.predictedDirection,
+            ...(right.operativeThreshold.availability === "available"
+              ? { operativeThreshold: right.operativeThreshold.value }
+              : {}),
+            ...(right.position === undefined ? {} : { position: right.position }),
+            ...(right.targetDate.availability === "available"
+              ? { targetDate: right.targetDate.value }
+              : {}),
+          },
+        ));
+    },
+  );
+
+  const currentPredictionUnavailable = validatePredictionUnavailableList(
+    root["currentPredictionUnavailable"],
+    "currentPredictionUnavailable",
+  );
+
+  const simulation = validateResultContractField(
+    root["simulation"],
+    "simulation",
+    (v, p) => validateSimulationSummary(v, p),
+  );
+
+  const promotion = validatePromotion(root["promotion"], "promotion");
+
+  const warnings = normalizeMessages(
+    assertArray("warnings", root["warnings"]).map((w, i) => assertString(`warnings[${i}]`, w)),
+  );
+
+  const unavailableFields = validateUnavailableFieldsList(root["unavailableFields"], "unavailableFields");
+
+  const provenanceReferences = validateProvenanceReferencesList(
+    root["provenanceReferences"],
+    "provenanceReferences",
+  );
+
+  const guardrails = validateGuardrails(root["guardrails"], "guardrails");
+
+  const result: PredictionRetrainingResultV1 = {
+    schemaVersion: PREDICTION_RETRAINING_RESULT_SCHEMA_VERSION,
+    runId,
+    generatedAt,
+    dataAsOf,
+    dataset,
+    model,
+    retraining,
+    partitions,
+    thresholdSelection,
+    finalTestMetrics,
+    baselineMetrics,
+    finalTestReliability,
+    finalTestEconomicEdge,
+    perSymbolLogisticChallenger,
+    ...(finalTestEconomicReconciliation === undefined ? {} : { finalTestEconomicReconciliation }),
+    latestPredictions,
+    currentUnresolvedPredictions,
+    currentPredictionUnavailable,
+    simulation,
+    promotion,
+    warnings,
+    unavailableFields,
+    provenanceReferences,
+    guardrails,
   };
 
   return deepFreezeClone(result);
