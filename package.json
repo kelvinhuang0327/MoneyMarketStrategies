@@ -15,7 +15,8 @@
     "lint": "eslint packages vitest.config.ts",
     "test": "vitest run",
     "verify": "npm run lint && npm run build && npm run typecheck && npm test",
-    "research:tw": "node scripts/runTwStrategyResearchStudy.mjs"
+    "research:tw": "node scripts/runTwStrategyResearchStudy.mjs",
+    "inspect:prediction-result": "node scripts/inspectPredictionRetrainingResult.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.1",
