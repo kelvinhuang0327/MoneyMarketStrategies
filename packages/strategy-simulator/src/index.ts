@@ -89,6 +89,9 @@ export {
 export {
   runPerSymbolT86InstitutionalFlowLogisticChallengerTemporal,
 } from "./perSymbolT86InstitutionalFlowLogisticChallengerTemporal.js";
+export {
+  runPerSymbolMiMargnMarginShortLogisticChallengerTemporal,
+} from "./perSymbolMiMargnMarginShortLogisticChallengerTemporal.js";
 export type {
   T86Decision,
   T86InstitutionalFlowComparisonSummaryVsControl,
@@ -104,6 +107,21 @@ export type {
   T86InstitutionalFlowTemporalSummary,
   T86NextRoute,
 } from "./perSymbolT86InstitutionalFlowLogisticChallengerTemporal.js";
+export type {
+  MiMargnDecision,
+  MiMargnMarginShortComparisonSummaryVsControl,
+  MiMargnMarginShortControlReproduction,
+  MiMargnMarginShortCutoffContextSummary,
+  MiMargnMarginShortDeltasVsControl,
+  MiMargnMarginShortSideMetrics,
+  MiMargnMarginShortTemporalCutoffResult,
+  MiMargnMarginShortTemporalGuardrails,
+  MiMargnMarginShortTemporalInput,
+  MiMargnMarginShortTemporalResult,
+  MiMargnMarginShortTemporalSource,
+  MiMargnMarginShortTemporalSummary,
+  MiMargnNextRoute,
+} from "./perSymbolMiMargnMarginShortLogisticChallengerTemporal.js";
 export type {
   MarketRegimeAnswer,
   MarketRegimeComparisonSummaryVsControl,
