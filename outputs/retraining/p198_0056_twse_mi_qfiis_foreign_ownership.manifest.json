@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "MMS_0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_MANIFEST_V1",
+  "sourceIdentity": "TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT",
+  "officialSourceIdentity": "TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT",
+  "sourceOwner": "Taiwan Stock Exchange Corporation",
+  "sourceFamily": "MI_QFIIS",
+  "officialQueryPage": "https://www.twse.com.tw/en/trading/foreign/mi-qfiis.html",
+  "officialEndpointTemplate": "https://www.twse.com.tw/rwd/zh/fund/MI_QFIIS?date=YYYYMMDD&selectType=ALLBUT0999&response=json",
+  "symbol": "0056",
+  "requestedStartDate": "2020-01-02",
+  "requestedEndDate": "2026-08-11",
+  "earliestObservedDate": "2020-01-02",
+  "latestObservedDate": "2026-08-11",
+  "rowCount": 1618,
+  "sourceRetrievedAt": "2026-08-20T13:54:35.121Z",
+  "acquisitionTimestampProvenanceOnly": "2026-08-20T13:54:35.121Z",
+  "csvSha256": "04d30647e0685868c4f13613d938c5e73b337fdaa4506afc3798e705be7d08a5",
+  "pitRule": "tradeDate < featureDate",
+  "strictPitRule": "tradeDate < featureDate",
+  "sameDayEligibility": false,
+  "exactHistoricalPublicationMinuteUsed": false,
+  "fieldDefinitions": {
+    "tradeDate": "Official TWSE MI_QFIIS report / trading date in ISO YYYY-MM-DD format",
+    "symbol": "Target security ticker symbol (0056)",
+    "securityName": "Official security short name from the MI_QFIIS 證券名稱 column",
+    "issuedShares": "Official total issued shares (發行股數) for 0056 as published (source unit: 股 / shares)",
+    "foreignHeldShares": "Official total foreign and mainland investor held shares (全體外資及陸資持有股數) for 0056 as published (source unit: 股 / shares)",
+    "foreignHoldingRatio": "Official total foreign and mainland investor shareholding ratio (全體外資及陸資持股比率) for 0056 as published (source unit: 百分比 / percentage points 0.0 - 100.0%)",
+    "foreignRemainingInvestableShares": "Official foreign and mainland investor remaining investable shares (外資及陸資尚可投資股數) for 0056 as published (source unit: 股 / shares)",
+    "foreignRemainingInvestableRatio": "Official foreign and mainland investor remaining investable ratio (外資及陸資尚可投資比率) for 0056 as published (source unit: 百分比 / percentage points 0.0 - 100.0%)",
+    "statutoryInvestmentLimitRatio": "Official foreign and mainland investor statutory investment limit ratio (外資及陸資共用法令投資上限比率) for 0056 as published (source unit: 百分比 / percentage points 0.0 - 100.0%)",
+    "sourceIdentity": "Official provenance identifier (TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT)",
+    "sourceRetrievedAt": "ISO UTC timestamp when this qualification run retrieved the official record (provenance only; not historicalAvailableAt, publicationTimestamp, or featureEligibilityTimestamp)"
+  },
+  "duplicateTradeDateCount": 0,
+  "malformedRowCount": 0,
+  "missing0056ObservationCount": 0,
+  "dataQualityMetrics": {
+    "requestedDateRange": {
+      "start": "2020-01-02",
+      "end": "2026-08-11"
+    },
+    "successfulOfficialResponses": 1618,
+    "nonTradingNoDataDates": 106,
+    "normalized0056Rows": 1618,
+    "earliestObservedDate": "2020-01-02",
+    "latestObservedDate": "2026-08-11",
+    "duplicateTradeDates": 0,
+    "malformedRows": 0,
+    "missing0056RowsOnDataDates": 0,
+    "chronologicalOrdering": "PASS"
+  },
+  "cutoffCoverage": [
+    {
+      "cutoff": "2025-09-30",
+      "priorEligibleObservationCount": 1408,
+      "latestPriorTradeDate": "2025-09-26"
+    },
+    {
+      "cutoff": "2025-12-31",
+      "priorEligibleObservationCount": 1470,
+      "latestPriorTradeDate": "2025-12-30"
+    },
+    {
+      "cutoff": "2026-03-31",
+      "priorEligibleObservationCount": 1527,
+      "latestPriorTradeDate": "2026-03-30"
+    },
+    {
+      "cutoff": "2026-07-01",
+      "priorEligibleObservationCount": 1589,
+      "latestPriorTradeDate": "2026-06-30"
+    }
+  ],
+  "ratioUnitSemantics": "Official ratio fields (foreignHoldingRatio, foreignRemainingInvestableRatio, statutoryInvestmentLimitRatio) represent percentage points (0.0 to 100.0%) as published in TWSE tables.",
+  "revisionSemantics": "V1 uses official current-day foreign & mainland investor shareholding statistics. Same-day eligibility is forbidden. sourceRetrievedAt is retrieval provenance only and is not a historical publication timestamp. Exact historical publication minutes are not used.",
+  "qualificationClassification": "MMS_0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_QUALIFIED"
+}

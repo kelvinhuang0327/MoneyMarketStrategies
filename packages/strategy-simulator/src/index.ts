@@ -92,6 +92,9 @@ export {
 export {
   runPerSymbolMiMargnMarginShortLogisticChallengerTemporal,
 } from "./perSymbolMiMargnMarginShortLogisticChallengerTemporal.js";
+export {
+  runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal,
+} from "./perSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal.js";
 export type {
   T86Decision,
   T86InstitutionalFlowComparisonSummaryVsControl,
@@ -122,6 +125,21 @@ export type {
   MiMargnMarginShortTemporalSummary,
   MiMargnNextRoute,
 } from "./perSymbolMiMargnMarginShortLogisticChallengerTemporal.js";
+export type {
+  MiQfiisDecision,
+  MiQfiisForeignOwnershipComparisonSummaryVsControl,
+  MiQfiisForeignOwnershipControlReproduction,
+  MiQfiisForeignOwnershipCutoffContextSummary,
+  MiQfiisForeignOwnershipDeltasVsControl,
+  MiQfiisForeignOwnershipSideMetrics,
+  MiQfiisForeignOwnershipTemporalCutoffResult,
+  MiQfiisForeignOwnershipTemporalGuardrails,
+  MiQfiisForeignOwnershipTemporalInput,
+  MiQfiisForeignOwnershipTemporalResult,
+  MiQfiisForeignOwnershipTemporalSource,
+  MiQfiisForeignOwnershipTemporalSummary,
+  MiQfiisNextRoute,
+} from "./perSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal.js";
 export type {
   MarketRegimeAnswer,
   MarketRegimeComparisonSummaryVsControl,

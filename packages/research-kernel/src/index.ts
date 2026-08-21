@@ -26,6 +26,8 @@ export * from "./twseT86InstitutionalFlows.js";
 export * from "./twseT86InstitutionalFlowFeatureChallenger.js";
 export * from "./twseMiMargnMarginShortBalances.js";
 export * from "./twseMiMargnMarginShortFeatureChallenger.js";
+export * from "./twseMiQfiisForeignOwnership.js";
+export * from "./twseMiQfiisForeignOwnershipFeatureChallenger.js";
 export * from "./twStrategyResearchRunner.js";
 export * from "./twStrategyTemporalRobustness.js";
 export * from "./twStrategyTransactionCostSensitivity.js";
