@@ -1,0 +1,202 @@
+{
+  "schemaVersion": "MMS_0050_2317_2330_2454_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_MANIFEST_V1",
+  "sourceIdentity": "TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT",
+  "officialSourceIdentity": "TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT",
+  "sourceOwner": "Taiwan Stock Exchange Corporation",
+  "sourceFamily": "MI_QFIIS",
+  "officialQueryPage": "https://www.twse.com.tw/en/trading/foreign/mi-qfiis.html",
+  "officialEndpointTemplate": "https://www.twse.com.tw/rwd/zh/fund/MI_QFIIS?date=YYYYMMDD&selectType=ALLBUT0999&response=json",
+  "symbols": [
+    "0050",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "requestedStartDate": "2020-01-02",
+  "requestedEndDate": "2026-08-11",
+  "earliestObservedDate": "2020-01-02",
+  "latestObservedDate": "2026-08-11",
+  "totalRowCount": 6472,
+  "sourceRetrievedAt": "2026-08-21T09:59:05.591Z",
+  "acquisitionTimestampProvenanceOnly": "2026-08-21T09:59:05.591Z",
+  "csvSha256": "fa827bd325df16ee6eeda0c5b94b01663a595bbc2812fd4c89f84ef3b4892693",
+  "pitRule": "tradeDate < featureDate",
+  "strictPitRule": "tradeDate < featureDate",
+  "sameDayEligibility": false,
+  "exactHistoricalPublicationMinuteUsed": false,
+  "fieldDefinitions": {
+    "tradeDate": "Official TWSE MI_QFIIS report / trading date in ISO YYYY-MM-DD format",
+    "symbol": "Target security ticker symbol (0050, 0056, 2317, 2330, 2454)",
+    "securityName": "Official security short name from the MI_QFIIS 證券名稱 column",
+    "issuedShares": "Official total issued shares (發行股數) as published (source unit: 股 / shares)",
+    "foreignHeldShares": "Official total foreign and mainland investor held shares (全體外資及陸資持有股數) as published (source unit: 股 / shares)",
+    "foreignHoldingRatio": "Official total foreign and mainland investor shareholding ratio (全體外資及陸資持股比率) as published (source unit: 百分比 / percentage points 0.0 - 100.0%)",
+    "foreignRemainingInvestableShares": "Official foreign and mainland investor remaining investable shares (外資及陸資尚可投資股數) as published (source unit: 股 / shares)",
+    "foreignRemainingInvestableRatio": "Official foreign and mainland investor remaining investable ratio (外資及陸資尚可投資比率) as published (source unit: 百分比 / percentage points 0.0 - 100.0%)",
+    "statutoryInvestmentLimitRatio": "Official foreign and mainland investor statutory investment limit ratio (外資及陸資共用法令投資上限比率) as published (source unit: 百分比 / percentage points 0.0 - 100.0%)",
+    "sourceIdentity": "Official provenance identifier (TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT)",
+    "sourceRetrievedAt": "ISO UTC timestamp when this qualification run retrieved the official record (provenance only; not historicalAvailableAt, publicationTimestamp, or featureEligibilityTimestamp)"
+  },
+  "duplicateKeyCount": 0,
+  "malformedRowCount": 0,
+  "perSymbolQualifications": [
+    {
+      "symbol": "0050",
+      "securityName": "元大台灣50",
+      "earliestObservedDate": "2020-01-02",
+      "latestObservedDate": "2026-08-11",
+      "rowCount": 1618,
+      "malformedRowCount": 0,
+      "duplicateKeyCount": 0,
+      "missingSymbolObservationCount": 0,
+      "pitRule": "tradeDate < featureDate",
+      "cutoffCoverage": [
+        {
+          "cutoff": "2025-09-30",
+          "priorEligibleObservationCount": 1408,
+          "latestPriorTradeDate": "2025-09-26"
+        },
+        {
+          "cutoff": "2025-12-31",
+          "priorEligibleObservationCount": 1470,
+          "latestPriorTradeDate": "2025-12-30"
+        },
+        {
+          "cutoff": "2026-03-31",
+          "priorEligibleObservationCount": 1527,
+          "latestPriorTradeDate": "2026-03-30"
+        },
+        {
+          "cutoff": "2026-07-01",
+          "priorEligibleObservationCount": 1589,
+          "latestPriorTradeDate": "2026-06-30"
+        }
+      ],
+      "qualificationClassification": "MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_QUALIFIED"
+    },
+    {
+      "symbol": "2317",
+      "securityName": "鴻海",
+      "earliestObservedDate": "2020-01-02",
+      "latestObservedDate": "2026-08-11",
+      "rowCount": 1618,
+      "malformedRowCount": 0,
+      "duplicateKeyCount": 0,
+      "missingSymbolObservationCount": 0,
+      "pitRule": "tradeDate < featureDate",
+      "cutoffCoverage": [
+        {
+          "cutoff": "2025-09-30",
+          "priorEligibleObservationCount": 1408,
+          "latestPriorTradeDate": "2025-09-26"
+        },
+        {
+          "cutoff": "2025-12-31",
+          "priorEligibleObservationCount": 1470,
+          "latestPriorTradeDate": "2025-12-30"
+        },
+        {
+          "cutoff": "2026-03-31",
+          "priorEligibleObservationCount": 1527,
+          "latestPriorTradeDate": "2026-03-30"
+        },
+        {
+          "cutoff": "2026-07-01",
+          "priorEligibleObservationCount": 1589,
+          "latestPriorTradeDate": "2026-06-30"
+        }
+      ],
+      "qualificationClassification": "MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_QUALIFIED"
+    },
+    {
+      "symbol": "2330",
+      "securityName": "台積電",
+      "earliestObservedDate": "2020-01-02",
+      "latestObservedDate": "2026-08-11",
+      "rowCount": 1618,
+      "malformedRowCount": 0,
+      "duplicateKeyCount": 0,
+      "missingSymbolObservationCount": 0,
+      "pitRule": "tradeDate < featureDate",
+      "cutoffCoverage": [
+        {
+          "cutoff": "2025-09-30",
+          "priorEligibleObservationCount": 1408,
+          "latestPriorTradeDate": "2025-09-26"
+        },
+        {
+          "cutoff": "2025-12-31",
+          "priorEligibleObservationCount": 1470,
+          "latestPriorTradeDate": "2025-12-30"
+        },
+        {
+          "cutoff": "2026-03-31",
+          "priorEligibleObservationCount": 1527,
+          "latestPriorTradeDate": "2026-03-30"
+        },
+        {
+          "cutoff": "2026-07-01",
+          "priorEligibleObservationCount": 1589,
+          "latestPriorTradeDate": "2026-06-30"
+        }
+      ],
+      "qualificationClassification": "MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_QUALIFIED"
+    },
+    {
+      "symbol": "2454",
+      "securityName": "聯發科",
+      "earliestObservedDate": "2020-01-02",
+      "latestObservedDate": "2026-08-11",
+      "rowCount": 1618,
+      "malformedRowCount": 0,
+      "duplicateKeyCount": 0,
+      "missingSymbolObservationCount": 0,
+      "pitRule": "tradeDate < featureDate",
+      "cutoffCoverage": [
+        {
+          "cutoff": "2025-09-30",
+          "priorEligibleObservationCount": 1408,
+          "latestPriorTradeDate": "2025-09-26"
+        },
+        {
+          "cutoff": "2025-12-31",
+          "priorEligibleObservationCount": 1470,
+          "latestPriorTradeDate": "2025-12-30"
+        },
+        {
+          "cutoff": "2026-03-31",
+          "priorEligibleObservationCount": 1527,
+          "latestPriorTradeDate": "2026-03-30"
+        },
+        {
+          "cutoff": "2026-07-01",
+          "priorEligibleObservationCount": 1589,
+          "latestPriorTradeDate": "2026-06-30"
+        }
+      ],
+      "qualificationClassification": "MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_QUALIFIED"
+    }
+  ],
+  "dataQualityMetrics": {
+    "requestedDateRange": {
+      "start": "2020-01-02",
+      "end": "2026-08-11"
+    },
+    "successfulOfficialResponses": 1618,
+    "nonTradingNoDataDates": 106,
+    "totalNormalizedRows": 6472,
+    "duplicateKeys": 0,
+    "malformedRows": 0,
+    "chronologicalOrdering": "PASS",
+    "perSymbolRowCounts": {
+      "2317": 1618,
+      "2330": 1618,
+      "2454": 1618,
+      "0050": 1618
+    }
+  },
+  "ratioUnitSemantics": "Official ratio fields (foreignHoldingRatio, foreignRemainingInvestableRatio, statutoryInvestmentLimitRatio) represent percentage points (0.0 to 100.0%) as published in TWSE tables.",
+  "revisionSemantics": "V1 uses official current-day foreign & mainland investor shareholding statistics. Same-day eligibility is forbidden. sourceRetrievedAt is retrieval provenance only and is not a historical publication timestamp. Exact historical publication minutes are not used.",
+  "overallQualification": "PASS",
+  "qualificationClassification": "MMS_MULTI_SYMBOL_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_QUALIFIED"
+}

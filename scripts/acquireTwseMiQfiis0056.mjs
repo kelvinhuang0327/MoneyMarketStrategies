@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 /**
- * Bounded TWSE MI_QFIIS acquisition for 0056 only.
- * official dated JSON → normalize 0056 → deterministic CSV + manifest.
+ * Bounded TWSE MI_QFIIS acquisition for qualified symbols.
+ * Supports:
+ * - Multi-symbol p199: 0050, 2317, 2330, 2454 (default or --multi)
+ * - Single-symbol p198: 0056 (--symbol 0056 or --p198)
+ *
+ * Official dated JSON → local untracked raw cache → deterministic CSV + manifest.
  * Not a generic crawler, daemon, or scheduler.
  */
 import { createHash } from "node:crypto";
@@ -10,31 +14,42 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  buildTwseMiQfiisMultiSymbolSourceManifest,
   buildTwseMiQfiisSourceManifest,
   isTwseMiQfiisNoDataResponse,
   parseTwseMiQfiisDailyReport,
+  parseTwseMiQfiisDailyReportMultiSymbol,
   serializeTwseMiQfiisToCsv,
   TWSE_MI_QFIIS_ENDPOINT_TEMPLATE,
+  TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
   TWSE_MI_QFIIS_TARGET_SYMBOL,
   TwseMiQfiisQualificationError,
 } from "@mms/research-kernel";
 
 const START_DATE = "2020-01-02";
 const END_DATE = "2026-08-11";
-const PACE_MS = 4000;
+const PACE_MS = 3500;
 const BATCH_SIZE = 30;
-const BATCH_REST_MS = 35000;
+const BATCH_REST_MS = 25000;
 const MAX_RETRIES = 10;
 const WAF_COOLDOWN_MS = 1800000; // 30 minutes full quiet cooldown if WAF encountered
 const REQUEST_TIMEOUT_MS = 45000;
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const csvPath = path.join(repoRoot, "outputs/retraining/p198_0056_twse_mi_qfiis_foreign_ownership.csv");
-const manifestPath = path.join(
-  repoRoot,
-  "outputs/retraining/p198_0056_twse_mi_qfiis_foreign_ownership.manifest.json",
-);
-const checkpointPath = process.env.MMS_MI_QFIIS_CHECKPOINT ?? "";
+const rawCacheDir = path.join(repoRoot, "outputs/.rawcache/mi-qfiis");
+
+const args = process.argv.slice(2);
+const isP198Single = args.includes("--symbol") && args.includes("0056") || args.includes("--p198");
+
+const targetSymbols = isP198Single ? [TWSE_MI_QFIIS_TARGET_SYMBOL] : [...TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS];
+
+const csvPath = isP198Single
+  ? path.join(repoRoot, "outputs/retraining/p198_0056_twse_mi_qfiis_foreign_ownership.csv")
+  : path.join(repoRoot, "outputs/retraining/p199_0050_2317_2330_2454_twse_mi_qfiis_foreign_ownership.csv");
+
+const manifestPath = isP198Single
+  ? path.join(repoRoot, "outputs/retraining/p198_0056_twse_mi_qfiis_foreign_ownership.manifest.json")
+  : path.join(repoRoot, "outputs/retraining/p199_0050_2317_2330_2454_twse_mi_qfiis_foreign_ownership.manifest.json");
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -127,6 +142,8 @@ async function fetchWithRetry(url) {
 
 async function main() {
   const sourceRetrievedAt = new Date().toISOString();
+  mkdirSync(rawCacheDir, { recursive: true });
+
   const allDates = eachCalendarDate(START_DATE, END_DATE);
   const requestDates = allDates.filter((iso) => !isWeekend(iso));
 
@@ -134,56 +151,50 @@ async function main() {
   let successfulOfficialResponses = 0;
   let nonTradingNoDataDates = 0;
   let malformedRowCount = 0;
-  let missing0056ObservationCount = 0;
-  let duplicateTradeDateCount = 0;
-  let resumeAfter = "";
-  if (checkpointPath && existsSync(checkpointPath)) {
-    const checkpoint = JSON.parse(readFileSync(checkpointPath, "utf8"));
-    if (checkpoint.requestedStartDate === START_DATE && checkpoint.requestedEndDate === END_DATE) {
-      records = checkpoint.records;
-      successfulOfficialResponses = checkpoint.successfulOfficialResponses;
-      nonTradingNoDataDates = checkpoint.nonTradingNoDataDates;
-      resumeAfter = checkpoint.lastCompletedDate ?? "";
-    }
-  }
-
-  function writeCheckpoint(lastCompletedDate) {
-    if (!checkpointPath) return;
-    mkdirSync(path.dirname(checkpointPath), { recursive: true });
-    writeFileSync(
-      checkpointPath,
-      JSON.stringify({
-        requestedStartDate: START_DATE,
-        requestedEndDate: END_DATE,
-        lastCompletedDate,
-        records,
-        successfulOfficialResponses,
-        nonTradingNoDataDates,
-      }),
-    );
+  let duplicateKeyCount = 0;
+  const missingObservationsBySymbol = {};
+  for (const s of targetSymbols) {
+    missingObservationsBySymbol[s] = 0;
   }
 
   console.log(
     JSON.stringify({
       phase: "start",
+      mode: isP198Single ? "p198_single_0056" : "p199_multi_symbol",
       endpointTemplate: TWSE_MI_QFIIS_ENDPOINT_TEMPLATE,
-      symbol: TWSE_MI_QFIIS_TARGET_SYMBOL,
+      symbols: targetSymbols,
       requestedStartDate: START_DATE,
       requestedEndDate: END_DATE,
       weekdayRequestCount: requestDates.length,
-      resumingAfter: resumeAfter || "NONE",
+      rawCacheDir,
       paceMs: PACE_MS,
       batchSize: BATCH_SIZE,
       batchRestMs: BATCH_REST_MS,
     }),
   );
 
-  let batchCount = 0;
+  let networkRequestsCount = 0;
+  let cachedRequestsCount = 0;
+
   for (let i = 0; i < requestDates.length; i += 1) {
     const iso = requestDates[i];
-    if (resumeAfter && iso <= resumeAfter) continue;
-    const url = endpointFor(iso);
-    const body = await fetchWithRetry(url);
+    const yyyymmdd = isoToYyyymmdd(iso);
+    const cacheFilePath = path.join(rawCacheDir, `${yyyymmdd}.json`);
+
+    let body = "";
+    let fromCache = false;
+
+    if (existsSync(cacheFilePath)) {
+      body = readFileSync(cacheFilePath, "utf8");
+      fromCache = true;
+      cachedRequestsCount += 1;
+    } else {
+      const url = endpointFor(iso);
+      body = await fetchWithRetry(url);
+      writeFileSync(cacheFilePath, body, "utf8");
+      networkRequestsCount += 1;
+    }
+
     let payload;
     try {
       payload = JSON.parse(body);
@@ -199,20 +210,34 @@ async function main() {
       throw new Error(`TWSE_REPORT_NOT_OK:${iso}:${String(payload.stat)}`);
     } else {
       try {
-        const record = parseTwseMiQfiisDailyReport(payload, {
-          symbol: TWSE_MI_QFIIS_TARGET_SYMBOL,
-          sourceRetrievedAt,
-          expectedTradeDate: iso,
-        });
-        records.push(record);
-        successfulOfficialResponses += 1;
+        if (isP198Single) {
+          const record = parseTwseMiQfiisDailyReport(payload, {
+            symbol: TWSE_MI_QFIIS_TARGET_SYMBOL,
+            sourceRetrievedAt,
+            expectedTradeDate: iso,
+          });
+          records.push(record);
+          successfulOfficialResponses += 1;
+        } else {
+          const symRecords = parseTwseMiQfiisDailyReportMultiSymbol(payload, {
+            symbols: targetSymbols,
+            sourceRetrievedAt,
+            expectedTradeDate: iso,
+          });
+          records.push(...symRecords);
+          successfulOfficialResponses += 1;
+        }
       } catch (error) {
         if (error instanceof TwseMiQfiisQualificationError && error.code === "ABSENT_SYMBOL_ROW") {
-          missing0056ObservationCount += 1;
+          for (const s of targetSymbols) {
+            if (error.message.includes(s)) {
+              missingObservationsBySymbol[s] = (missingObservationsBySymbol[s] ?? 0) + 1;
+            }
+          }
           throw error;
         }
         if (error instanceof TwseMiQfiisQualificationError && error.code === "DUPLICATE_SYMBOL_ROWS") {
-          duplicateTradeDateCount += 1;
+          duplicateKeyCount += 1;
           throw error;
         }
         malformedRowCount += 1;
@@ -220,46 +245,86 @@ async function main() {
       }
     }
 
-    writeCheckpoint(iso);
-    batchCount += 1;
-
-    if (batchCount % BATCH_SIZE === 0) {
+    if (!fromCache) {
+      if (networkRequestsCount % BATCH_SIZE === 0) {
+        console.log(
+          JSON.stringify({
+            phase: "batch_rest",
+            completed: i + 1,
+            total: requestDates.length,
+            networkRequests: networkRequestsCount,
+            cachedRequests: cachedRequestsCount,
+            normalizedRows: records.length,
+            successfulOfficialResponses,
+            nonTradingNoDataDates,
+            restingMs: BATCH_REST_MS,
+          }),
+        );
+        await sleep(BATCH_REST_MS);
+      } else {
+        await sleep(PACE_MS);
+      }
+    } else if ((i + 1) % 200 === 0 || i + 1 === requestDates.length) {
       console.log(
         JSON.stringify({
-          phase: "batch_rest",
+          phase: "cache_replay_progress",
           completed: i + 1,
           total: requestDates.length,
-          normalized0056Rows: records.length,
+          cachedRequests: cachedRequestsCount,
+          networkRequests: networkRequestsCount,
+          normalizedRows: records.length,
+          successfulOfficialResponses,
           nonTradingNoDataDates,
-          restingMs: BATCH_REST_MS,
         }),
       );
-      await sleep(BATCH_REST_MS);
-    } else if (i + 1 < requestDates.length) {
-      await sleep(PACE_MS);
     }
   }
 
-  records.sort((left, right) => (left.tradeDate < right.tradeDate ? -1 : left.tradeDate > right.tradeDate ? 1 : 0));
+  // Deterministic sort: tradeDate ASC, then symbol ASC
+  records.sort((left, right) => {
+    if (left.tradeDate !== right.tradeDate) {
+      return left.tradeDate < right.tradeDate ? -1 : 1;
+    }
+    return left.symbol < right.symbol ? -1 : left.symbol > right.symbol ? 1 : 0;
+  });
+
   records = records.map((record) => ({ ...record, sourceRetrievedAt }));
   const csvText = serializeTwseMiQfiisToCsv(records);
   const csvSha256 = createHash("sha256").update(csvText, "utf8").digest("hex");
-  const manifest = buildTwseMiQfiisSourceManifest({
-    records,
-    requestedStartDate: START_DATE,
-    requestedEndDate: END_DATE,
-    sourceRetrievedAt,
-    csvSha256,
-    successfulOfficialResponses,
-    nonTradingNoDataDates,
-    duplicateTradeDateCount,
-    malformedRowCount,
-    missing0056ObservationCount,
-  });
+
+  let manifest;
+  if (isP198Single) {
+    manifest = buildTwseMiQfiisSourceManifest({
+      records,
+      requestedStartDate: START_DATE,
+      requestedEndDate: END_DATE,
+      sourceRetrievedAt,
+      csvSha256,
+      successfulOfficialResponses,
+      nonTradingNoDataDates,
+      duplicateTradeDateCount: duplicateKeyCount,
+      malformedRowCount,
+      missing0056ObservationCount: missingObservationsBySymbol["0056"] ?? 0,
+    });
+  } else {
+    manifest = buildTwseMiQfiisMultiSymbolSourceManifest({
+      records,
+      symbols: targetSymbols,
+      requestedStartDate: START_DATE,
+      requestedEndDate: END_DATE,
+      sourceRetrievedAt,
+      csvSha256,
+      successfulOfficialResponses,
+      nonTradingNoDataDates,
+      duplicateKeyCount,
+      malformedRowCount,
+      missingSymbolObservationsBySymbol: missingObservationsBySymbol,
+    });
+  }
 
   mkdirSync(path.dirname(csvPath), { recursive: true });
   writeFileSync(csvPath, csvText, "utf8");
-  writeFileSync(`${manifestPath}`, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 
   console.log(
     JSON.stringify(
@@ -267,23 +332,29 @@ async function main() {
         phase: "done",
         csvPath,
         manifestPath,
-        rowCount: records.length,
+        totalRowCount: records.length,
         earliestObservedDate: manifest.earliestObservedDate,
         latestObservedDate: manifest.latestObservedDate,
         csvSha256,
         qualificationClassification: manifest.qualificationClassification,
-        cutoffCoverage: manifest.cutoffCoverage,
+        overallQualification: manifest.overallQualification ?? (manifest.qualificationClassification.includes("QUALIFIED") ? "PASS" : "FAIL"),
         successfulOfficialResponses,
         nonTradingNoDataDates,
-        missing0056ObservationCount,
+        duplicateKeyCount,
         malformedRowCount,
+        cachedRequestsCount,
+        networkRequestsCount,
+        perSymbolQualifications: manifest.perSymbolQualifications,
       },
       null,
       2,
     ),
   );
 
-  if (manifest.qualificationClassification !== "MMS_0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_QUALIFIED") {
+  if (
+    manifest.qualificationClassification !== "MMS_0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_QUALIFIED" &&
+    manifest.qualificationClassification !== "MMS_MULTI_SYMBOL_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_QUALIFIED"
+  ) {
     process.exitCode = 2;
   }
 }

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   parseTwseMiQfiisDailyReport,
+  parseTwseMiQfiisDailyReportMultiSymbol,
   parseTwseMiQfiisCsvText,
   serializeTwseMiQfiisToCsv,
   parseNonNegativeSafeInteger,
@@ -10,14 +11,18 @@ import {
   filterEligibleMiQfiisRecords,
   isTwseMiQfiisNoDataResponse,
   buildTwseMiQfiisSourceManifest,
+  buildTwseMiQfiisMultiSymbolSourceManifest,
   TWSE_MI_QFIIS_OFFICIAL_SOURCE_IDENTITY,
   TWSE_MI_QFIIS_SOURCE_OWNER,
   TWSE_MI_QFIIS_SOURCE_FAMILY,
   TWSE_MI_QFIIS_TARGET_SYMBOL,
+  TWSE_MI_QFIIS_SUPPORTED_SYMBOLS,
+  TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
   TWSE_MI_QFIIS_STRICT_PIT_RULE,
   TWSE_MI_QFIIS_OFFICIAL_QUERY_PAGE,
   TWSE_MI_QFIIS_ENDPOINT_TEMPLATE,
   TWSE_MI_QFIIS_SCHEMA_VERSION,
+  TWSE_MI_QFIIS_MULTI_SYMBOL_SCHEMA_VERSION,
   TwseMiQfiisQualificationError,
   type TwseMiQfiisRecord,
 } from "./twseMiQfiisForeignOwnership.js";
@@ -37,21 +42,6 @@ const OFFICIAL_FIELDS = [
   "最近一次上市公司申報外資及陸資持股異動日期",
 ];
 
-const ROW_0056 = [
-  "0056",
-  "元大高股息",
-  "TW0000056001",
-  "1,075,034,000",
-  "1,070,921,372",
-  "4,112,628",
-  99.61,
-  0.38,
-  "100.00",
-  "100.00",
-  "",
-  "108/07/18",
-];
-
 const ROW_0050 = [
   "0050",
   "元大台灣50",
@@ -67,14 +57,74 @@ const ROW_0050 = [
   "108/07/18",
 ];
 
+const ROW_0056 = [
+  "0056",
+  "元大高股息",
+  "TW0000056001",
+  "1,075,034,000",
+  "1,070,921,372",
+  "4,112,628",
+  99.61,
+  0.38,
+  "100.00",
+  "100.00",
+  "",
+  "108/07/18",
+];
+
+const ROW_2317 = [
+  "2317",
+  "鴻海",
+  "TW0002317005",
+  "13,862,990,609",
+  "8,000,000,000",
+  "5,862,990,609",
+  57.7,
+  42.29,
+  "100.00",
+  "100.00",
+  "",
+  "108/07/18",
+];
+
+const ROW_2330 = [
+  "2330",
+  "台積電",
+  "TW0002330008",
+  "25,930,380,458",
+  "5,000,000,000",
+  "20,930,380,458",
+  19.28,
+  80.71,
+  "100.00",
+  "100.00",
+  "",
+  "108/07/18",
+];
+
+const ROW_2454 = [
+  "2454",
+  "聯發科",
+  "TW0002454006",
+  "1,598,735,744",
+  "600,000,000",
+  "998,735,744",
+  37.53,
+  62.47,
+  "100.00",
+  "100.00",
+  "",
+  "108/07/18",
+];
+
 function officialShapePayload(overrides: Record<string, unknown> = {}) {
   return {
     stat: "OK",
     date: "20200102",
     title: "109年01月02日 外資及陸資投資持股統計",
     fields: OFFICIAL_FIELDS,
-    data: [ROW_0050, ROW_0056],
-    total: 2,
+    data: [ROW_0050, ROW_0056, ROW_2317, ROW_2330, ROW_2454],
+    total: 5,
     ...overrides,
   };
 }
@@ -94,6 +144,10 @@ describe("twseMiQfiisForeignOwnership", () => {
       expect(() => parseNonNegativeSafeInteger("", "shares", "test")).toThrow(TwseMiQfiisQualificationError);
       expect(() => parseNonNegativeSafeInteger(NaN, "shares", "test")).toThrow(TwseMiQfiisQualificationError);
       expect(() => parseNonNegativeSafeInteger(Infinity, "shares", "test")).toThrow(TwseMiQfiisQualificationError);
+    });
+
+    it("exports supported symbols array", () => {
+      expect(TWSE_MI_QFIIS_SUPPORTED_SYMBOLS).toEqual(["0050", "0056", "2317", "2330", "2454"]);
     });
 
     it("parses non-negative percentage floats", () => {
@@ -134,6 +188,20 @@ describe("twseMiQfiisForeignOwnership", () => {
       expect(record.sourceRetrievedAt).toBe("2026-08-20T08:00:00.000Z");
     });
 
+    it("parses supported symbol 0050", () => {
+      const payload = officialShapePayload();
+      const record = parseTwseMiQfiisDailyReport(payload, {
+        symbol: "0050",
+        sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+      });
+
+      expect(record.tradeDate).toBe("2020-01-02");
+      expect(record.symbol).toBe("0050");
+      expect(record.securityName).toBe("元大台灣50");
+      expect(record.issuedShares).toBe(1100000000);
+      expect(record.foreignHoldingRatio).toBe(54.55);
+    });
+
     it("parses JSON string payload and multi-table structure", () => {
       const multiTablePayload = {
         stat: "OK",
@@ -157,7 +225,7 @@ describe("twseMiQfiisForeignOwnership", () => {
       expect(record.securityName).toBe("元大高股息");
     });
 
-    it("fails closed when 0056 is absent from trading-day response", () => {
+    it("fails closed when target symbol is absent from trading-day response", () => {
       const payload = officialShapePayload({ data: [ROW_0050] });
       expect(() =>
         parseTwseMiQfiisDailyReport(payload, {
@@ -167,7 +235,7 @@ describe("twseMiQfiisForeignOwnership", () => {
       ).toThrowError(/ABSENT_SYMBOL_ROW/);
     });
 
-    it("rejects duplicate 0056 rows", () => {
+    it("rejects duplicate symbol rows", () => {
       const payload = officialShapePayload({ data: [ROW_0056, ROW_0056] });
       expect(() =>
         parseTwseMiQfiisDailyReport(payload, {
@@ -198,14 +266,55 @@ describe("twseMiQfiisForeignOwnership", () => {
       ).toThrowError(/TWSE_REPORT_NOT_OK/);
     });
 
-    it("rejects requested symbol mismatch", () => {
+    it("rejects unsupported symbol", () => {
       const payload = officialShapePayload();
       expect(() =>
         parseTwseMiQfiisDailyReport(payload, {
-          symbol: "0050",
+          symbol: "9999",
           sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
         }),
       ).toThrowError(/INVALID_SYMBOL/);
+    });
+  });
+
+  describe("parseTwseMiQfiisDailyReportMultiSymbol", () => {
+    it("extracts all four target symbols (0050, 2317, 2330, 2454) from one dated payload", () => {
+      const payload = officialShapePayload();
+      const records = parseTwseMiQfiisDailyReportMultiSymbol(payload, {
+        symbols: TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
+        sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+        expectedTradeDate: "2020-01-02",
+      });
+
+      expect(records.length).toBe(4);
+      expect(records.map((r) => r.symbol)).toEqual(["0050", "2317", "2330", "2454"]);
+      expect(records[0]!.securityName).toBe("元大台灣50");
+      expect(records[1]!.securityName).toBe("鴻海");
+      expect(records[2]!.securityName).toBe("台積電");
+      expect(records[3]!.securityName).toBe("聯發科");
+      expect(records[2]!.foreignHoldingRatio).toBe(80.71);
+    });
+
+    it("throws ABSENT_SYMBOL_ROW if any required symbol is missing", () => {
+      const payload = officialShapePayload({ data: [ROW_0050, ROW_2317, ROW_2330] }); // 2454 missing
+      expect(() =>
+        parseTwseMiQfiisDailyReportMultiSymbol(payload, {
+          symbols: TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
+          sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+        }),
+      ).toThrowError(/ABSENT_SYMBOL_ROW:2454/);
+    });
+
+    it("throws DUPLICATE_SYMBOL_ROWS if a symbol appears more than once", () => {
+      const payload = officialShapePayload({
+        data: [ROW_0050, ROW_2317, ROW_2330, ROW_2454, ROW_2330],
+      });
+      expect(() =>
+        parseTwseMiQfiisDailyReportMultiSymbol(payload, {
+          symbols: TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
+          sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+        }),
+      ).toThrowError(/DUPLICATE_SYMBOL_ROWS:2330/);
     });
   });
 
@@ -221,13 +330,13 @@ describe("twseMiQfiisForeignOwnership", () => {
   describe("Point-in-Time (PIT) lag-1 contract", () => {
     const record: TwseMiQfiisRecord = {
       tradeDate: "2024-05-15",
-      symbol: "0056",
-      securityName: "元大高股息",
-      issuedShares: 7300034000,
-      foreignHeldShares: 124009535,
-      foreignHoldingRatio: 1.69,
-      foreignRemainingInvestableShares: 7176024465,
-      foreignRemainingInvestableRatio: 98.3,
+      symbol: "2330",
+      securityName: "台積電",
+      issuedShares: 25930380458,
+      foreignHeldShares: 19000000000,
+      foreignHoldingRatio: 73.27,
+      foreignRemainingInvestableShares: 6930380458,
+      foreignRemainingInvestableRatio: 26.73,
       statutoryInvestmentLimitRatio: 100.0,
       sourceIdentity: TWSE_MI_QFIIS_OFFICIAL_SOURCE_IDENTITY,
       sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
@@ -260,33 +369,46 @@ describe("twseMiQfiisForeignOwnership", () => {
     const sampleRecords: readonly TwseMiQfiisRecord[] = [
       {
         tradeDate: "2020-01-02",
-        symbol: "0056",
-        securityName: "元大高股息",
-        issuedShares: 1075034000,
-        foreignHeldShares: 4112628,
-        foreignHoldingRatio: 0.38,
-        foreignRemainingInvestableShares: 1070921372,
-        foreignRemainingInvestableRatio: 99.61,
+        symbol: "0050",
+        securityName: "元大台灣50",
+        issuedShares: 1100000000,
+        foreignHeldShares: 600000000,
+        foreignHoldingRatio: 54.55,
+        foreignRemainingInvestableShares: 500000000,
+        foreignRemainingInvestableRatio: 45.45,
+        statutoryInvestmentLimitRatio: 100.0,
+        sourceIdentity: TWSE_MI_QFIIS_OFFICIAL_SOURCE_IDENTITY,
+        sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+      },
+      {
+        tradeDate: "2020-01-02",
+        symbol: "2330",
+        securityName: "台積電",
+        issuedShares: 25930380458,
+        foreignHeldShares: 20930380458,
+        foreignHoldingRatio: 80.71,
+        foreignRemainingInvestableShares: 5000000000,
+        foreignRemainingInvestableRatio: 19.28,
         statutoryInvestmentLimitRatio: 100.0,
         sourceIdentity: TWSE_MI_QFIIS_OFFICIAL_SOURCE_IDENTITY,
         sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
       },
       {
         tradeDate: "2020-01-03",
-        symbol: "0056",
-        securityName: "元大高股息",
-        issuedShares: 1075034000,
-        foreignHeldShares: 4150000,
-        foreignHoldingRatio: 0.39,
-        foreignRemainingInvestableShares: 1070884000,
-        foreignRemainingInvestableRatio: 99.61,
+        symbol: "0050",
+        securityName: "元大台灣50",
+        issuedShares: 1100000000,
+        foreignHeldShares: 601000000,
+        foreignHoldingRatio: 54.64,
+        foreignRemainingInvestableShares: 499000000,
+        foreignRemainingInvestableRatio: 45.36,
         statutoryInvestmentLimitRatio: 100.0,
         sourceIdentity: TWSE_MI_QFIIS_OFFICIAL_SOURCE_IDENTITY,
         sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
       },
     ];
 
-    it("serializes and parses back identically", () => {
+    it("serializes and parses back multi-symbol records identically", () => {
       const csv = serializeTwseMiQfiisToCsv(sampleRecords);
       expect(csv.startsWith("tradeDate,symbol,securityName,issuedShares")).toBe(true);
       expect(csv.endsWith("\n")).toBe(true);
@@ -295,18 +417,29 @@ describe("twseMiQfiisForeignOwnership", () => {
       expect(parsed).toEqual(sampleRecords);
     });
 
-    it("rejects duplicate tradeDate in CSV", () => {
+    it("rejects duplicate (tradeDate, symbol) natural key in CSV", () => {
       const duplicateCsv = serializeTwseMiQfiisToCsv([sampleRecords[0]!, sampleRecords[0]!]);
       expect(() => parseTwseMiQfiisCsvText(duplicateCsv)).toThrowError(/DUPLICATE_TRADE_DATE/);
     });
 
-    it("rejects out-of-order trade dates in CSV", () => {
-      const outOfOrderCsv = serializeTwseMiQfiisToCsv([sampleRecords[1]!, sampleRecords[0]!]);
+    it("rejects out-of-order dates in CSV", () => {
+      const outOfOrderCsv =
+        "tradeDate,symbol,securityName,issuedShares,foreignHeldShares,foreignHoldingRatio,foreignRemainingInvestableShares,foreignRemainingInvestableRatio,statutoryInvestmentLimitRatio,sourceIdentity,sourceRetrievedAt\n" +
+        "2020-01-03,0050,元大台灣50,1100000000,601000000,54.64,499000000,45.36,100,TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT,2026-08-20T08:00:00.000Z\n" +
+        "2020-01-02,0050,元大台灣50,1100000000,600000000,54.55,500000000,45.45,100,TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT,2026-08-20T08:00:00.000Z\n";
       expect(() => parseTwseMiQfiisCsvText(outOfOrderCsv)).toThrowError(/OUT_OF_ORDER_RECORDS/);
+    });
+
+    it("rejects out-of-order symbol lexical order on same date in CSV", () => {
+      const outOfOrderSymbolCsv =
+        "tradeDate,symbol,securityName,issuedShares,foreignHeldShares,foreignHoldingRatio,foreignRemainingInvestableShares,foreignRemainingInvestableRatio,statutoryInvestmentLimitRatio,sourceIdentity,sourceRetrievedAt\n" +
+        "2020-01-02,2330,台積電,25930380458,20930380458,80.71,5000000000,19.28,100,TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT,2026-08-20T08:00:00.000Z\n" +
+        "2020-01-02,0050,元大台灣50,1100000000,600000000,54.55,500000000,45.45,100,TWSE_MI_QFIIS_DAILY_FOREIGN_INVESTMENT,2026-08-20T08:00:00.000Z\n";
+      expect(() => parseTwseMiQfiisCsvText(outOfOrderSymbolCsv)).toThrowError(/OUT_OF_ORDER_RECORDS/);
     });
   });
 
-  describe("Manifest Builder", () => {
+  describe("Single Symbol Manifest Builder (0056)", () => {
     const records: readonly TwseMiQfiisRecord[] = [
       {
         tradeDate: "2020-01-02",
@@ -375,13 +508,124 @@ describe("twseMiQfiisForeignOwnership", () => {
         csvSha256: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
         successfulOfficialResponses: 2,
         nonTradingNoDataDates: 0,
-        duplicateTradeDateCount: 1, // Error
+        duplicateTradeDateCount: 1,
         malformedRowCount: 0,
         missing0056ObservationCount: 0,
       });
 
       expect(manifest.qualificationClassification).toBe(
         "MMS_0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_BLOCKED",
+      );
+    });
+  });
+
+  describe("Multi-Symbol Manifest Builder (0050, 2317, 2330, 2454)", () => {
+    function makeMultiSymbolRecords(dates: string[]): TwseMiQfiisRecord[] {
+      const symbols = ["0050", "2317", "2330", "2454"];
+      const names: Record<string, string> = {
+        "0050": "元大台灣50",
+        "2317": "鴻海",
+        "2330": "台積電",
+        "2454": "聯發科",
+      };
+      const recs: TwseMiQfiisRecord[] = [];
+      for (const d of dates) {
+        for (const s of symbols) {
+          recs.push({
+            tradeDate: d,
+            symbol: s,
+            securityName: names[s]!,
+            issuedShares: 1000000,
+            foreignHeldShares: 500000,
+            foreignHoldingRatio: 50.0,
+            foreignRemainingInvestableShares: 500000,
+            foreignRemainingInvestableRatio: 50.0,
+            statutoryInvestmentLimitRatio: 100.0,
+            sourceIdentity: TWSE_MI_QFIIS_OFFICIAL_SOURCE_IDENTITY,
+            sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+          });
+        }
+      }
+      return recs;
+    }
+
+    it("qualifies all four symbols when coverage and data quality are complete", () => {
+      const dates = [
+        "2020-01-02",
+        "2025-09-20",
+        "2025-12-20",
+        "2026-03-20",
+        "2026-06-20",
+        "2026-08-11",
+      ];
+      const records = makeMultiSymbolRecords(dates);
+
+      const manifest = buildTwseMiQfiisMultiSymbolSourceManifest({
+        records,
+        symbols: TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
+        requestedStartDate: "2020-01-02",
+        requestedEndDate: "2026-08-11",
+        sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+        csvSha256: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        successfulOfficialResponses: dates.length,
+        nonTradingNoDataDates: 0,
+        duplicateKeyCount: 0,
+        malformedRowCount: 0,
+      });
+
+      expect(manifest.schemaVersion).toBe(TWSE_MI_QFIIS_MULTI_SYMBOL_SCHEMA_VERSION);
+      expect(manifest.symbols).toEqual(["0050", "2317", "2330", "2454"]);
+      expect(manifest.totalRowCount).toBe(dates.length * 4);
+      expect(manifest.perSymbolQualifications.length).toBe(4);
+      for (const psq of manifest.perSymbolQualifications) {
+        expect(psq.qualificationClassification).toBe("MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_QUALIFIED");
+        expect(psq.rowCount).toBe(dates.length);
+        expect(psq.duplicateKeyCount).toBe(0);
+        expect(psq.malformedRowCount).toBe(0);
+        expect(psq.cutoffCoverage.length).toBe(4);
+      }
+      expect(manifest.overallQualification).toBe("PASS");
+      expect(manifest.qualificationClassification).toBe(
+        "MMS_MULTI_SYMBOL_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_QUALIFIED",
+      );
+    });
+
+    it("fails overall qualification if even one symbol fails (3/4 PASS = overall FAIL gate)", () => {
+      const dates = [
+        "2020-01-02",
+        "2025-09-20",
+        "2025-12-20",
+        "2026-03-20",
+        "2026-06-20",
+        "2026-08-11",
+      ];
+      // Omit 2454 on 2026-08-11 so 2454 fails end-date coverage
+      const allRecords = makeMultiSymbolRecords(dates);
+      const recordsWith2454MissingLast = allRecords.filter(
+        (r) => !(r.symbol === "2454" && r.tradeDate === "2026-08-11"),
+      );
+
+      const manifest = buildTwseMiQfiisMultiSymbolSourceManifest({
+        records: recordsWith2454MissingLast,
+        symbols: TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
+        requestedStartDate: "2020-01-02",
+        requestedEndDate: "2026-08-11",
+        sourceRetrievedAt: "2026-08-20T08:00:00.000Z",
+        csvSha256: "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+        successfulOfficialResponses: dates.length,
+        nonTradingNoDataDates: 0,
+        duplicateKeyCount: 0,
+        malformedRowCount: 0,
+      });
+
+      const sym0050 = manifest.perSymbolQualifications.find((p) => p.symbol === "0050")!;
+      const sym2454 = manifest.perSymbolQualifications.find((p) => p.symbol === "2454")!;
+
+      expect(sym0050.qualificationClassification).toBe("MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_QUALIFIED");
+      expect(sym2454.qualificationClassification).toBe("MMS_SYMBOL_TWSE_MI_QFIIS_SOURCE_BLOCKED");
+      expect(manifest.overallQualification).toBe("FAIL");
+      expect(manifest.qualificationClassification).toBe(
+        "MMS_MULTI_SYMBOL_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_SOURCE_BLOCKED",
       );
     });
   });
