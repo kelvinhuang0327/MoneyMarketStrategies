@@ -27,11 +27,12 @@ function makeMiQfiisRecord(
   foreignHoldingRatio: number,
   foreignHeldShares = 10_000_000,
   issuedShares = 1_000_000_000,
+  symbol = "0056",
 ): TwseMiQfiisRecord {
   return Object.freeze({
     tradeDate: isoDate(index),
-    symbol: "0056",
-    securityName: "元大高股息",
+    symbol,
+    securityName: `TEST_${symbol}`,
     issuedShares,
     foreignHeldShares,
     foreignHoldingRatio,
@@ -43,11 +44,11 @@ function makeMiQfiisRecord(
   });
 }
 
-function makeMarketRows(count: number, startIndex = 0): readonly MarketDataRow[] {
+function makeMarketRows(count: number, startIndex = 0, symbol = "0056"): readonly MarketDataRow[] {
   return Object.freeze(Array.from({ length: count }, (_, index) => {
     const close = 100 + index;
     return Object.freeze({
-      symbol: "0056",
+      symbol,
       date: isoDate(startIndex + index),
       open: close - 1,
       high: close + 1,
@@ -66,7 +67,7 @@ function makeHistory(count: number, baseRatio = 10.0, step = 0.05): readonly Tws
 
 describe("0056 TWSE MI_QFIIS foreign ownership feature challenger", () => {
   it("1. defines exactly the three requested features and strict PIT contract", () => {
-    expect(TWSE_MI_QFIIS_FEATURE_FAMILY_NAME).toBe("0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_V1");
+    expect(TWSE_MI_QFIIS_FEATURE_FAMILY_NAME).toBe("TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_V1");
     expect(TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL).toBe("0056");
     expect(TWSE_MI_QFIIS_FEATURE_STRICT_PIT_RULE).toBe("tradeDate < featureDate");
     expect(TWSE_MI_QFIIS_FEATURE_LOOKBACK_OBSERVATIONS).toBe(21);
@@ -201,5 +202,38 @@ describe("0056 TWSE MI_QFIIS foreign ownership feature challenger", () => {
     expect(result.missingContextRows).toBe(0);
     expect(JSON.stringify(targetRows)).toBe(targetBefore);
     expect(JSON.stringify(miQfiisRecords)).toBe(miBefore);
+  });
+
+  it("12. applies the identical frozen formula and PIT rule to a parameterized OOS symbol", () => {
+    const seedRecords = makeHistory(30, 10.0, 0.05);
+    const oosRecords = Object.freeze(seedRecords.map((record) => Object.freeze({
+      ...record,
+      symbol: "2330",
+      securityName: "TEST_2330",
+    })));
+
+    const seedValues = computeMiQfiisForeignOwnershipFeatureValues(seedRecords, isoDate(25));
+    const oosValues = computeMiQfiisForeignOwnershipFeatureValues(oosRecords, isoDate(25), "2330");
+    expect(oosValues).toEqual(seedValues);
+
+    const result = buildMiQfiisForeignOwnershipFeatureRows({
+      targetSymbol: "2330",
+      targetRows: makeMarketRows(50, 1, "2330"),
+      miQfiisRecords: oosRecords,
+    });
+    expect(result.featureRows.map((row) => row.featureDate)).toEqual(
+      result.controlFeatureRows.map((row) => row.featureDate),
+    );
+    expect(result.featureRows[0]!.features).toHaveLength(8);
+    expect(result.controlFeatureRows[0]!.features).toHaveLength(5);
+  });
+
+  it("13. fails closed on mixed-symbol MI_QFIIS input", () => {
+    const records = [
+      ...makeHistory(21),
+      makeMiQfiisRecord(21, 11.0, 10_000_000, 1_000_000_000, "2330"),
+    ];
+    expect(() => computeMiQfiisForeignOwnershipFeatureValues(records, isoDate(22), "0056"))
+      .toThrow("MI_QFIIS records must have symbol 0056");
   });
 });

@@ -6,6 +6,7 @@ import {
   TWSE_MI_QFIIS_FEATURE_FIELDS,
   TWSE_MI_QFIIS_FEATURE_STRICT_PIT_RULE,
   TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL,
+  TWSE_MI_QFIIS_SUPPORTED_SYMBOLS,
   buildFinalTestEconomicEvidence,
   buildMiQfiisForeignOwnershipFeatureRows,
   createFinalTestEvaluator,
@@ -26,6 +27,7 @@ import {
   type RawTwStrategyResearchRow,
   type ThreeWayChronologicalSplit,
   type TwseMiQfiisRecord,
+  type TwseMiQfiisSupportedSymbol,
 } from "@mms/research-kernel";
 
 import { buildFinalTestPerSymbolEconomicEdge } from "./finalTestEconomicEdge.js";
@@ -37,7 +39,10 @@ import {
 
 const SCHEMA_VERSION = "MMS_0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_FEATURE_CHALLENGER_TEMPORAL_V1" as const;
 const CLASSIFICATION = "MMS_0056_MI_QFIIS_FOREIGN_OWNERSHIP_FEATURE_CHALLENGER_V1_READY_FOR_CTO_REVIEW" as const;
-const TARGET_SYMBOL = TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL;
+const MULTI_SYMBOL_SCHEMA_VERSION =
+  "MMS_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_FEATURE_CHALLENGER_TEMPORAL_V1" as const;
+const MULTI_SYMBOL_CLASSIFICATION =
+  "MMS_MI_QFIIS_FOREIGN_OWNERSHIP_MULTI_SYMBOL_OOS_V1_DIAGNOSTIC" as const;
 const RESEARCH_MODE = "diagnostic-only" as const;
 
 export interface MiQfiisForeignOwnershipTemporalSource {
@@ -48,6 +53,7 @@ export interface MiQfiisForeignOwnershipTemporalSource {
 }
 
 export interface MiQfiisForeignOwnershipTemporalInput {
+  readonly targetSymbol?: TwseMiQfiisSupportedSymbol;
   readonly rawRows: readonly RawTwStrategyResearchRow[];
   readonly miQfiisRecords: readonly TwseMiQfiisRecord[];
   readonly cutoffDates: readonly string[];
@@ -90,7 +96,7 @@ export interface MiQfiisFeatureDistributionSummary {
 }
 
 export interface MiQfiisForeignOwnershipCutoffContextSummary {
-  readonly targetSymbol: typeof TARGET_SYMBOL;
+  readonly targetSymbol: TwseMiQfiisSupportedSymbol;
   readonly miQfiisDataAsOf: string;
   readonly foreignHoldingRatioLag1Summary: MiQfiisFeatureDistributionSummary;
   readonly foreignHoldingRatioChange5dSummary: MiQfiisFeatureDistributionSummary;
@@ -113,7 +119,7 @@ export interface MiQfiisForeignOwnershipDeltasVsControl {
 export interface MiQfiisForeignOwnershipTemporalCutoffResult {
   readonly cutoff: string;
   readonly asOf: string;
-  readonly symbol: typeof TARGET_SYMBOL;
+  readonly symbol: TwseMiQfiisSupportedSymbol;
   readonly sourceRowsAsOf: number;
   readonly miQfiisRecordsAsOf: number;
   readonly symbolRowsAsOf: number;
@@ -194,21 +200,22 @@ export type MiQfiisDecision =
 export type MiQfiisNextRoute =
   | "MI_QFIIS_FEATURE_SLICE_PRODUCTION_INTEGRATION"
   | "STOP_MI_QFIIS_FEATURE_RESEARCH_AND_REASSESS_ALTERNATIVE_DATA"
-  | "COLLECT_FURTHER_TEMPORAL_CONFIRMATION";
+  | "COLLECT_FURTHER_TEMPORAL_CONFIRMATION"
+  | "MULTI_SYMBOL_GENERALIZATION_GATE_ONLY";
 
 export interface MiQfiisForeignOwnershipTemporalGuardrails extends LongCashReplayGuardrails {
   readonly supportsSymbolSelection: false;
 }
 
 export interface MiQfiisForeignOwnershipTemporalResult {
-  readonly schemaVersion: typeof SCHEMA_VERSION;
-  readonly classification: typeof CLASSIFICATION;
+  readonly schemaVersion: typeof SCHEMA_VERSION | typeof MULTI_SYMBOL_SCHEMA_VERSION;
+  readonly classification: typeof CLASSIFICATION | typeof MULTI_SYMBOL_CLASSIFICATION;
   readonly dataClassification: "HISTORICAL_RESEARCH_STUDY";
   readonly reviewDate: string;
   readonly researchMode: typeof RESEARCH_MODE;
   readonly providesInvestmentAdvice: false;
   readonly currentDatePredictionClaim: false;
-  readonly symbol: typeof TARGET_SYMBOL;
+  readonly symbol: TwseMiQfiisSupportedSymbol;
   readonly candidateDataQualityBasis: string;
   readonly datasetVersion: DatasetVersion;
   readonly requestedCutoffDates: readonly string[];
@@ -243,6 +250,12 @@ export interface MiQfiisForeignOwnershipTemporalResult {
 
 function fail(message: string): never {
   throw new LongCashReplayError(message);
+}
+
+function validateTargetSymbol(targetSymbol: string): asserts targetSymbol is TwseMiQfiisSupportedSymbol {
+  if (!TWSE_MI_QFIIS_SUPPORTED_SYMBOLS.includes(targetSymbol as TwseMiQfiisSupportedSymbol)) {
+    fail(`unsupported MI_QFIIS temporal target symbol: ${targetSymbol}`);
+  }
 }
 
 function round(value: number): number {
@@ -322,6 +335,7 @@ function replayEconomic(
 
 function buildSingleModelEvidence(
   split: ThreeWayChronologicalSplit,
+  targetSymbol: TwseMiQfiisSupportedSymbol,
 ): PerSymbolLogisticChallengerSymbolEvidence {
   const scaler = fitStandardScaler(split.training);
   const model = fitLogisticRegression(split.training, scaler);
@@ -377,7 +391,7 @@ function buildSingleModelEvidence(
   const actualUpRate = metrics.sampleCount === 0 ? 0 : round(metrics.positiveCount / metrics.sampleCount);
 
   return Object.freeze({
-    symbol: TARGET_SYMBOL,
+    symbol: targetSymbol,
     trainingRows: split.training.rows.length,
     trainValidationPurgeRows: split.trainValidationPurge.rows.length,
     validationRows: split.validation.rows.length,
@@ -454,7 +468,9 @@ function extractSideMetrics(
 function assertControlCutoffReproduction(
   cutoff: string,
   controlMetrics: MiQfiisForeignOwnershipSideMetrics,
+  targetSymbol: TwseMiQfiisSupportedSymbol,
 ): void {
+  if (targetSymbol !== TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL) return;
   const expected = CONTROL_EXPECTED_CUTOFFS.find((candidate) => candidate.cutoff === cutoff);
   if (expected === undefined) return;
   if (
@@ -480,21 +496,38 @@ function featureDistribution(values: readonly number[]): MiQfiisFeatureDistribut
 function evaluateCutoff(
   input: MiQfiisForeignOwnershipTemporalInput,
   cutoff: string,
+  targetSymbol: TwseMiQfiisSupportedSymbol,
 ): MiQfiisForeignOwnershipTemporalCutoffResult {
   const cutoffRawRows = filterRowsForCutoff(input.rawRows, cutoff);
   const asOf = resolveDataEndDate(cutoffRawRows, cutoff);
-  const symbolRows = toMarketRows(cutoffRawRows, TARGET_SYMBOL);
-  if (symbolRows.length === 0) fail(`0056 has no source rows at cutoff ${cutoff}`);
+  const symbolRows = toMarketRows(cutoffRawRows, targetSymbol);
+  if (symbolRows.length === 0) fail(`${targetSymbol} has no source rows at cutoff ${cutoff}`);
   if (symbolRows.some((row) => row.date > asOf)) {
-    fail(`0056 source row exceeds resolved asOf at cutoff ${cutoff}`);
+    fail(`${targetSymbol} source row exceeds resolved asOf at cutoff ${cutoff}`);
   }
 
   const cutoffMiQfiisRecords = input.miQfiisRecords.filter((record) => record.tradeDate <= asOf);
-  if (cutoffMiQfiisRecords.length === 0) fail(`0056 has no MI_QFIIS records at cutoff ${cutoff}`);
+  if (cutoffMiQfiisRecords.length === 0) fail(`${targetSymbol} has no MI_QFIIS records at cutoff ${cutoff}`);
   const featureBuild = buildMiQfiisForeignOwnershipFeatureRows({
+    targetSymbol,
     targetRows: symbolRows,
     miQfiisRecords: cutoffMiQfiisRecords,
   });
+  const populationDrift = featureBuild.controlFeatureRows.length !== featureBuild.featureRows.length
+    || featureBuild.controlFeatureRows.some((controlRow, index) => {
+      const challengerRow = featureBuild.featureRows[index];
+      return challengerRow === undefined
+        || controlRow.symbol !== challengerRow.symbol
+        || controlRow.featureDate !== challengerRow.featureDate
+        || controlRow.targetDate !== challengerRow.targetDate
+        || controlRow.featureSourceStartDate !== challengerRow.featureSourceStartDate
+        || controlRow.featureSourceEndDate !== challengerRow.featureSourceEndDate
+        || controlRow.target !== challengerRow.target
+        || controlRow.forwardReturn !== challengerRow.forwardReturn;
+    });
+  if (populationDrift) {
+    fail(`STOP_CONTROL_CHALLENGER_POPULATION_DRIFT: row identity mismatch at cutoff ${cutoff}`);
+  }
   const controlSplit = splitChronologically(featureBuild.controlFeatureRows);
   const challengerSplit = splitChronologically(featureBuild.featureRows);
 
@@ -507,19 +540,19 @@ function evaluateCutoff(
     || controlSplit.validation.rows.length !== challengerSplit.validation.rows.length
     || controlSplit.finalTest.rows.length !== challengerSplit.finalTest.rows.length
   ) {
-    fail(`STOP_TEMPORAL_CONTRACT_DRIFT: control/challenger split mismatch at cutoff ${cutoff}`);
+    fail(`STOP_TEMPORAL_SPLIT_DRIFT: control/challenger split mismatch at cutoff ${cutoff}`);
   }
 
-  const controlEvidence = buildSingleModelEvidence(controlSplit);
+  const controlEvidence = buildSingleModelEvidence(controlSplit, targetSymbol);
   const controlEconomic = replayEconomic(controlEvidence, input.roundTripCostBps, input.initialCapital);
   const controlMetrics = extractSideMetrics(
     controlEvidence,
     controlEconomic,
     featureBuild.eligibleRowsRemovedForMiQfiisContext,
   );
-  assertControlCutoffReproduction(cutoff, controlMetrics);
+  assertControlCutoffReproduction(cutoff, controlMetrics, targetSymbol);
 
-  const challengerEvidence = buildSingleModelEvidence(challengerSplit);
+  const challengerEvidence = buildSingleModelEvidence(challengerSplit, targetSymbol);
   const challengerEconomic = replayEconomic(challengerEvidence, input.roundTripCostBps, input.initialCapital);
   const challengerMetrics = extractSideMetrics(
     challengerEvidence,
@@ -533,7 +566,7 @@ function evaluateCutoff(
   const latestMiQfiisTradeDate = maximumDate(cutoffMiQfiisRecords.map((record) => record.tradeDate));
 
   const miQfiisContext: MiQfiisForeignOwnershipCutoffContextSummary = Object.freeze({
-    targetSymbol: TARGET_SYMBOL,
+    targetSymbol,
     miQfiisDataAsOf: latestMiQfiisTradeDate,
     foreignHoldingRatioLag1Summary: featureDistribution(lag1Values),
     foreignHoldingRatioChange5dSummary: featureDistribution(change5dValues),
@@ -556,7 +589,7 @@ function evaluateCutoff(
   const warnings = uniqueMessages([
     `As-of boundary enforced at ${asOf}; source rows and FINAL_TEST target rows do not exceed this date.`,
     "This cutoff was fitted independently; no fitted model or threshold was reused from another cutoff.",
-    "0056 MI_QFIIS features (foreign_holding_ratio_lag1, foreign_holding_ratio_change_5d, foreign_holding_ratio_change_20d) applied strictly point-in-time (tradeDate < featureDate).",
+    `${targetSymbol} MI_QFIIS features (foreign_holding_ratio_lag1, foreign_holding_ratio_change_5d, foreign_holding_ratio_change_20d) applied strictly point-in-time (tradeDate < featureDate).`,
     "Evaluation populations between Control (5 features) and Challenger (8 features) are strictly identical.",
     ...controlMetrics.warnings,
     ...challengerMetrics.warnings,
@@ -565,7 +598,7 @@ function evaluateCutoff(
   const normalized = {
     cutoff,
     asOf,
-    symbol: TARGET_SYMBOL,
+    symbol: targetSymbol,
     sourceRowsAsOf: cutoffRawRows.length,
     miQfiisRecordsAsOf: cutoffMiQfiisRecords.length,
     symbolRowsAsOf: symbolRows.length,
@@ -671,6 +704,7 @@ function summarizeComparisonVsControl(
 
 function verifyControlReproduction(
   cutoffRuns: readonly MiQfiisForeignOwnershipTemporalCutoffResult[],
+  targetSymbol: TwseMiQfiisSupportedSymbol,
 ): MiQfiisForeignOwnershipControlReproduction {
   const observedExcess = cutoffRuns.map((run) => run.controlMetrics.excessReturn);
   const observedAccuracyDeltas = cutoffRuns.map((run) => run.controlMetrics.accuracyDeltaVsBaseline);
@@ -689,6 +723,9 @@ function verifyControlReproduction(
     latestExcessReturn: observedExcess.at(-1) ?? 0,
     observedThresholds: Object.freeze(observedThresholds),
   });
+  if (targetSymbol !== TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL) {
+    return Object.freeze({ status: "NOT_APPLICABLE", expected, observed });
+  }
   const expectedDatesMatch = cutoffRuns.length === CONTROL_EXPECTED_CUTOFFS.length
     && CONTROL_EXPECTED_CUTOFFS.every((candidate, index) => cutoffRuns[index]?.cutoff === candidate.cutoff);
   if (!expectedDatesMatch) {
@@ -723,6 +760,8 @@ function deriveDecision(
 export function runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal(
   input: MiQfiisForeignOwnershipTemporalInput,
 ): MiQfiisForeignOwnershipTemporalResult {
+  const targetSymbol = input.targetSymbol ?? TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL;
+  validateTargetSymbol(targetSymbol);
   const cutoffDates = validateCutoffDates(input.cutoffDates);
   if (
     cutoffDates.length !== SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES.length
@@ -735,36 +774,45 @@ export function runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal(
     fail(`canonical 10 bps transaction cost required, received ${input.roundTripCostBps}`);
   }
   if (input.miQfiisRecords.length === 0) fail("MI_QFIIS records cannot be empty");
+  if (input.miQfiisRecords.some((record) => record.symbol !== targetSymbol)) {
+    fail(`STOP_MIXED_SYMBOL_INPUT: MI_QFIIS records must contain only ${targetSymbol}`);
+  }
 
-  const cutoffRuns = cutoffDates.map((cutoff) => evaluateCutoff(input, cutoff));
+  const cutoffRuns = cutoffDates.map((cutoff) => evaluateCutoff(input, cutoff, targetSymbol));
   const controlTemporalSummary = summarizeSideMetrics(cutoffRuns.map((run) => run.controlMetrics));
   const challengerTemporalSummary = summarizeSideMetrics(cutoffRuns.map((run) => run.challengerMetrics));
   const comparisonSummaryVsControl = summarizeComparisonVsControl(cutoffRuns);
-  const controlReproduction = verifyControlReproduction(cutoffRuns);
+  const controlReproduction = verifyControlReproduction(cutoffRuns, targetSymbol);
   const decision = deriveDecision(
     comparisonSummaryVsControl.directionalWins,
     comparisonSummaryVsControl.calibrationWins,
     comparisonSummaryVsControl.economicWins,
   );
-  const nextRoute: MiQfiisNextRoute = decision === "KEEP_MI_QFIIS_FEATURE_SLICE"
-    ? "MI_QFIIS_FEATURE_SLICE_PRODUCTION_INTEGRATION"
-    : decision === "REJECT_MI_QFIIS_FEATURE_SLICE"
-      ? "STOP_MI_QFIIS_FEATURE_RESEARCH_AND_REASSESS_ALTERNATIVE_DATA"
-      : "COLLECT_FURTHER_TEMPORAL_CONFIRMATION";
+  const nextRoute: MiQfiisNextRoute = targetSymbol !== TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL
+    ? "MULTI_SYMBOL_GENERALIZATION_GATE_ONLY"
+    : decision === "KEEP_MI_QFIIS_FEATURE_SLICE"
+      ? "MI_QFIIS_FEATURE_SLICE_PRODUCTION_INTEGRATION"
+      : decision === "REJECT_MI_QFIIS_FEATURE_SLICE"
+        ? "STOP_MI_QFIIS_FEATURE_RESEARCH_AND_REASSESS_ALTERNATIVE_DATA"
+        : "COLLECT_FURTHER_TEMPORAL_CONFIRMATION";
 
-  const symbolRows = toMarketRows(input.rawRows, TARGET_SYMBOL);
-  if (symbolRows.length === 0) fail("0056 has no source rows");
+  const symbolRows = toMarketRows(input.rawRows, targetSymbol);
+  if (symbolRows.length === 0) fail(`${targetSymbol} has no source rows`);
   const minDate = minimumDate(symbolRows.map((row) => row.date));
   const maxDate = maximumDate(symbolRows.map((row) => row.date));
   const normalized = {
-    schemaVersion: SCHEMA_VERSION,
-    classification: CLASSIFICATION,
+    schemaVersion: targetSymbol === TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL
+      ? SCHEMA_VERSION
+      : MULTI_SYMBOL_SCHEMA_VERSION,
+    classification: targetSymbol === TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL
+      ? CLASSIFICATION
+      : MULTI_SYMBOL_CLASSIFICATION,
     dataClassification: "HISTORICAL_RESEARCH_STUDY" as const,
     reviewDate: input.reviewDate,
     researchMode: RESEARCH_MODE,
     providesInvestmentAdvice: false as const,
     currentDatePredictionClaim: false as const,
-    symbol: TARGET_SYMBOL,
+    symbol: targetSymbol,
     candidateDataQualityBasis: input.candidateDataQualityBasis,
     datasetVersion: input.datasetVersion,
     requestedCutoffDates: Object.freeze([...cutoffDates]),
@@ -794,7 +842,9 @@ export function runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal(
     promotionDecision: "do_not_promote" as const,
     warnings: Object.freeze([
       "Diagnostic-only historical quantitative research study; no promotion, no order execution, no investment advice.",
-      "Frozen control reproduced before computing challenger comparison deltas.",
+      targetSymbol === TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL
+        ? "Frozen control reproduced before computing challenger comparison deltas."
+        : "0056 discovery/control reproduction is not applied to this independently fitted OOS symbol.",
       "Strict point-in-time invariant (tradeDate < featureDate) enforced for all MI_QFIIS features.",
       "Evaluation populations between Control (5 features) and Challenger (8 features) are strictly identical.",
       ...uniqueMessages(cutoffRuns.flatMap((run) => run.warnings)),

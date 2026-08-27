@@ -2,7 +2,9 @@ import { buildHistoricalFeatureRows, RESEARCH_FEATURE_NAMES } from "./features.j
 import {
   filterEligibleMiQfiisRecords,
   isMiQfiisRecordEligibleForFeatureDate,
+  TWSE_MI_QFIIS_SUPPORTED_SYMBOLS,
   type TwseMiQfiisRecord,
+  type TwseMiQfiisSupportedSymbol,
 } from "./twseMiQfiisForeignOwnership.js";
 import { isCanonicalIsoDate } from "./twStrategyTemporalRobustness.js";
 import {
@@ -12,7 +14,7 @@ import {
   type PerSymbolLogisticChallengerFeatureFamily,
 } from "./types.js";
 
-export const TWSE_MI_QFIIS_FEATURE_FAMILY_NAME = "0056_TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_V1" as const;
+export const TWSE_MI_QFIIS_FEATURE_FAMILY_NAME = "TWSE_MI_QFIIS_FOREIGN_OWNERSHIP_V1" as const;
 export const TWSE_MI_QFIIS_FEATURE_FIELDS = Object.freeze([
   "foreign_holding_ratio_lag1",
   "foreign_holding_ratio_change_5d",
@@ -36,7 +38,7 @@ export const TWSE_MI_QFIIS_FEATURE_FAMILY: PerSymbolLogisticChallengerFeatureFam
   newFeatureFields: TWSE_MI_QFIIS_FEATURE_FIELDS,
   currentIncumbentFeatureFields: Object.freeze([...RESEARCH_FEATURE_NAMES]),
   whyNotDuplicative:
-    "The live incumbent features capture single-asset 0056 price and volume technical dynamics; MI_QFIIS features capture lagged official foreign & mainland investor holding level and percentage-point changes.",
+    "The incumbent features capture single-asset price and volume technical dynamics; MI_QFIIS features capture lagged official foreign & mainland investor holding level and percentage-point changes.",
   lookbackRowsRequired: TWSE_MI_QFIIS_FEATURE_LOOKBACK_OBSERVATIONS,
   availableAtRule:
     "At featureDate T, use MI_QFIIS records strictly satisfying tradeDate < T; same-day MI_QFIIS observations are forbidden.",
@@ -58,15 +60,23 @@ function compareTradeDate(left: TwseMiQfiisRecord, right: TwseMiQfiisRecord): nu
   return 0;
 }
 
+function validateTargetSymbol(targetSymbol: string): asserts targetSymbol is TwseMiQfiisSupportedSymbol {
+  if (!TWSE_MI_QFIIS_SUPPORTED_SYMBOLS.includes(targetSymbol as TwseMiQfiisSupportedSymbol)) {
+    fail(`unsupported MI_QFIIS feature target symbol: ${targetSymbol}`);
+  }
+}
+
 export function computeMiQfiisForeignOwnershipFeatureValues(
   miQfiisRecords: readonly TwseMiQfiisRecord[],
   featureDate: string,
+  targetSymbol: string = TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL,
 ): MiQfiisForeignOwnershipFeatureValues {
+  validateTargetSymbol(targetSymbol);
   if (!isCanonicalIsoDate(featureDate)) {
     fail(`invalid canonical feature date: ${featureDate}`);
   }
-  if (miQfiisRecords.some((record) => record.symbol !== TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL)) {
-    fail(`MI_QFIIS records must have symbol ${TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL}`);
+  if (miQfiisRecords.some((record) => record.symbol !== targetSymbol)) {
+    fail(`MI_QFIIS records must have symbol ${targetSymbol}`);
   }
 
   const eligible = [...filterEligibleMiQfiisRecords(miQfiisRecords, featureDate)].sort(compareTradeDate);
@@ -99,6 +109,7 @@ export function computeMiQfiisForeignOwnershipFeatureValues(
 }
 
 export interface BuildMiQfiisForeignOwnershipFeatureRowsInput {
+  readonly targetSymbol?: TwseMiQfiisSupportedSymbol;
   readonly targetRows: readonly MarketDataRow[];
   readonly miQfiisRecords: readonly TwseMiQfiisRecord[];
 }
@@ -115,13 +126,15 @@ export function buildMiQfiisForeignOwnershipFeatureRows(
   input: BuildMiQfiisForeignOwnershipFeatureRowsInput,
 ): MiQfiisForeignOwnershipFeatureBuildResult {
   const { targetRows, miQfiisRecords } = input;
+  const targetSymbol = input.targetSymbol ?? TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL;
+  validateTargetSymbol(targetSymbol);
   if (targetRows.length === 0) fail("target rows cannot be empty");
   if (miQfiisRecords.length === 0) fail("MI_QFIIS records cannot be empty");
-  if (targetRows.some((row) => row.symbol !== TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL)) {
-    fail(`target rows must have symbol ${TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL}`);
+  if (targetRows.some((row) => row.symbol !== targetSymbol)) {
+    fail(`target rows must have symbol ${targetSymbol}`);
   }
-  if (miQfiisRecords.some((record) => record.symbol !== TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL)) {
-    fail(`MI_QFIIS records must have symbol ${TWSE_MI_QFIIS_FEATURE_TARGET_SYMBOL}`);
+  if (miQfiisRecords.some((record) => record.symbol !== targetSymbol)) {
+    fail(`MI_QFIIS records must have symbol ${targetSymbol}`);
   }
 
   const sortedTargetRows = [...targetRows].sort((left, right) => left.date.localeCompare(right.date));
@@ -139,7 +152,11 @@ export function buildMiQfiisForeignOwnershipFeatureRows(
       continue;
     }
 
-    const values = computeMiQfiisForeignOwnershipFeatureValues(sortedMiQfiisRecords, baseRow.featureDate);
+    const values = computeMiQfiisForeignOwnershipFeatureValues(
+      sortedMiQfiisRecords,
+      baseRow.featureDate,
+      targetSymbol,
+    );
     controlFeatureRows.push(baseRow);
     featureRows.push(Object.freeze({
       ...baseRow,

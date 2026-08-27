@@ -65,6 +65,9 @@ describe("0056 MI_QFIIS foreign ownership temporal challenger", () => {
     expect(result.controlFeatureNames).toEqual([...RESEARCH_FEATURE_NAMES]);
     expect(result.featureNames).toEqual([...RESEARCH_FEATURE_NAMES, ...TWSE_MI_QFIIS_FEATURE_FIELDS]);
     expect(result.controlReproduction.status).toBe("PASS");
+    expect(result.comparisonSummaryVsControl.directionalWins).toBe(3);
+    expect(result.comparisonSummaryVsControl.calibrationWins).toBe(4);
+    expect(result.comparisonSummaryVsControl.economicWins).toBe(3);
     expect(["KEEP_MI_QFIIS_FEATURE_SLICE", "REJECT_MI_QFIIS_FEATURE_SLICE", "NEED_ONE_CONFIRMATION"]).toContain(
       result.decision,
     );
@@ -110,7 +113,10 @@ describe("0056 MI_QFIIS foreign ownership temporal challenger", () => {
   it("replays deterministically with fixed cost and no final-test tuning", () => {
     const input = loadCanonicalInput();
     const first = runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal(input);
-    const second = runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal(input);
+    const second = runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal({
+      ...input,
+      targetSymbol: "0056",
+    });
 
     expect(canonicalStringify(second)).toBe(canonicalStringify(first));
     expect(second.normalizedResultSha256).toBe(first.normalizedResultSha256);
@@ -119,4 +125,20 @@ describe("0056 MI_QFIIS foreign ownership temporal challenger", () => {
     expect(second.guardrails.supportsAutomaticPromotion).toBe(false);
     expect(second.featureNames).toHaveLength(8);
   }, 120_000);
+
+  it("fails closed before fitting when the requested symbol and MI_QFIIS records are mixed", () => {
+    const input = loadCanonicalInput();
+    const firstRecord = input.miQfiisRecords[0];
+    expect(firstRecord).toBeDefined();
+    const mixedRecords = [
+      Object.freeze({ ...firstRecord!, symbol: "0050" }),
+      ...input.miQfiisRecords.slice(1),
+    ];
+
+    expect(() => runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal({
+      ...input,
+      targetSymbol: "0056",
+      miQfiisRecords: mixedRecords,
+    })).toThrow("STOP_MIXED_SYMBOL_INPUT");
+  });
 });

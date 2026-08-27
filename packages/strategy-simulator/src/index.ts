@@ -95,6 +95,21 @@ export {
 export {
   runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal,
 } from "./perSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal.js";
+export {
+  evaluateMultiSymbolMiQfiisForeignOwnershipGeneralizationGate,
+  MI_QFIIS_GENERALIZATION_EQUITY_SYMBOLS,
+  MI_QFIIS_GENERALIZATION_OOS_SYMBOLS,
+  MI_QFIIS_GENERALIZATION_POOLED_METRICS_ROLE,
+  toMultiSymbolMiQfiisSymbolVerdict,
+} from "./multiSymbolMiQfiisForeignOwnershipGeneralization.js";
+export type {
+  MultiSymbolMiQfiisEquitySymbol,
+  MultiSymbolMiQfiisGeneralizationGateInput,
+  MultiSymbolMiQfiisGeneralizationGateResult,
+  MultiSymbolMiQfiisGeneralizationLabel,
+  MultiSymbolMiQfiisOosSymbol,
+  MultiSymbolMiQfiisSymbolVerdict,
+} from "./multiSymbolMiQfiisForeignOwnershipGeneralization.js";
 export type {
   T86Decision,
   T86InstitutionalFlowComparisonSummaryVsControl,
