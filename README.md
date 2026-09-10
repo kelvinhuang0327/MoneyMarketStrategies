@@ -35,6 +35,19 @@ preserving validation and diagnostic-only guardrails:
 npm run inspect:prediction-result -- --artifact <path> --summary
 ```
 
+## Research run inspector
+
+Inspect a completed `research:tw` output directory with the read-only run
+inspector:
+
+```sh
+npm run inspect:research-run -- --run-dir <research-output-directory>
+```
+
+The inspector expects the four canonical `research:tw` outputs. It computes
+SHA-256 hashes locally; the hashes are not verified against a manifest. The
+prediction-result details reuse the concise validated summary.
+
 ## Authority boundaries
 
 Future legacy ports must read pinned Git objects, never the legacy current
