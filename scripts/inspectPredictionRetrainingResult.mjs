@@ -21,10 +21,11 @@ function formatField(field, formatter = (v) => String(v)) {
 }
 
 /**
- * Parses CLI arguments. Requires exactly `--artifact <path>`.
+ * Parses CLI arguments. Requires `--artifact <path>` and accepts `--summary`.
  */
 export function parseArgs(argv) {
   let artifactPath = null;
+  let summary = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
@@ -41,6 +42,8 @@ export function parseArgs(argv) {
         throw new Error("missing required value for --artifact <path>");
       }
       artifactPath = value;
+    } else if (flag === "--summary") {
+      summary = true;
     } else if (flag.startsWith("--")) {
       throw new Error(`unrecognized flag ${flag}`);
     } else {
@@ -52,7 +55,7 @@ export function parseArgs(argv) {
     throw new Error("missing required argument: --artifact <path>");
   }
 
-  return { artifactPath };
+  return { artifactPath, summary };
 }
 
 /**
@@ -408,9 +411,216 @@ export function formatPredictionRetrainingResult(result) {
 }
 
 /**
+ * Formats a validated PredictionRetrainingResultV1 artifact into concise deterministic text.
+ */
+export function formatPredictionRetrainingResultSummary(result) {
+  const lines = [];
+
+  lines.push("MMS PREDICTION & RETRAINING RESULT SUMMARY");
+  lines.push("");
+
+  lines.push("ARTIFACT IDENTITY");
+  lines.push(`Schema Version: ${result.schemaVersion}`);
+  lines.push(`Run ID: ${result.runId}`);
+  lines.push(`Generated At: ${result.generatedAt}`);
+  lines.push(`Data As Of: ${formatField(result.dataAsOf)}`);
+  lines.push("");
+
+  lines.push("DATASET / MODEL / RETRAINING PROVENANCE");
+  if (result.dataset.availability === "available") {
+    const dataset = result.dataset.value;
+    lines.push(`Dataset ID: ${dataset.datasetId}`);
+    lines.push(`Dataset Version: ${dataset.version}`);
+    lines.push(`Dataset Source: ${dataset.source}`);
+    lines.push(`Dataset SHA-256: ${dataset.datasetSha256}`);
+    lines.push(`Feature Rows SHA-256: ${dataset.featureRowsSha256}`);
+  } else {
+    lines.push(`Dataset: ${formatField(result.dataset)}`);
+  }
+  lines.push(`Model Algorithm: ${formatField(result.model.algorithm)}`);
+  lines.push(`Research Version: ${formatField(result.model.researchVersion)}`);
+  lines.push(`Model Version: ${formatField(result.model.modelVersion)}`);
+  lines.push(`Model Fit Partition: ${formatField(result.model.fitPartition)}`);
+  lines.push(`Model Training Rows SHA-256: ${formatField(result.model.trainingRowsSha256)}`);
+  if (result.retraining.availability === "available") {
+    const retraining = result.retraining.value;
+    lines.push(`Retraining Run ID: ${retraining.runId}`);
+    lines.push(`Retraining Executed: ${retraining.executed}`);
+    lines.push(`Retraining Fit Partition: ${retraining.fitPartition}`);
+    lines.push(`Retraining Training Row Count: ${retraining.trainingRowCount}`);
+    lines.push(`Retraining Training Rows SHA-256: ${retraining.trainingRowsSha256}`);
+    lines.push(`Retraining Model State SHA-256: ${formatField(retraining.modelStateSha256)}`);
+  } else {
+    lines.push(`Retraining: ${formatField(result.retraining)}`);
+  }
+  lines.push("");
+
+  lines.push("EVALUATION CONTRACT");
+  for (const [label, partition] of [
+    ["Training", result.partitions.training],
+    ["Validation", result.partitions.validation],
+    ["Final-Test", result.partitions.finalTest],
+  ]) {
+    lines.push(`${label} Partition:`);
+    lines.push(`  Start Date: ${formatField(partition.startDate)}`);
+    lines.push(`  End Date: ${formatField(partition.endDate)}`);
+    lines.push(`  Row Count: ${formatField(partition.rowCount)}`);
+    lines.push(`  Rows SHA-256: ${formatField(partition.rowsSha256)}`);
+  }
+  lines.push(`Purge Train -> Validation Rows: ${formatField(result.partitions.purgeRowCounts.trainValidation)}`);
+  lines.push(`Purge Validation -> Final Rows: ${formatField(result.partitions.purgeRowCounts.validationFinal)}`);
+  lines.push(`Fit Partition: ${formatField(result.model.fitPartition)}`);
+  if (result.thresholdSelection.availability === "available") {
+    const thresholdSelection = result.thresholdSelection.value;
+    lines.push(`Selected Threshold: ${thresholdSelection.selectedThreshold}`);
+    lines.push(`Threshold Selection Source: ${thresholdSelection.selectionSource}`);
+    lines.push(`Threshold Selection Rows SHA-256: ${thresholdSelection.selectionRowsSha256}`);
+  } else {
+    lines.push(`Threshold Selection: ${formatField(result.thresholdSelection)}`);
+  }
+  lines.push("");
+
+  lines.push("FINAL-TEST METRICS");
+  if (result.finalTestMetrics.availability === "available") {
+    const metrics = result.finalTestMetrics.value;
+    lines.push(`Final-Test Sample Count: ${metrics.sampleCount}`);
+    lines.push(`Accuracy: ${metrics.accuracy}`);
+    lines.push(`Balanced Accuracy: ${metrics.balancedAccuracy}`);
+    lines.push(`Brier Score: ${metrics.brierScore}`);
+    lines.push(`Cross Entropy: ${metrics.crossEntropy}`);
+    lines.push(`Calibration Error: ${metrics.calibrationError}`);
+    lines.push(`Positive Rate (Actual): ${metrics.positiveRate}`);
+    lines.push(`Predicted Positive Rate: ${metrics.predictedPositiveRate}`);
+  } else {
+    lines.push(`Final-Test Metrics: ${formatField(result.finalTestMetrics)}`);
+  }
+  if (result.baselineMetrics.availability === "available") {
+    const baseline = result.baselineMetrics.value;
+    lines.push(`Baseline Metric: ${baseline.metricName}`);
+    lines.push(`Baseline Majority Accuracy: ${baseline.majorityClassAccuracy}`);
+  } else {
+    lines.push(`Baseline Metrics: ${formatField(result.baselineMetrics)}`);
+  }
+  if (result.finalTestReliability.availability === "available") {
+    const reliability = result.finalTestReliability.value;
+    lines.push(`Reliability Group Dimension: ${reliability.groupDimension}`);
+    lines.push(`Reliability Final-Test Row Count: ${reliability.finalTestRowCount}`);
+    for (const group of reliability.groups) {
+      lines.push(
+        `Reliability ${group.symbol}: rows=${group.finalTestRowCount}`
+        + ` correct=${group.correctPredictionCount}`
+        + ` accuracy=${group.accuracy}`
+        + ` balancedAccuracy=${group.balancedAccuracy}`
+        + ` actualUpRate=${group.actualUpRate}`
+        + ` predictedUpRate=${group.predictedUpRate}`
+        + ` meanProbabilityUp=${group.meanProbabilityUp}`
+        + ` calibrationGap=${group.calibrationGap}`
+        + ` brierScore=${group.brierScore}`,
+      );
+    }
+  } else {
+    lines.push(`Final-Test Reliability: ${formatField(result.finalTestReliability)}`);
+  }
+  lines.push("");
+
+  lines.push("ECONOMIC EVIDENCE");
+  if (result.finalTestEconomicEdge.availability === "available") {
+    const economicEdge = result.finalTestEconomicEdge.value;
+    lines.push(`Economic Edge Research Mode: ${economicEdge.researchMode}`);
+    lines.push(`Economic Edge Evaluation Partition: ${economicEdge.evaluationPartition}`);
+    lines.push(`Economic Edge Final-Test Row Count: ${economicEdge.finalTestRowCount}`);
+    lines.push(`Economic Edge Operative Threshold: ${economicEdge.operativeThreshold}`);
+    lines.push(`Economic Edge Transaction Cost Bps: ${economicEdge.transactionCostBps}`);
+    for (const group of economicEdge.groups) {
+      lines.push(
+        `Economic Edge ${group.symbol}: rows=${group.finalTestRows}`
+        + ` period=${group.evaluationStartDate}..${group.evaluationEndDate}`
+        + ` strategyGrossReturn=${group.strategyGrossReturn}`
+        + ` strategyNetReturn=${group.strategyNetReturn}`
+        + ` benchmarkGrossReturn=${group.benchmarkGrossReturn}`
+        + ` benchmarkNetReturn=${group.benchmarkNetReturn}`
+        + ` excessReturn=${group.excessReturn}`
+        + ` strategyMaxDrawdown=${group.strategyMaximumDrawdown}`
+        + ` benchmarkMaxDrawdown=${group.benchmarkMaximumDrawdown}`
+        + ` tradeCount=${group.tradeCount}`,
+      );
+    }
+  } else {
+    lines.push(`Final-Test Economic Edge: ${formatField(result.finalTestEconomicEdge)}`);
+  }
+  if (result.simulation.availability === "available") {
+    const simulation = result.simulation.value;
+    lines.push(
+      `Simulation ${simulation.symbol}: strategyReturn=${simulation.strategy.totalReturn}`
+      + ` strategyMaxDrawdown=${simulation.strategy.maximumDrawdown}`
+      + ` benchmarkReturn=${simulation.benchmark.totalReturn}`
+      + ` benchmarkMaxDrawdown=${simulation.benchmark.maximumDrawdown}`
+      + ` excessReturn=${simulation.excessReturn}`,
+    );
+  } else {
+    lines.push(`Simulation: ${formatField(result.simulation)}`);
+  }
+  lines.push("");
+
+  lines.push("PREDICTIONS");
+  if (result.latestPredictions.availability === "available") {
+    lines.push(`Resolved Historical Prediction Count: ${result.latestPredictions.value.length}`);
+  } else {
+    lines.push(`Resolved Historical Prediction Count: ${formatField(result.latestPredictions)}`);
+  }
+  if (result.currentUnresolvedPredictions.availability === "available") {
+    lines.push(`Current Unresolved Prediction Count: ${result.currentUnresolvedPredictions.value.length}`);
+  } else {
+    lines.push(`Current Unresolved Prediction Count: ${formatField(result.currentUnresolvedPredictions)}`);
+  }
+  lines.push(`Current Prediction Unavailable Count: ${result.currentPredictionUnavailable.length}`);
+  for (const unavailable of result.currentPredictionUnavailable) {
+    lines.push(`Current Prediction Unavailable: ${unavailable.scenario}: ${unavailable.reason}`);
+  }
+  lines.push("");
+
+  lines.push("PROMOTION AND GUARDRAILS");
+  lines.push(`Promotion Verdict: ${result.promotion.verdict}`);
+  lines.push(`Upstream Status: ${result.promotion.upstreamStatus ?? "none"}`);
+  lines.push(`Automatic Promotion: ${result.promotion.automaticPromotion}`);
+  lines.push(`Manual Approval Required: ${result.promotion.manualApprovalRequired}`);
+  for (const reason of result.promotion.reasons) {
+    lines.push(`Promotion Reason: ${reason}`);
+  }
+  lines.push(`Provides Investment Recommendation: ${result.guardrails.providesInvestmentRecommendation}`);
+  lines.push(`Supports Order Execution: ${result.guardrails.supportsOrderExecution}`);
+  lines.push(`Supports Automatic Promotion: ${result.guardrails.supportsAutomaticPromotion}`);
+  lines.push("");
+
+  lines.push("WARNINGS / UNAVAILABLE EVIDENCE");
+  lines.push(`Warnings (${result.warnings.length}):`);
+  if (result.warnings.length === 0) {
+    lines.push("  None");
+  } else {
+    for (const warning of result.warnings) {
+      lines.push(`  - ${warning}`);
+    }
+  }
+  lines.push(`Unavailable Fields (${result.unavailableFields.length}):`);
+  if (result.unavailableFields.length === 0) {
+    lines.push("  None");
+  } else {
+    for (const unavailable of result.unavailableFields) {
+      lines.push(`  - ${unavailable.path}: ${unavailable.reason}`);
+    }
+  }
+  lines.push("");
+
+  lines.push("PROVENANCE");
+  lines.push(`Provenance Reference Count: ${result.provenanceReferences.length}`);
+
+  return `${lines.join("\n")}\n`;
+}
+
+/**
  * Inspects a serialized artifact file by delegating validation to @mms/contracts.
  */
-export function inspectPredictionRetrainingResultFile(artifactPath) {
+export function inspectPredictionRetrainingResultFile(artifactPath, options = {}) {
   let fileContent;
   try {
     fileContent = readFileSync(artifactPath, "utf8");
@@ -419,15 +629,19 @@ export function inspectPredictionRetrainingResultFile(artifactPath) {
   }
 
   const result = readPredictionRetrainingResultArtifact(fileContent);
-  return formatPredictionRetrainingResult(result);
+  const summary = options === true
+    || (typeof options === "object" && options !== null && options.summary === true);
+  return summary
+    ? formatPredictionRetrainingResultSummary(result)
+    : formatPredictionRetrainingResult(result);
 }
 
 /**
  * CLI main entrypoint.
  */
 export async function main(argv = process.argv.slice(2)) {
-  const { artifactPath } = parseArgs(argv);
-  const inspectionText = inspectPredictionRetrainingResultFile(artifactPath);
+  const { artifactPath, summary } = parseArgs(argv);
+  const inspectionText = inspectPredictionRetrainingResultFile(artifactPath, { summary });
   process.stdout.write(inspectionText);
 }
 

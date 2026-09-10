@@ -18,6 +18,7 @@ import {
 
 import {
   formatPredictionRetrainingResult,
+  formatPredictionRetrainingResultSummary,
   inspectPredictionRetrainingResultFile,
   parseArgs,
 } from "./inspectPredictionRetrainingResult.mjs";
@@ -128,6 +129,12 @@ function buildValidTestArtifact() {
         predictionHorizon: { unit: "trading_rows", rows: 5 },
       },
     ],
+    currentPredictionUnavailable: [
+      {
+        scenario: "MISSING_SCENARIO",
+        reason: "No current unresolved signal was produced for this scenario.",
+      },
+    ],
     simulation,
     warnings: [
       "Test warning 1: Diagnostic research inspection only.",
@@ -139,6 +146,13 @@ function buildValidTestArtifact() {
         sha256: "0".repeat(64),
       },
     ],
+  });
+}
+
+function buildUnavailableTestArtifact() {
+  return buildPredictionRetrainingResultV1({
+    runId: "inspector-unavailable-run-001",
+    generatedAt: "2026-08-12T00:00:00.000Z",
   });
 }
 
@@ -167,15 +181,27 @@ function runInspectorCli(args, options = {}) {
 test("parseArgs parses valid --artifact flags and rejects invalid arguments", () => {
   assert.deepEqual(parseArgs(["--artifact", "path/to/file.json"]), {
     artifactPath: "path/to/file.json",
+    summary: false,
   });
   assert.deepEqual(parseArgs(["--artifact=path/to/file.json"]), {
     artifactPath: "path/to/file.json",
+    summary: false,
+  });
+  assert.deepEqual(parseArgs(["--artifact", "path/to/file.json", "--summary"]), {
+    artifactPath: "path/to/file.json",
+    summary: true,
+  });
+  assert.deepEqual(parseArgs(["--summary", "--artifact=path/to/file.json"]), {
+    artifactPath: "path/to/file.json",
+    summary: true,
   });
 
   assert.throws(() => parseArgs([]), /missing required argument: --artifact/);
   assert.throws(() => parseArgs(["--artifact"]), /missing required value for --artifact/);
   assert.throws(() => parseArgs(["--artifact="]), /missing required value for --artifact/);
   assert.throws(() => parseArgs(["--unknown-flag"]), /unrecognized flag/);
+  assert.throws(() => parseArgs(["--artifact", "path/to/file.json", "--summary=true"]), /unrecognized flag/);
+  assert.throws(() => parseArgs(["--artifact", "path/to/file.json", "--summary", "extra"]), /unexpected positional argument/);
   assert.throws(() => parseArgs(["positional"]), /unexpected positional argument/);
 });
 
@@ -199,6 +225,78 @@ test("formats valid PredictionRetrainingResultV1 artifact deterministically", ()
   assert.equal(output1.includes("Provides Investment Recommendation: false"), true);
   assert.equal(output1.includes("Supports Order Execution:          false"), true);
   assert.equal(output1.includes("Supports Automatic Promotion:      false"), true);
+});
+
+test("formats the concise summary deterministically with all required evidence categories", () => {
+  const artifact = buildValidTestArtifact();
+  const output1 = formatPredictionRetrainingResultSummary(artifact);
+  const output2 = formatPredictionRetrainingResultSummary(artifact);
+
+  assert.equal(output1, output2);
+  for (const category of [
+    "ARTIFACT IDENTITY",
+    "DATASET / MODEL / RETRAINING PROVENANCE",
+    "EVALUATION CONTRACT",
+    "FINAL-TEST METRICS",
+    "ECONOMIC EVIDENCE",
+    "PREDICTIONS",
+    "PROMOTION AND GUARDRAILS",
+    "WARNINGS / UNAVAILABLE EVIDENCE",
+    "PROVENANCE",
+  ]) {
+    assert.equal(output1.includes(category), true, `Summary should include ${category}`);
+  }
+
+  assert.equal(output1.includes("MMS PREDICTION & RETRAINING RESULT SUMMARY"), true);
+  assert.equal(output1.includes("Schema Version: MMS_PREDICTION_RETRAINING_RESULT_V1"), true);
+  assert.equal(output1.includes("Run ID: inspector-test-run-001"), true);
+  assert.equal(output1.includes("Generated At: 2026-08-12T00:00:00.000Z"), true);
+  assert.equal(output1.includes("Data As Of: 2024-04-29"), true);
+  assert.equal(output1.includes("Dataset ID: synthetic-cycle"), true);
+  assert.equal(output1.includes("Dataset Version: v1"), true);
+  assert.equal(output1.includes("Dataset SHA-256:"), true);
+  assert.equal(output1.includes("Model Algorithm: binary_logistic_regression"), true);
+  assert.equal(output1.includes("Model Fit Partition: TRAINING"), true);
+  assert.equal(output1.includes("Retraining Training Row Count:"), true);
+  assert.equal(output1.includes("Training Partition:"), true);
+  assert.equal(output1.includes("Validation Partition:"), true);
+  assert.equal(output1.includes("Final-Test Partition:"), true);
+  assert.equal(output1.includes("Selected Threshold:"), true);
+  assert.equal(output1.includes("Fit Partition: TRAINING"), true);
+  assert.equal(output1.includes("Final-Test Sample Count:"), true);
+  assert.equal(output1.includes("Accuracy:"), true);
+  assert.equal(output1.includes("Calibration Error:"), true);
+  assert.equal(output1.includes("Reliability SYNTH:"), true);
+  assert.equal(output1.includes("Economic Edge SYNTH:"), true);
+  assert.equal(output1.includes("strategyNetReturn="), true);
+  assert.equal(output1.includes("excessReturn="), true);
+  assert.equal(output1.includes("strategyMaxDrawdown="), true);
+  assert.equal(output1.includes("Resolved Historical Prediction Count: 1"), true);
+  assert.equal(output1.includes("Current Unresolved Prediction Count: 1"), true);
+  assert.equal(output1.includes("Current Prediction Unavailable Count: 1"), true);
+  assert.equal(output1.includes("MISSING_SCENARIO: No current unresolved signal was produced for this scenario."), true);
+  assert.equal(output1.includes("Promotion Verdict: research_only"), true);
+  assert.equal(output1.includes("Automatic Promotion: false"), true);
+  assert.equal(output1.includes("Manual Approval Required: true"), true);
+  assert.match(output1, /Warnings \(\d+\):/);
+  assert.equal(output1.includes("Test warning 1: Diagnostic research inspection only."), true);
+  assert.equal(output1.includes("Unavailable Fields ("), true);
+  assert.equal(output1.includes("Provenance Reference Count:"), true);
+});
+
+test("summary exposes unavailable values with their reasons", () => {
+  const output = formatPredictionRetrainingResultSummary(buildUnavailableTestArtifact());
+
+  assert.equal(output.includes("Data As Of: unavailable: The upstream research evidence does not expose a data-as-of value."), true);
+  assert.equal(output.includes("Dataset: unavailable: No ExperimentRunEvidence was supplied."), true);
+  assert.equal(output.includes("Model Algorithm: unavailable: The current evidence does not carry a normalized model algorithm name."), true);
+  assert.equal(output.includes("Retraining: unavailable: No ExperimentRunEvidence was supplied."), true);
+  assert.equal(output.includes("Threshold Selection: unavailable: No ExperimentRunEvidence was supplied."), true);
+  assert.equal(output.includes("Final-Test Metrics: unavailable: No ExperimentRunEvidence was supplied."), true);
+  assert.equal(output.includes("Resolved Historical Prediction Count: unavailable: No latest per-symbol prediction evidence was supplied."), true);
+  assert.equal(output.includes("Current Unresolved Prediction Count: unavailable: No current unresolved prediction evidence was supplied."), true);
+  assert.equal(output.includes("Unavailable Fields ("), true);
+  assert.equal(output.includes("- dataAsOf: The upstream research evidence does not expose a data-as-of value."), true);
 });
 
 test("inspectPredictionRetrainingResultFile reads and formats artifact from file", () => {
@@ -231,8 +329,32 @@ test("CLI inspects valid serialized artifact with exit 0 and deterministic stdou
     assert.equal(result1.stderr, "");
     assert.equal(result2.stderr, "");
     assert.equal(result1.stdout, result2.stdout);
+    assert.equal(result1.stdout, formatPredictionRetrainingResult(artifact));
     assert.equal(result1.stdout.includes("inspector-test-run-001"), true);
     assert.equal(result1.stdout.includes("MMS_PREDICTION_RETRAINING_RESULT_V1"), true);
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test("CLI summary mode returns exit 0 and deterministic concise stdout", () => {
+  const tempDir = mkdtempSync(path.join(tmpdir(), "mms-inspector-test-"));
+  try {
+    const artifact = buildValidTestArtifact();
+    const artifactPath = path.join(tempDir, "valid_artifact.json");
+    writeFileSync(artifactPath, JSON.stringify(artifact, null, 2));
+
+    const result1 = runInspectorCli(["--artifact", artifactPath, "--summary"]);
+    const result2 = runInspectorCli(["--artifact", artifactPath, "--summary"]);
+
+    assert.equal(result1.status, 0);
+    assert.equal(result2.status, 0);
+    assert.equal(result1.stderr, "");
+    assert.equal(result2.stderr, "");
+    assert.equal(result1.stdout, result2.stdout);
+    assert.equal(result1.stdout, formatPredictionRetrainingResultSummary(artifact));
+    assert.equal(result1.stdout.includes("MMS PREDICTION & RETRAINING RESULT SUMMARY"), true);
+    assert.equal(result1.stdout.includes("FINAL-TEST RELIABILITY & CALIBRATION"), false);
   } finally {
     rmSync(tempDir, { recursive: true, force: true });
   }
@@ -253,6 +375,21 @@ test("CLI fails closed on malformed JSON input", () => {
   }
 });
 
+test("CLI summary mode fails closed on malformed JSON input", () => {
+  const tempDir = mkdtempSync(path.join(tmpdir(), "mms-inspector-test-"));
+  try {
+    const artifactPath = path.join(tempDir, "malformed.json");
+    writeFileSync(artifactPath, "{ this is not valid json");
+
+    const result = runInspectorCli(["--artifact", artifactPath, "--summary"]);
+    assert.notEqual(result.status, 0);
+    assert.equal(result.stdout, "");
+    assert.equal(result.stderr.includes("malformed JSON input"), true);
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
 test("CLI fails closed on contract-invalid artifact (tampered schemaVersion)", () => {
   const tempDir = mkdtempSync(path.join(tmpdir(), "mms-inspector-test-"));
   try {
@@ -262,6 +399,23 @@ test("CLI fails closed on contract-invalid artifact (tampered schemaVersion)", (
     writeFileSync(artifactPath, JSON.stringify(tampered, null, 2));
 
     const result = runInspectorCli(["--artifact", artifactPath]);
+    assert.notEqual(result.status, 0);
+    assert.equal(result.stdout, "");
+    assert.equal(result.stderr.includes("schemaVersion must be MMS_PREDICTION_RETRAINING_RESULT_V1"), true);
+  } finally {
+    rmSync(tempDir, { recursive: true, force: true });
+  }
+});
+
+test("CLI summary mode fails closed on contract-invalid artifact", () => {
+  const tempDir = mkdtempSync(path.join(tmpdir(), "mms-inspector-test-"));
+  try {
+    const artifact = buildValidTestArtifact();
+    const tampered = { ...artifact, schemaVersion: "INVALID_SCHEMA_VERSION" };
+    const artifactPath = path.join(tempDir, "tampered_schema.json");
+    writeFileSync(artifactPath, JSON.stringify(tampered, null, 2));
+
+    const result = runInspectorCli(["--artifact", artifactPath, "--summary"]);
     assert.notEqual(result.status, 0);
     assert.equal(result.stdout, "");
     assert.equal(result.stderr.includes("schemaVersion must be MMS_PREDICTION_RETRAINING_RESULT_V1"), true);
@@ -298,6 +452,13 @@ test("CLI fails closed on contract-invalid artifact (tampered guardrails)", () =
 
 test("CLI fails closed on non-existent input file", () => {
   const result = runInspectorCli(["--artifact", "non/existent/path/artifact.json"]);
+  assert.notEqual(result.status, 0);
+  assert.equal(result.stdout, "");
+  assert.equal(result.stderr.includes("failed to read artifact file"), true);
+});
+
+test("CLI summary mode fails closed on non-existent input file", () => {
+  const result = runInspectorCli(["--artifact", "non/existent/path/artifact.json", "--summary"]);
   assert.notEqual(result.status, 0);
   assert.equal(result.stdout, "");
   assert.equal(result.stderr.includes("failed to read artifact file"), true);
@@ -347,4 +508,29 @@ test("Inspection output preserves research evidence without introducing investme
   assert.equal(output.includes("Strategy Net Return:"), true);
   assert.equal(output.includes("Benchmark Net Return:"), true);
   assert.equal(output.includes("Excess Return:"), true);
+});
+
+test("Summary preserves false guardrails without introducing advice or execution semantics", () => {
+  const output = formatPredictionRetrainingResultSummary(buildValidTestArtifact());
+
+  assert.equal(output.includes("Provides Investment Recommendation: false"), true);
+  assert.equal(output.includes("Supports Order Execution: false"), true);
+  assert.equal(output.includes("Supports Automatic Promotion: false"), true);
+
+  for (const pattern of [
+    /\bBUY\b/,
+    /\bSELL\b/,
+    /\bHOLD\b/,
+    /target price/i,
+    /entry price/i,
+    /stop price/i,
+    /portfolio weight/i,
+    /trade now/i,
+    /Kelly/i,
+  ]) {
+    assert.equal(pattern.test(output), false, `Summary should not match forbidden pattern: ${pattern}`);
+  }
+
+  const recommendationLines = output.split("\n").filter((line) => /investment recommendation/i.test(line));
+  assert.deepEqual(recommendationLines, ["Provides Investment Recommendation: false"]);
 });

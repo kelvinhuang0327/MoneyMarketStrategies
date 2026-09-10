@@ -19,6 +19,22 @@ positions are research evidence, not current trading signals. The platform does
 not provide investment advice or trading execution. No production database has
 been selected, and the local bootstrap has no configured remote.
 
+## Prediction result inspector
+
+Inspect an already-validated prediction/retraining artifact with the existing
+full report:
+
+```sh
+npm run inspect:prediction-result -- --artifact <path>
+```
+
+Use the optional `--summary` flag for concise deterministic triage while
+preserving validation and diagnostic-only guardrails:
+
+```sh
+npm run inspect:prediction-result -- --artifact <path> --summary
+```
+
 ## Authority boundaries
 
 Future legacy ports must read pinned Git objects, never the legacy current
