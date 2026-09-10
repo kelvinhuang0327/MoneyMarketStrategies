@@ -44,9 +44,19 @@ inspector:
 npm run inspect:research-run -- --run-dir <research-output-directory>
 ```
 
-The inspector expects the four canonical `research:tw` outputs. It computes
-SHA-256 hashes locally; the hashes are not verified against a manifest. The
-prediction-result details reuse the concise validated summary.
+To compare two completed runs:
+
+```sh
+npm run inspect:research-run -- \
+  --run-dir <primary-run> \
+  --compare-to <comparison-run>
+```
+
+Both runs must contain the existing four canonical `research:tw` artifacts.
+`SAME` and `DIFFERENT` refer only to exact file-content SHA-256 hashes,
+computed locally and not verified against a manifest. The prediction-result
+sections reuse the existing validated summaries. The comparison does not
+declare one run better than the other.
 
 ## Authority boundaries
 

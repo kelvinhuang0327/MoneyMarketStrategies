@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Read-only CLI inspector for one completed research:tw output directory.
+// Read-only CLI inspector for one or two completed research:tw output directories.
 // Inventories only the four canonical artifacts and delegates prediction-result
 // validation and concise summary formatting to the existing implementations.
 
@@ -22,10 +22,12 @@ export const CANONICAL_ARTIFACT_FILENAMES = Object.freeze([
 const PREDICTION_RESULT_FILENAME = CANONICAL_ARTIFACT_FILENAMES.at(-1);
 
 /**
- * Parses CLI arguments. Requires exactly one --run-dir value.
+ * Parses CLI arguments. Requires exactly one --run-dir value and accepts one
+ * optional --compare-to value.
  */
 export function parseArgs(argv) {
   let runDir = null;
+  let compareTo = null;
 
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
@@ -48,6 +50,25 @@ export function parseArgs(argv) {
         throw new Error("missing required value for --run-dir <path>");
       }
       runDir = value;
+    } else if (flag === "--compare-to") {
+      if (compareTo !== null) {
+        throw new Error("duplicate --compare-to argument");
+      }
+      const value = argv[index + 1];
+      if (value === undefined || value.length === 0 || value.startsWith("--")) {
+        throw new Error("missing required value for --compare-to <path>");
+      }
+      compareTo = value;
+      index += 1;
+    } else if (flag.startsWith("--compare-to=")) {
+      if (compareTo !== null) {
+        throw new Error("duplicate --compare-to argument");
+      }
+      const value = flag.slice("--compare-to=".length);
+      if (value.length === 0) {
+        throw new Error("missing required value for --compare-to <path>");
+      }
+      compareTo = value;
     } else if (flag.startsWith("--")) {
       throw new Error(`unrecognized flag ${flag}`);
     } else {
@@ -59,7 +80,7 @@ export function parseArgs(argv) {
     throw new Error("missing required argument: --run-dir <path>");
   }
 
-  return { runDir };
+  return compareTo === null ? { runDir } : { runDir, compareTo };
 }
 
 function resolveRunDirectory(runDir) {
@@ -151,12 +172,60 @@ export function formatTwResearchRunInspection({ artifacts, predictionResult }) {
 }
 
 /**
+ * Formats a deterministic comparison of two validated research-run
+ * inventories and their prediction-result summaries.
+ */
+export function formatTwResearchRunComparison({ primary, comparison }) {
+  const lines = [
+    "MMS TW RESEARCH RUN COMPARISON",
+    "",
+    "CANONICAL ARTIFACTS",
+  ];
+
+  for (let index = 0; index < CANONICAL_ARTIFACT_FILENAMES.length; index += 1) {
+    const filename = CANONICAL_ARTIFACT_FILENAMES[index];
+    const primaryArtifact = primary.artifacts[index];
+    const comparisonArtifact = comparison.artifacts[index];
+
+    lines.push(`Filename: ${filename}`);
+    lines.push(`Primary Byte Count: ${primaryArtifact.byteCount}`);
+    lines.push(`Comparison Byte Count: ${comparisonArtifact.byteCount}`);
+    lines.push(`Primary Computed SHA-256: ${primaryArtifact.sha256}`);
+    lines.push(`Comparison Computed SHA-256: ${comparisonArtifact.sha256}`);
+    lines.push(
+      `Content Status: ${primaryArtifact.sha256 === comparisonArtifact.sha256
+        ? "SAME"
+        : "DIFFERENT"}`,
+    );
+    lines.push("");
+  }
+
+  lines.push("PRIMARY PREDICTION-RESULT SUMMARY");
+  lines.push(formatPredictionRetrainingResultSummary(primary.predictionResult).trimEnd());
+  lines.push("");
+  lines.push("COMPARISON PREDICTION-RESULT SUMMARY");
+  lines.push(formatPredictionRetrainingResultSummary(comparison.predictionResult).trimEnd());
+
+  return `${lines.join("\n")}\n`;
+}
+
+/**
  * CLI main entrypoint.
  */
 export async function main(argv = process.argv.slice(2)) {
-  const { runDir } = parseArgs(argv);
-  const inspection = inspectTwResearchRun(runDir);
-  process.stdout.write(formatTwResearchRunInspection(inspection));
+  const { runDir, compareTo } = parseArgs(argv);
+  const primaryInspection = inspectTwResearchRun(runDir);
+
+  if (compareTo === undefined) {
+    process.stdout.write(formatTwResearchRunInspection(primaryInspection));
+    return;
+  }
+
+  const comparisonInspection = inspectTwResearchRun(compareTo);
+  process.stdout.write(formatTwResearchRunComparison({
+    primary: primaryInspection,
+    comparison: comparisonInspection,
+  }));
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
