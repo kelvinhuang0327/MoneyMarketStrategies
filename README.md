@@ -35,6 +35,34 @@ preserving validation and diagnostic-only guardrails:
 npm run inspect:prediction-result -- --artifact <path> --summary
 ```
 
+## Research run producer
+
+Produce the normal no-mode Taiwan strategy research run with:
+
+```sh
+npm run research:tw
+```
+
+For the invocation above, the current default output directory is
+`/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1`.
+
+To choose an output directory explicitly:
+
+```sh
+npm run research:tw -- --out-dir <path>
+```
+
+The runner creates the selected directory as needed and writes the existing
+four canonical artifacts as sibling files in it. Use that same selected
+directory with the read-only inspector:
+
+```sh
+npm run inspect:research-run -- --run-dir <same-selected-directory>
+```
+
+`--out-dir` selects a location for the run; this documentation does not make
+any specific directory a new durable or canonical artifact authority.
+
 ## Research run inspector
 
 Inspect a completed `research:tw` output directory with the read-only run
