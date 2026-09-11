@@ -4,18 +4,122 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
+import { fileURLToPath } from "node:url";
 
 import {
   buildCurrentUnresolvedSignal,
   buildPredictionRetrainingResultV1FromFreshResearch,
   buildValidationThresholdParetoResearchOutput,
   formatProfitFactorForResearchMarkdown,
+  parseArgs,
   serializeResearchOutputForJson,
 } from "./runTwStrategyResearchStudy.mjs";
 import {
   simulateLongCashReplay,
   summarizeLongCashReplay,
 } from "@mms/strategy-simulator";
+
+test("uses portable project-local implicit output defaults and preserves explicit --out-dir", () => {
+  const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const outputRoot = path.join(repositoryRoot, "outputs");
+  const expectedNormalOutDir = path.join(outputRoot, "mms-tw-strategy-research-run-v1");
+  const implicitInvocations = [
+    {
+      args: [],
+      expectedOutDir: expectedNormalOutDir,
+    },
+    {
+      args: ["--cutoffs", "2026-07-01"],
+      expectedOutDir: path.join(outputRoot, "mms-tw-temporal-robustness-v1"),
+    },
+    {
+      args: ["--round-trip-cost-bps", "10"],
+      expectedOutDir: path.join(outputRoot, "mms-tw-cost-sensitivity-v1", "sensitivity-run1"),
+    },
+    {
+      args: ["--market-regime-challenger"],
+      expectedOutDir: path.join(expectedNormalOutDir, "market-regime-context-v1"),
+    },
+    {
+      args: ["--direct-return-linear-challenger"],
+      expectedOutDir: path.join(expectedNormalOutDir, "direct-return-linear-v1"),
+    },
+    {
+      args: ["--return-hurdle-logistic-challenger"],
+      expectedOutDir: path.join(expectedNormalOutDir, "return-hurdle-logistic-v1"),
+    },
+    {
+      args: ["--gnb-challenger"],
+      expectedOutDir: path.join(expectedNormalOutDir, "gnb-challenger-v1"),
+    },
+    {
+      args: ["--balanced-logistic-challenger"],
+      expectedOutDir: path.join(expectedNormalOutDir, "balanced-logistic-challenger-v1"),
+    },
+    {
+      args: ["--challenger-temporal"],
+      expectedOutDir: path.join(expectedNormalOutDir, "temporal-challenger-v1"),
+    },
+  ];
+
+  const implicitOutputDirs = implicitInvocations.map(({ args, expectedOutDir }) => {
+    const parsed = parseArgs(args);
+    assert.equal(parsed.outDir, expectedOutDir);
+    return parsed.outDir;
+  });
+  assert.equal(implicitOutputDirs.every((outDir) => outDir.startsWith(`${outputRoot}${path.sep}`)), true);
+  const runnerSource = readFileSync(
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "runTwStrategyResearchStudy.mjs"),
+    "utf8",
+  );
+  assert.equal(runnerSource.includes("/Users/kelvin/VibeCoding-WorkSpace/_scratch/"), false);
+
+  const customOutDir = "./caller-selected-output";
+  for (const { args } of implicitInvocations.slice(1)) {
+    assert.equal(parseArgs([...args, "--out-dir", customOutDir]).outDir, customOutDir);
+    assert.equal(parseArgs(["--out-dir", customOutDir, ...args]).outDir, customOutDir);
+  }
+
+  assert.equal(
+    parseArgs([
+      "--round-trip-cost-bps",
+      "10",
+      "--cutoffs",
+      "2026-07-01",
+      "--market-regime-challenger",
+      "--direct-return-linear-challenger",
+      "--return-hurdle-logistic-challenger",
+      "--gnb-challenger",
+      "--balanced-logistic-challenger",
+      "--challenger-temporal",
+    ]).outDir,
+    path.join(outputRoot, "mms-tw-cost-sensitivity-v1", "sensitivity-run1"),
+  );
+
+  const defaultArgs = parseArgs([]);
+  assert.deepEqual(
+    {
+      legacyRepo: defaultArgs.legacyRepo,
+      ref: defaultArgs.ref,
+      csvPath: defaultArgs.csvPath,
+      refitReportPath: defaultArgs.refitReportPath,
+      expectedSha256: defaultArgs.expectedSha256,
+      dataEndDate: defaultArgs.dataEndDate,
+      reviewDate: defaultArgs.reviewDate,
+      qualificationAsOf: defaultArgs.qualificationAsOf,
+    },
+    {
+      legacyRepo: "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
+      ref: "WORKTREE",
+      csvPath: "outputs/retraining/p194_twstock_ohlcv_export.csv",
+      refitReportPath: "outputs/retraining/p193_real_ohlcv_refit_report.json",
+      expectedSha256: "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+      dataEndDate: "2026-08-11",
+      reviewDate: "2026-08-12",
+      qualificationAsOf: "2025-06-18T10:00:00.000Z",
+    },
+  );
+});
 
 function replaySummary(strategyProfitFactor) {
   return {

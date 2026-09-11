@@ -77,7 +77,6 @@ const DEFAULTS = Object.freeze({
   dataEndDate: "2026-08-11",
   reviewDate: "2026-08-12",
   qualificationAsOf: "2025-06-18T10:00:00.000Z",
-  outDir: "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1",
   cutoffs: null,
   roundTripCostBps: null,
   challengerTemporal: false,
@@ -90,7 +89,38 @@ const DEFAULTS = Object.freeze({
 
 const SUPPORTED_SYMBOLS = Object.freeze(["0050", "0056", "2317", "2330", "2454"]);
 
-function parseArgs(argv) {
+function resolveDefaultOutputDir(args) {
+  const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const outputRoot = path.join(repositoryRoot, "outputs");
+
+  if (args.roundTripCostBps) {
+    return path.join(outputRoot, "mms-tw-cost-sensitivity-v1", "sensitivity-run1");
+  }
+  if (args.cutoffs) {
+    return path.join(outputRoot, "mms-tw-temporal-robustness-v1");
+  }
+  if (args.marketRegimeChallenger) {
+    return path.join(outputRoot, "mms-tw-strategy-research-run-v1", "market-regime-context-v1");
+  }
+  if (args.directReturnLinearChallenger) {
+    return path.join(outputRoot, "mms-tw-strategy-research-run-v1", "direct-return-linear-v1");
+  }
+  if (args.returnHurdleLogisticChallenger) {
+    return path.join(outputRoot, "mms-tw-strategy-research-run-v1", "return-hurdle-logistic-v1");
+  }
+  if (args.gnbChallenger) {
+    return path.join(outputRoot, "mms-tw-strategy-research-run-v1", "gnb-challenger-v1");
+  }
+  if (args.balancedLogisticChallenger) {
+    return path.join(outputRoot, "mms-tw-strategy-research-run-v1", "balanced-logistic-challenger-v1");
+  }
+  if (args.challengerTemporal) {
+    return path.join(outputRoot, "mms-tw-strategy-research-run-v1", "temporal-challenger-v1");
+  }
+  return path.join(outputRoot, "mms-tw-strategy-research-run-v1");
+}
+
+export function parseArgs(argv) {
   const args = { ...DEFAULTS };
   let customOutDir = false;
 
@@ -154,22 +184,8 @@ function parseArgs(argv) {
     index += 1;
   }
 
-  if (args.roundTripCostBps && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-cost-sensitivity-v1/sensitivity-run1";
-  } else if (args.cutoffs && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-temporal-robustness-v1";
-  } else if (args.marketRegimeChallenger && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/market-regime-context-v1";
-  } else if (args.directReturnLinearChallenger && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/direct-return-linear-v1";
-  } else if (args.returnHurdleLogisticChallenger && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/return-hurdle-logistic-v1";
-  } else if (args.gnbChallenger && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/gnb-challenger-v1";
-  } else if (args.balancedLogisticChallenger && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/balanced-logistic-challenger-v1";
-  } else if (args.challengerTemporal && !customOutDir) {
-    args.outDir = "/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1/temporal-challenger-v1";
+  if (!customOutDir) {
+    args.outDir = resolveDefaultOutputDir(args);
   }
 
   return args;

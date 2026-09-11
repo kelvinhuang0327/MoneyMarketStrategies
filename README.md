@@ -43,8 +43,8 @@ Produce the normal no-mode Taiwan strategy research run with:
 npm run research:tw
 ```
 
-For the invocation above, the current default output directory is
-`/Users/kelvin/VibeCoding-WorkSpace/_scratch/mms-tw-strategy-research-run-v1`.
+For the invocation above, the default output directory is
+`outputs/mms-tw-strategy-research-run-v1`, resolved under the repository root.
 
 To choose an output directory explicitly:
 
