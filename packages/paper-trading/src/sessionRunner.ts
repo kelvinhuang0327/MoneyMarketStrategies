@@ -359,6 +359,7 @@ export function runPaperSession(
   session: PaperSession,
   inputSha256: string,
   fillRule: SimulatedFillRule = (input) => alwaysFillNextEvent(input),
+  strategyOverride?: PaperStrategy,
 ): Record<string, unknown> {
   if (!/^[a-f0-9]{64}$/.test(inputSha256)) throw new TypeError("inputSha256 must be a lowercase SHA-256 digest");
   let currentTimestamp = 0;
@@ -366,7 +367,7 @@ export function runPaperSession(
     now: () => currentTimestamp,
     set: (timestamp) => { currentTimestamp = timestamp; },
   };
-  const strategy: PaperStrategy = new PriceBandStrategy({
+  const strategy: PaperStrategy = strategyOverride ?? new PriceBandStrategy({
     strategyVersion: STRATEGY_VERSION,
     ...session.simulation.strategy,
   });
@@ -432,12 +433,12 @@ export function runPaperSession(
     sourceLabelMeaning: "DECLARATION_ONLY_NOT_INDEPENDENTLY_VERIFIED",
     inputSha256,
     asset: session.asset,
-    strategyVersion: STRATEGY_VERSION,
+    strategyVersion: strategy.strategyVersion,
     simulationSettings: Object.freeze({
       initialCashMinor: session.simulation.initialCashMinor,
       risk: session.simulation.risk,
       terms: session.simulation.terms,
-      strategy: session.simulation.strategy,
+      strategy: strategy.strategyParameters ?? session.simulation.strategy,
       fillModel: FILL_MODEL,
     }),
     timeRange: Object.freeze(timeRange),

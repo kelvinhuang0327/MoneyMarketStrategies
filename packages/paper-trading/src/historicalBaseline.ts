@@ -28,6 +28,10 @@ export interface ParsedHistoricalCsv {
   readonly rowCount: number;
   readonly startDate: string;
   readonly endDate: string;
+  readonly sourceRows: readonly {
+    readonly date: string;
+    readonly valuesByColumn: Readonly<Record<string, string>>;
+  }[];
   readonly sourceProfile?: typeof TWSE_SOURCE_PROFILE;
   readonly minorUnitsPerMajor?: number;
   readonly sourcePriceColumn?: "close";
@@ -218,6 +222,7 @@ export function parseHistoricalCsv(
     readonly priceMinor: string;
     readonly eventId: string;
   }[] = [];
+  const sourceRows: ParsedHistoricalCsv["sourceRows"][number][] = [];
   let lastSelectedTimestamp: number | null = null;
   let selectedCurrencyCode: string | null = null;
   let selectedMinorUnit: string | null = null;
@@ -252,6 +257,12 @@ export function parseHistoricalCsv(
         priceMinor,
         eventId: `historical-${symbol}-${date}`,
       }));
+      sourceRows.push(Object.freeze({
+        date,
+        valuesByColumn: Object.freeze(Object.fromEntries(
+          header.fields.map((name, index) => [name, record.fields[index]!]),
+        )),
+      }));
       continue;
     }
 
@@ -282,6 +293,12 @@ export function parseHistoricalCsv(
       minorUnit,
       priceMinor,
       eventId: `historical-${symbol}-${date}`,
+    }));
+    sourceRows.push(Object.freeze({
+      date,
+      valuesByColumn: Object.freeze(Object.fromEntries(
+        header.fields.map((name, index) => [name, record.fields[index]!]),
+      )),
     }));
   }
 
@@ -320,6 +337,7 @@ export function parseHistoricalCsv(
     rowCount: selected.length,
     startDate: first.date,
     endDate: last.date,
+    sourceRows: Object.freeze(sourceRows),
     ...(sourceProfile === TWSE_SOURCE_PROFILE_ARGUMENT
       ? {
           sourceProfile: TWSE_SOURCE_PROFILE,

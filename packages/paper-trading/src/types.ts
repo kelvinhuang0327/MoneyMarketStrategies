@@ -22,10 +22,13 @@ export interface StrategyInput {
   /** Earlier fresh observations only. No future-derived values are provided. */
   readonly history: readonly MarketObservation[];
   readonly positionQuantity: number;
+  /** Sum of actual execution-price notional for the currently open long lots. */
+  readonly positionEntryExecutionNotionalMinor: bigint;
 }
 
 export interface PaperStrategy {
   readonly strategyVersion: string;
+  readonly strategyParameters?: Readonly<Record<string, string | number | boolean>>;
   decide(input: StrategyInput): number;
 }
 

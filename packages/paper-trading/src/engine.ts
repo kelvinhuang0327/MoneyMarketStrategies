@@ -36,6 +36,7 @@ interface MutableOrder {
 interface Lot {
   quantity: number;
   totalCostMinor: bigint;
+  totalExecutionNotionalMinor: bigint;
 }
 
 function nonEmpty(value: unknown): value is string {
@@ -252,7 +253,11 @@ export class PaperTradingEngine {
     if (order.side === "buy") {
       this.cashMinor -= totalBuyCostMinor;
       this.positionQuantity += report.quantity;
-      this.lots.push({ quantity: report.quantity, totalCostMinor: totalBuyCostMinor });
+      this.lots.push({
+        quantity: report.quantity,
+        totalCostMinor: totalBuyCostMinor,
+        totalExecutionNotionalMinor: notionalMinor,
+      });
     } else {
       const netProceedsMinor = notionalMinor - report.feeMinor;
       const basisMinor = this.consumeLots(report.quantity);
@@ -463,10 +468,15 @@ export class PaperTradingEngine {
   }
 
   private processStrategyDecision(market: MarketObservation): void {
+    const positionEntryExecutionNotionalMinor = this.lots.reduce(
+      (sum, lot) => sum + lot.totalExecutionNotionalMinor,
+      0n,
+    );
     const input = Object.freeze({
       current: Object.freeze({ ...market }),
       history: Object.freeze(this.history.map((item) => Object.freeze({ ...item }))),
       positionQuantity: this.positionQuantity,
+      positionEntryExecutionNotionalMinor,
     });
     let target: number;
     try {
@@ -635,8 +645,14 @@ export class PaperTradingEngine {
       if (!lot) throw new Error("position lot ledger is inconsistent with holdings");
       const soldFromLot = Math.min(left, lot.quantity);
       const allocated = allocateCostBasisMinor(lot.totalCostMinor, lot.quantity, soldFromLot);
+      const allocatedExecutionNotional = allocateCostBasisMinor(
+        lot.totalExecutionNotionalMinor,
+        lot.quantity,
+        soldFromLot,
+      );
       lot.quantity -= soldFromLot;
       lot.totalCostMinor -= allocated;
+      lot.totalExecutionNotionalMinor -= allocatedExecutionNotional;
       costBasisMinor += allocated;
       left -= soldFromLot;
       if (lot.quantity === 0) this.lots.shift();
