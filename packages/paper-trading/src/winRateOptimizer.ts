@@ -6,8 +6,9 @@ import { pathToFileURL } from "node:url";
 import { parseHistoricalCsv, type ParsedHistoricalCsv } from "./historicalBaseline.js";
 import { runPaperSession } from "./sessionRunner.js";
 
-const STRATEGY_VERSION = "price-band-fixed-v1";
-const TWSE_SOURCE_PROFILE_ARGUMENT = "twse-daily-ohlcv-close-v1" as const;
+export const PRICE_BAND_FIXED_STRATEGY_VERSION = "price-band-fixed-v1" as const;
+export const TWSE_SOURCE_PROFILE_ARGUMENT = "twse-daily-ohlcv-close-v1" as const;
+const STRATEGY_VERSION = PRICE_BAND_FIXED_STRATEGY_VERSION;
 const DEVELOPMENT_FRACTION = 0.8;
 const CANDIDATE_OFFSETS_MINOR = [-1_000n, -500n, 0n, 500n, 1_000n] as const;
 
@@ -251,6 +252,21 @@ function evaluateSessionWindow(
     events: session.events.slice(startIndex, endIndex),
   };
   return readTradeCounts(runPaperSession(windowSession, inputSha256));
+}
+
+export function evaluateDevelopmentParameters(
+  parsed: ParsedHistoricalCsv,
+  inputSha256: string,
+  parameters: WinRateParameters,
+): TradeCounts {
+  const layout = fullDevelopmentLayout(parsed.rowCount);
+  return aggregateTradeCounts(layout.foldIndices.map((fold) => evaluateSessionWindow(
+    parsed,
+    inputSha256,
+    parameters,
+    fold.validationStartIndex,
+    fold.validationEndIndex,
+  )));
 }
 
 export function isDevelopmentEligible(candidate: TradeCounts, championCompletedTradeCount: number): boolean {

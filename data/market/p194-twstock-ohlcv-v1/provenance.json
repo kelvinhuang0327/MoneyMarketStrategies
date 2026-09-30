@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "p194-twstock-ohlcv-v1",
+  "sourceRepository": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
+  "sourceRelativePath": "outputs/retraining/p194_twstock_ohlcv_export.csv",
+  "producer": "scripts/p194_twstock_export_ohlcv.py",
+  "provider": "twstock Stock.fetch(year, month); TWSE/TPEX",
+  "providerVersion": "1.5.1",
+  "fetchedAtUtc": "2026-08-12T03:29:21Z",
+  "csvSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "rowCount": 8014,
+  "symbols": ["2330", "2317", "2454", "0050", "0056"],
+  "perSymbolRowCounts": {
+    "2330": 1604,
+    "2317": 1603,
+    "2454": 1604,
+    "0050": 1599,
+    "0056": 1604
+  },
+  "actualDateRange": {
+    "start": "2020-01-02",
+    "end": "2026-08-11"
+  },
+  "schemaValidation": "PASS",
+  "pitValidation": "BOUNDED_PASS_WITH_SOURCE_LIMITATION",
+  "knownLimitations": [
+    "twstock does not provide full point-in-time archival metadata; PIT validation is bounded to the exported rows.",
+    "Coverage is limited to the five symbols listed in this artifact."
+  ]
+}
