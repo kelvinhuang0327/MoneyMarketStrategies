@@ -254,6 +254,17 @@ function evaluateSessionWindow(
   return readTradeCounts(runPaperSession(windowSession, inputSha256));
 }
 
+export function evaluateParametersOnAllRows(
+  parsed: ParsedHistoricalCsv,
+  inputSha256: string,
+  parameters: WinRateParameters,
+): TradeCounts {
+  if (parsed.rowCount !== parsed.session.events.length) {
+    throw new Error("parsed row count does not match its market event count");
+  }
+  return evaluateSessionWindow(parsed, inputSha256, parameters, 0, parsed.rowCount);
+}
+
 export function evaluateDevelopmentParameters(
   parsed: ParsedHistoricalCsv,
   inputSha256: string,

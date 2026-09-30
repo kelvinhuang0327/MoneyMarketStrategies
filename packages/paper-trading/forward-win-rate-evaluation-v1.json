@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "objective": "WIN_RATE_WILSON_LOWER_BOUND_95",
+  "selectionPolicyVersion": "wilson-lower-bound-95-development-v1",
+  "historicalCutoff": "2026-08-11",
+  "freshDataSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf",
+  "freshDateRange": {
+    "start": "2026-08-12",
+    "end": "2026-09-29"
+  },
+  "freshRowCount": 33,
+  "freshCompletedTradeCount": {
+    "champion": 0,
+    "challenger": 0
+  },
+  "champion": {
+    "id": "price-band-fixed-v1",
+    "strategyVersion": "price-band-fixed-v1",
+    "parameters": {
+      "entryAtOrBelowMinor": "10000",
+      "exitAtOrAboveMinor": "11000",
+      "targetQuantity": 3
+    },
+    "freshDataSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf",
+    "completedTradeCount": 0,
+    "freshCompletedTradeCount": 0,
+    "wins": 0,
+    "losses": 0,
+    "breakevens": 0,
+    "rawNetWinRate": null,
+    "wilsonLowerBound95": null
+  },
+  "challenger": {
+    "id": "entry-11000-exit-12000",
+    "strategyVersion": "price-band-fixed-v1",
+    "parameters": {
+      "entryAtOrBelowMinor": "11000",
+      "exitAtOrAboveMinor": "12000",
+      "targetQuantity": 3
+    },
+    "freshDataSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf",
+    "completedTradeCount": 0,
+    "freshCompletedTradeCount": 0,
+    "wins": 0,
+    "losses": 0,
+    "breakevens": 0,
+    "rawNetWinRate": null,
+    "wilsonLowerBound95": null
+  },
+  "promotionStatus": "INSUFFICIENT_FRESH_TRADES"
+}

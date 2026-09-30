@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "0050-forward-v1",
+  "symbol": "0050",
+  "source": "TWSE STOCK_DAY monthly report API",
+  "fetchedAtUtc": "2026-09-30T05:45:03.047Z",
+  "dateRange": {
+    "start": "2026-08-12",
+    "end": "2026-09-29"
+  },
+  "rowCount": 33,
+  "sha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf",
+  "historicalCutoff": "2026-08-11",
+  "purpose": "FORWARD_EVALUATION_ONLY",
+  "sourceUrls": [
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260801&stockNo=0050",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260901&stockNo=0050"
+  ]
+}
