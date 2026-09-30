@@ -8,6 +8,13 @@ export {
   alwaysFillNextEvent,
 } from "./strategy.js";
 export type { RollingMeanReversionV1Config } from "./strategy.js";
+export {
+  ROLLING_ZSCORE_MEAN_REVERSION_V1,
+  ROLLING_ZSCORE_MEAN_REVERSION_V1_STRATEGY_VERSION,
+  RollingZScoreMeanReversionV1Strategy,
+  rollingCloseZScore,
+} from "./zscoreStrategy.js";
+export type { RollingZScoreMeanReversionV1Config } from "./zscoreStrategy.js";
 export type {
   AccountSnapshot,
   CancelRequest,
