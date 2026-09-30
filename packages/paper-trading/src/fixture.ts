@@ -21,6 +21,25 @@ export const PAPER_TRADING_FIXTURE: readonly MarketEvent[] = Object.freeze([
   Object.freeze({ eventId: "fixture-004", timestamp: 4_000, symbol: "SYNTH", priceMinor: 10_500n }),
 ]);
 
+export const PAPER_TRADING_DEMO_SETTINGS = Object.freeze({
+  initialCashMinor: 100_000n,
+  risk: Object.freeze({
+    maxPositionQuantity: 4,
+    maxExposureMinor: 50_000n,
+    maxMarketAgeMs: 5_000,
+  }),
+  terms: Object.freeze({
+    label: "SYNTHETIC_ONLY" as const,
+    feeBps: 30,
+    slippageBps: 100,
+  }),
+  strategy: Object.freeze({
+    entryAtOrBelowMinor: 10_000n,
+    exitAtOrAboveMinor: 11_000n,
+    targetQuantity: 3,
+  }),
+});
+
 export function runDemoFixture(): {
   readonly engine: PaperTradingEngine;
   readonly outcomes: readonly OperationResult[];
@@ -28,23 +47,13 @@ export function runDemoFixture(): {
   const clock = new FixtureClock();
   const engine = new PaperTradingEngine({
     symbol: "SYNTH",
-    initialCashMinor: 100_000n,
-    risk: {
-      maxPositionQuantity: 4,
-      maxExposureMinor: 50_000n,
-      maxMarketAgeMs: 5_000,
-    },
-    terms: {
-      label: "SYNTHETIC_ONLY",
-      feeBps: 30,
-      slippageBps: 100,
-    },
+    initialCashMinor: PAPER_TRADING_DEMO_SETTINGS.initialCashMinor,
+    risk: PAPER_TRADING_DEMO_SETTINGS.risk,
+    terms: PAPER_TRADING_DEMO_SETTINGS.terms,
     clock,
     strategy: new PriceBandStrategy({
       strategyVersion: "price-band-fixed-v1",
-      entryAtOrBelowMinor: 10_000n,
-      exitAtOrAboveMinor: 11_000n,
-      targetQuantity: 3,
+      ...PAPER_TRADING_DEMO_SETTINGS.strategy,
     }),
     fillRule: (input) => alwaysFillNextEvent(input),
   });
