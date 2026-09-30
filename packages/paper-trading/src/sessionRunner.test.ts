@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { describe, expect, it } from "vitest";
 import { parsePaperSession, runPaperSession, runSessionFile } from "./sessionRunner.js";
 import type { SimulatedFillRule } from "./types.js";
+import { CROSS_SYMBOL_RESEARCH_RISK_V1 } from "./crossSymbolResearchRisk.js";
 
 const BASE_TIME = 1_700_000_000_000;
 
@@ -40,6 +41,69 @@ function asRecord(value: unknown): Record<string, unknown> {
 }
 
 describe("paper session runner", () => {
+  it("keeps default risk settings and applies the fixed research override only when supplied", () => {
+    const input = session([quote("risk-0", 1, "90"), quote("risk-1", 2, "120")]);
+    const parsed = parsePaperSession(input);
+    const defaultResult = asRecord(runPaperSession(parsed, "a".repeat(64)));
+    const normalizedResult = asRecord(runPaperSession(
+      parsed,
+      "a".repeat(64),
+      undefined,
+      undefined,
+      CROSS_SYMBOL_RESEARCH_RISK_V1,
+    ));
+    const defaultSettings = asRecord(defaultResult.simulationSettings);
+    const normalizedSettings = asRecord(normalizedResult.simulationSettings);
+    expect(defaultSettings.initialCashMinor).toBe(100_000n);
+    expect(asRecord(defaultSettings.risk)).toMatchObject({
+      maxPositionQuantity: 4,
+      maxExposureMinor: 50_000n,
+      maxMarketAgeMs: 5_000,
+    });
+    expect(defaultSettings.riskProfileId).toBeUndefined();
+    expect(normalizedSettings.initialCashMinor).toBe(10_000_000n);
+    expect(asRecord(normalizedSettings.risk)).toMatchObject({
+      maxPositionQuantity: 4,
+      maxExposureMinor: 2_000_000n,
+      maxMarketAgeMs: 5_000,
+    });
+    expect(normalizedSettings.riskProfileId).toBe("CROSS_SYMBOL_RESEARCH_RISK_V1");
+  });
+
+  it("keeps cash and position checks active under the research profile", () => {
+    const lowCashProfile = Object.freeze({
+      ...CROSS_SYMBOL_RESEARCH_RISK_V1,
+      initialCapitalMinor: 1n,
+    });
+    const lowCashResult = asRecord(runPaperSession(
+      parsePaperSession(session([quote("low-cash-0", 1, "90")])),
+      "a".repeat(64),
+      undefined,
+      undefined,
+      lowCashProfile,
+    ));
+    const lowCashDecision = (lowCashResult.journal as readonly Record<string, unknown>[])
+      .find((event) => event.kind === "decision");
+    expect(lowCashDecision).toMatchObject({ status: "risk-rejected", reasonCode: "INSUFFICIENT_FUNDS" });
+
+    const tooManyShares = session([quote("position-limit-0", 1, "90")]);
+    asRecord(asRecord(tooManyShares).simulation).strategy = {
+      entryAtOrBelowMinor: "90",
+      exitAtOrAboveMinor: "120",
+      targetQuantity: 5,
+    };
+    const positionResult = asRecord(runPaperSession(
+      parsePaperSession(tooManyShares),
+      "a".repeat(64),
+      undefined,
+      undefined,
+      CROSS_SYMBOL_RESEARCH_RISK_V1,
+    ));
+    const positionDecision = (positionResult.journal as readonly Record<string, unknown>[])
+      .find((event) => event.kind === "decision");
+    expect(positionDecision).toMatchObject({ status: "risk-rejected", reasonCode: "MAX_POSITION_EXCEEDED" });
+  });
+
   it("is deterministic and keeps earlier decisions unchanged when future prices change", () => {
     const events = [quote("q1", 1, "90"), quote("q2", 2, "100"), quote("q3", 3, "120"), quote("q4", 4, "110")];
     const first = run(session(events));

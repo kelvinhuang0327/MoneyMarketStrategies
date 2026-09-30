@@ -6,6 +6,7 @@ import { pathToFileURL } from "node:url";
 import { allocateCostBasisMinor } from "./money.js";
 import { PaperTradingEngine } from "./engine.js";
 import { alwaysFillNextEvent, PriceBandStrategy } from "./strategy.js";
+import type { CrossSymbolResearchRiskProfile } from "./crossSymbolResearchRisk.js";
 import type {
   Clock,
   MarketEvent,
@@ -360,8 +361,22 @@ export function runPaperSession(
   inputSha256: string,
   fillRule: SimulatedFillRule = (input) => alwaysFillNextEvent(input),
   strategyOverride?: PaperStrategy,
+  researchRiskProfile?: CrossSymbolResearchRiskProfile,
 ): Record<string, unknown> {
   if (!/^[a-f0-9]{64}$/.test(inputSha256)) throw new TypeError("inputSha256 must be a lowercase SHA-256 digest");
+  if (researchRiskProfile && (
+    session.asset.currencyCode !== researchRiskProfile.currency
+    || session.asset.minorUnit !== "0.01"
+    || researchRiskProfile.minorUnitsPerMajor !== 100
+    || researchRiskProfile.initialCapitalMinor < 0n
+    || researchRiskProfile.maxExposureMinor < 0n
+  )) {
+    throw new TypeError("cross-symbol research risk profile requires non-negative TWD minor-unit limits");
+  }
+  const initialCashMinor = researchRiskProfile?.initialCapitalMinor ?? session.simulation.initialCashMinor;
+  const riskLimits = researchRiskProfile === undefined
+    ? session.simulation.risk
+    : Object.freeze({ ...session.simulation.risk, maxExposureMinor: researchRiskProfile.maxExposureMinor });
   let currentTimestamp = 0;
   const clock: Clock & { set(timestamp: number): void } = {
     now: () => currentTimestamp,
@@ -373,8 +388,8 @@ export function runPaperSession(
   });
   const engine = new PaperTradingEngine({
     symbol: session.asset.symbol,
-    initialCashMinor: session.simulation.initialCashMinor,
-    risk: session.simulation.risk,
+    initialCashMinor,
+    risk: riskLimits,
     terms: session.simulation.terms,
     clock,
     strategy,
@@ -402,7 +417,7 @@ export function runPaperSession(
   const fillFeesMatch = trades.fillFeesMinor === account.feesPaidMinor;
   const positionsMatch = trades.filledPositionQuantity === account.positionQuantity;
   const realizedPnlMatches = trades.totalRealizedPnlMinor === account.realizedPnlMinor;
-  const equityFromPnlMinor = session.simulation.initialCashMinor
+  const equityFromPnlMinor = initialCashMinor
     + account.realizedPnlMinor
     + account.unrealizedPnlMinor;
   const equityMatches = equityFromPnlMinor === account.equityMinor;
@@ -435,8 +450,9 @@ export function runPaperSession(
     asset: session.asset,
     strategyVersion: strategy.strategyVersion,
     simulationSettings: Object.freeze({
-      initialCashMinor: session.simulation.initialCashMinor,
-      risk: session.simulation.risk,
+      initialCashMinor,
+      risk: riskLimits,
+      ...(researchRiskProfile === undefined ? {} : { riskProfileId: researchRiskProfile.id }),
       terms: session.simulation.terms,
       strategy: strategy.strategyParameters ?? session.simulation.strategy,
       fillModel: FILL_MODEL,

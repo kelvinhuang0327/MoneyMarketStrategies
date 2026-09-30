@@ -17,6 +17,7 @@ import {
   buildZScoreCandidateGrid,
   formatTwdMinor,
   ZSCORE_HISTORICAL_CUTOFF,
+  ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH,
   ZSCORE_SELECTION_ARTIFACT_PATH,
   type ZScoreMetrics,
   type ZScoreParameters,
@@ -25,12 +26,23 @@ import {
   ROLLING_ZSCORE_MEAN_REVERSION_V1,
   RollingZScoreMeanReversionV1Strategy,
 } from "./zscoreStrategy.js";
+import {
+  CROSS_SYMBOL_RESEARCH_RISK_V1,
+  type CrossSymbolResearchRiskProfile,
+} from "./crossSymbolResearchRisk.js";
 
 export const ZSCORE_FORWARD_SYMBOLS = CROSS_SYMBOL_VALIDATION_SYMBOLS;
 export const ZSCORE_FORWARD_DATA_DIRECTORY = "data/market/forward/cross-symbol-v1" as const;
 export const ZSCORE_FORWARD_CSV_PATH = `${ZSCORE_FORWARD_DATA_DIRECTORY}/cross_symbol_forward.csv` as const;
 export const ZSCORE_FORWARD_PROVENANCE_PATH = `${ZSCORE_FORWARD_DATA_DIRECTORY}/provenance.json` as const;
 export const ZSCORE_FORWARD_RESULT_PATH = "packages/paper-trading/zscore-cross-symbol-forward-v1.json" as const;
+export const ZSCORE_RISK_NORMALIZED_FORWARD_DATA_DIRECTORY = "data/market/forward/cross-symbol-risk-normalized-v1" as const;
+export const ZSCORE_RISK_NORMALIZED_FORWARD_CSV_PATH = `${ZSCORE_RISK_NORMALIZED_FORWARD_DATA_DIRECTORY}/cross_symbol_forward.csv` as const;
+export const ZSCORE_RISK_NORMALIZED_FORWARD_PROVENANCE_PATH = `${ZSCORE_RISK_NORMALIZED_FORWARD_DATA_DIRECTORY}/provenance.json` as const;
+export const ZSCORE_RISK_NORMALIZED_FORWARD_RESULT_PATH = "packages/paper-trading/zscore-risk-normalized-cross-symbol-forward-v1.json" as const;
+export const ZSCORE_RISK_NORMALIZED_TASK_BRANCH = "feat/cross-symbol-research-risk-profile-v1" as const;
+export const ZSCORE_RISK_NORMALIZED_FREEZE_COMMIT_SUBJECT = "feat(paper): freeze risk-normalized zscore challenger" as const;
+export const ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID = "cross-symbol-risk-normalized-forward-v1" as const;
 export const ZSCORE_FORWARD_EVALUATOR_VERSION = "TWSE exchangeReport/STOCK_DAY monthly report API response=json" as const;
 export const ZSCORE_FORWARD_SOURCE = "TWSE STOCK_DAY monthly report API" as const;
 export const ZSCORE_FORWARD_CSV_SOURCE = "twse/STOCK_DAY" as const;
@@ -59,7 +71,7 @@ interface FreshMarketRow {
 
 interface FreshProvenance {
   readonly schemaVersion: 1;
-  readonly artifactId: "cross-symbol-forward-v1";
+  readonly artifactId: "cross-symbol-forward-v1" | typeof ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID;
   readonly symbols: typeof ZSCORE_FORWARD_SYMBOLS;
   readonly source: typeof ZSCORE_FORWARD_SOURCE;
   readonly providerVersion: typeof ZSCORE_FORWARD_EVALUATOR_VERSION;
@@ -71,6 +83,27 @@ interface FreshProvenance {
   readonly purpose: "BLIND_CROSS_SYMBOL_FORWARD_EVALUATION";
   readonly sourceUrls: readonly string[];
 }
+
+interface FreshDataPaths {
+  readonly directory: string;
+  readonly csv: string;
+  readonly provenance: string;
+  readonly artifactId: FreshProvenance["artifactId"];
+}
+
+const LEGACY_FRESH_DATA_PATHS: FreshDataPaths = Object.freeze({
+  directory: ZSCORE_FORWARD_DATA_DIRECTORY,
+  csv: ZSCORE_FORWARD_CSV_PATH,
+  provenance: ZSCORE_FORWARD_PROVENANCE_PATH,
+  artifactId: "cross-symbol-forward-v1",
+});
+
+const RISK_NORMALIZED_FRESH_DATA_PATHS: FreshDataPaths = Object.freeze({
+  directory: ZSCORE_RISK_NORMALIZED_FORWARD_DATA_DIRECTORY,
+  csv: ZSCORE_RISK_NORMALIZED_FORWARD_CSV_PATH,
+  provenance: ZSCORE_RISK_NORMALIZED_FORWARD_PROVENANCE_PATH,
+  artifactId: ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID,
+});
 
 interface InternalMetrics extends ZScoreMetrics {
   readonly netPnlMinor: bigint;
@@ -335,11 +368,14 @@ function encodeUtf8(value: string): Uint8Array {
   return new TextEncoder().encode(value);
 }
 
-function parseFreshProvenance(value: unknown): FreshProvenance {
+function parseFreshProvenance(
+  value: unknown,
+  expectedArtifactId: FreshProvenance["artifactId"] = "cross-symbol-forward-v1",
+): FreshProvenance {
   const provenance = asRecord(value, "fresh cross-symbol provenance");
   if (
     provenance["schemaVersion"] !== 1
-    || provenance["artifactId"] !== "cross-symbol-forward-v1"
+    || provenance["artifactId"] !== expectedArtifactId
     || provenance["source"] !== ZSCORE_FORWARD_SOURCE
     || provenance["providerVersion"] !== ZSCORE_FORWARD_EVALUATOR_VERSION
     || provenance["historicalCutoff"] !== ZSCORE_HISTORICAL_CUTOFF
@@ -380,7 +416,7 @@ function parseFreshProvenance(value: unknown): FreshProvenance {
   }
   return Object.freeze({
     schemaVersion: 1,
-    artifactId: "cross-symbol-forward-v1",
+    artifactId: expectedArtifactId,
     symbols: ZSCORE_FORWARD_SYMBOLS,
     source: ZSCORE_FORWARD_SOURCE,
     providerVersion: ZSCORE_FORWARD_EVALUATOR_VERSION,
@@ -410,9 +446,25 @@ function validateFreshProvenanceRows(
   }
 }
 
-function validateFrozenChallenger(value: unknown): { readonly id: string; readonly parameters: ZScoreParameters } {
+function validateFrozenChallenger(
+  value: unknown,
+  requireRiskProfile = false,
+): { readonly id: string; readonly parameters: ZScoreParameters } {
   const artifact = asRecord(value, "frozen z-score selection artifact");
   const selected = asRecord(artifact["selectedFutureCandidate"], "selectedFutureCandidate");
+  if (requireRiskProfile) {
+    const riskProfile = asRecord(artifact["riskProfile"], "riskProfile");
+    if (
+      riskProfile["id"] !== CROSS_SYMBOL_RESEARCH_RISK_V1.id
+      || riskProfile["initialCapitalMinor"] !== Number(CROSS_SYMBOL_RESEARCH_RISK_V1.initialCapitalMinor)
+      || riskProfile["maxExposureMinor"] !== Number(CROSS_SYMBOL_RESEARCH_RISK_V1.maxExposureMinor)
+      || riskProfile["maxExposureFractionOfInitialCapital"] !== CROSS_SYMBOL_RESEARCH_RISK_V1.maxExposureFractionOfInitialCapital
+      || riskProfile["currency"] !== CROSS_SYMBOL_RESEARCH_RISK_V1.currency
+      || riskProfile["minorUnitsPerMajor"] !== CROSS_SYMBOL_RESEARCH_RISK_V1.minorUnitsPerMajor
+    ) {
+      throw new TypeError("frozen z-score artifact does not identify the fixed cross-symbol research risk profile");
+    }
+  }
   if (
     artifact["schemaVersion"] !== 1
     || artifact["strategyFamily"] !== ROLLING_ZSCORE_MEAN_REVERSION_V1
@@ -434,8 +486,13 @@ function validateFrozenChallenger(value: unknown): { readonly id: string; readon
   return Object.freeze({ id: candidate.candidateId, parameters: candidate.parameters });
 }
 
-function tradeMetrics(parsed: ParsedHistoricalCsv, inputSha256: string, strategy: Parameters<typeof runPaperSession>[3]): InternalMetrics {
-  const result = runPaperSession(parsed.session, inputSha256, undefined, strategy);
+function tradeMetrics(
+  parsed: ParsedHistoricalCsv,
+  inputSha256: string,
+  strategy: Parameters<typeof runPaperSession>[3],
+  researchRiskProfile?: CrossSymbolResearchRiskProfile,
+): InternalMetrics {
+  const result = runPaperSession(parsed.session, inputSha256, undefined, strategy, researchRiskProfile);
   const statistics = asRecord(result["tradingStatistics"], "paper session tradingStatistics");
   const account = asRecord(result["accountSummary"], "paper session accountSummary");
   const completedTrades = statistics["completedTrades"];
@@ -555,12 +612,14 @@ export function evaluateZScoreCrossSymbolForward(input: {
   readonly legacyReferenceArtifact: unknown;
   readonly frozenSelectionArtifact: unknown;
   readonly frozenSelectionCommit: string;
+  readonly researchRiskProfile?: CrossSymbolResearchRiskProfile;
+  readonly freshArtifactId?: FreshProvenance["artifactId"];
 }): Record<string, unknown> {
   if (!/^[a-f0-9]{40}$/.test(input.frozenSelectionCommit)) throw new TypeError("frozenSelectionCommit must be a full lowercase commit SHA");
   const legacy = loadFrozenCrossSymbolChallenger(input.legacyReferenceArtifact);
   const challenger = validateFrozenChallenger(input.frozenSelectionArtifact);
   const freshDataSha256 = sha256(input.freshDataBytes);
-  const provenance = parseFreshProvenance(input.freshProvenance);
+  const provenance = parseFreshProvenance(input.freshProvenance, input.freshArtifactId ?? "cross-symbol-forward-v1");
   let contents: string;
   try {
     contents = new TextDecoder("utf-8", { fatal: true }).decode(input.freshDataBytes);
@@ -581,8 +640,18 @@ export function evaluateZScoreCrossSymbolForward(input: {
     if (parsed.rowCount !== symbolRows.length || parsed.startDate <= ZSCORE_HISTORICAL_CUTOFF) {
       throw new TypeError(`fresh parsed rows do not reconcile for ${symbol}`);
     }
-    const legacyMetrics = tradeMetrics(parsed, freshDataSha256, createFrozenMeanReversionStrategy(legacy));
-    const challengerMetrics = tradeMetrics(parsed, freshDataSha256, new RollingZScoreMeanReversionV1Strategy(challenger.parameters));
+    const legacyMetrics = tradeMetrics(
+      parsed,
+      freshDataSha256,
+      createFrozenMeanReversionStrategy(legacy),
+      input.researchRiskProfile,
+    );
+    const challengerMetrics = tradeMetrics(
+      parsed,
+      freshDataSha256,
+      new RollingZScoreMeanReversionV1Strategy(challenger.parameters),
+      input.researchRiskProfile,
+    );
     return Object.freeze({ symbol, legacy: legacyMetrics, challenger: challengerMetrics });
   });
   const legacyPerSymbol = Object.freeze(perSymbolInternal.map(({ symbol, legacy: metrics }) => Object.freeze({ symbol, ...publicMetrics(metrics) })));
@@ -597,6 +666,16 @@ export function evaluateZScoreCrossSymbolForward(input: {
   return Object.freeze({
     schemaVersion: 1,
     frozenSelectionCommit: input.frozenSelectionCommit,
+    ...(input.researchRiskProfile === undefined ? {} : {
+      riskProfile: Object.freeze({
+        id: input.researchRiskProfile.id,
+        initialCapitalMinor: Number(input.researchRiskProfile.initialCapitalMinor),
+        maxExposureMinor: Number(input.researchRiskProfile.maxExposureMinor),
+        maxExposureFractionOfInitialCapital: input.researchRiskProfile.maxExposureFractionOfInitialCapital,
+        currency: input.researchRiskProfile.currency,
+        minorUnitsPerMajor: input.researchRiskProfile.minorUnitsPerMajor,
+      }),
+    }),
     freshDataSha256,
     freshDateRange,
     freshSymbols: ZSCORE_FORWARD_SYMBOLS,
@@ -643,12 +722,15 @@ function officialMonthUrl(month: string, symbol: string): string {
   return `https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=${month}&stockNo=${symbol}`;
 }
 
-function currentGitFreezeIdentity(): { readonly head: string; readonly branch: string; readonly subject: string } {
+function currentGitFreezeIdentity(
+  expectedBranch: string = ZSCORE_FORWARD_TASK_BRANCH,
+  expectedSubject: string = ZSCORE_FREEZE_COMMIT_SUBJECT,
+): { readonly head: string; readonly branch: string; readonly subject: string } {
   const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: PROJECT_ROOT, encoding: "utf8" }).trim();
   const branch = execFileSync("git", ["branch", "--show-current"], { cwd: PROJECT_ROOT, encoding: "utf8" }).trim();
   const subject = execFileSync("git", ["show", "-s", "--format=%s", "HEAD"], { cwd: PROJECT_ROOT, encoding: "utf8" }).trim();
   const status = execFileSync("git", ["status", "--porcelain=v1", "--untracked-files=all"], { cwd: PROJECT_ROOT, encoding: "utf8" }).trim();
-  if (branch !== ZSCORE_FORWARD_TASK_BRANCH || subject !== ZSCORE_FREEZE_COMMIT_SUBJECT || status !== "") {
+  if (branch !== expectedBranch || subject !== expectedSubject || status !== "") {
     throw new TypeError("fresh fetch requires a clean z-score task branch at the Phase A freeze commit");
   }
   return Object.freeze({ head, branch, subject });
@@ -664,7 +746,9 @@ async function readJson(path: string, label: string): Promise<unknown> {
   }
 }
 
-async function fetchAndWriteFreshData(): Promise<{ readonly bytes: Uint8Array; readonly provenance: FreshProvenance }> {
+async function fetchAndWriteFreshData(
+  paths: FreshDataPaths = LEGACY_FRESH_DATA_PATHS,
+): Promise<{ readonly bytes: Uint8Array; readonly provenance: FreshProvenance }> {
   const throughDate = taipeiDate();
   const months = monthsFromCutoffTo(throughDate);
   const sourceUrls: string[] = [];
@@ -686,7 +770,7 @@ async function fetchAndWriteFreshData(): Promise<{ readonly bytes: Uint8Array; r
   ]));
   const provenance: FreshProvenance = Object.freeze({
     schemaVersion: 1,
-    artifactId: "cross-symbol-forward-v1",
+    artifactId: paths.artifactId,
     symbols: ZSCORE_FORWARD_SYMBOLS,
     source: ZSCORE_FORWARD_SOURCE,
     providerVersion: ZSCORE_FORWARD_EVALUATOR_VERSION,
@@ -698,15 +782,21 @@ async function fetchAndWriteFreshData(): Promise<{ readonly bytes: Uint8Array; r
     purpose: "BLIND_CROSS_SYMBOL_FORWARD_EVALUATION",
     sourceUrls: Object.freeze(sourceUrls),
   });
-  const directory = resolve(PROJECT_ROOT, ZSCORE_FORWARD_DATA_DIRECTORY);
+  const directory = resolve(PROJECT_ROOT, paths.directory);
   await mkdir(directory, { recursive: true });
-  await writeFile(resolve(PROJECT_ROOT, ZSCORE_FORWARD_CSV_PATH), bytes);
-  await writeFile(resolve(PROJECT_ROOT, ZSCORE_FORWARD_PROVENANCE_PATH), `${JSON.stringify(provenance, null, 2)}\n`, "utf8");
+  await writeFile(resolve(PROJECT_ROOT, paths.csv), bytes);
+  await writeFile(resolve(PROJECT_ROOT, paths.provenance), `${JSON.stringify(provenance, null, 2)}\n`, "utf8");
   return Object.freeze({ bytes, provenance });
 }
 
-async function loadOrFetchFreshData(): Promise<{ readonly bytes: Uint8Array; readonly provenance: unknown }> {
-  const csvPath = resolve(PROJECT_ROOT, ZSCORE_FORWARD_CSV_PATH);
+async function loadOrFetchFreshData(
+  paths: FreshDataPaths = LEGACY_FRESH_DATA_PATHS,
+  expectedBranch: string = ZSCORE_FORWARD_TASK_BRANCH,
+  expectedSubject: string = ZSCORE_FREEZE_COMMIT_SUBJECT,
+  checkFreezeBeforeRead = false,
+): Promise<{ readonly bytes: Uint8Array; readonly provenance: unknown }> {
+  if (checkFreezeBeforeRead) currentGitFreezeIdentity(expectedBranch, expectedSubject);
+  const csvPath = resolve(PROJECT_ROOT, paths.csv);
   let csvExists = true;
   let provenanceExists = true;
   let bytes: Uint8Array | null = null;
@@ -715,14 +805,14 @@ async function loadOrFetchFreshData(): Promise<{ readonly bytes: Uint8Array; rea
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     csvExists = false;
   }
-  try { provenance = await readJson(ZSCORE_FORWARD_PROVENANCE_PATH, "fresh cross-symbol provenance"); } catch (error) {
+  try { provenance = await readJson(paths.provenance, "fresh cross-symbol provenance"); } catch (error) {
     if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
     provenanceExists = false;
   }
   if (csvExists !== provenanceExists) throw new TypeError("fresh data CSV and provenance must either both exist or both be absent");
   if (csvExists && bytes !== null) return Object.freeze({ bytes, provenance });
-  currentGitFreezeIdentity();
-  const fetched = await fetchAndWriteFreshData();
+  currentGitFreezeIdentity(expectedBranch, expectedSubject);
+  const fetched = await fetchAndWriteFreshData(paths);
   return Object.freeze({ bytes: fetched.bytes, provenance: fetched.provenance });
 }
 
@@ -746,6 +836,42 @@ export async function runZScoreCrossSymbolForwardEvaluation(): Promise<Record<st
     frozenSelectionCommit,
   });
   await writeFile(resolve(PROJECT_ROOT, ZSCORE_FORWARD_RESULT_PATH), serializeZScoreForwardResult(result), "utf8");
+  return result;
+}
+
+export async function runRiskNormalizedZScoreCrossSymbolForwardEvaluation(): Promise<Record<string, unknown>> {
+  const { head: frozenSelectionCommit } = currentGitFreezeIdentity(
+    ZSCORE_RISK_NORMALIZED_TASK_BRANCH,
+    ZSCORE_RISK_NORMALIZED_FREEZE_COMMIT_SUBJECT,
+  );
+  const frozenSelectionArtifact = await readJson(
+    ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH,
+    "frozen risk-normalized z-score selection artifact",
+  );
+  validateFrozenChallenger(frozenSelectionArtifact, true);
+  const [{ bytes, provenance }, legacyReferenceArtifact] = await Promise.all([
+    loadOrFetchFreshData(
+      RISK_NORMALIZED_FRESH_DATA_PATHS,
+      ZSCORE_RISK_NORMALIZED_TASK_BRANCH,
+      ZSCORE_RISK_NORMALIZED_FREEZE_COMMIT_SUBJECT,
+      true,
+    ),
+    readJson(CROSS_SYMBOL_VALIDATION_AUTHORITY_PATH, "legacy reference artifact"),
+  ]);
+  const result = evaluateZScoreCrossSymbolForward({
+    freshDataBytes: bytes,
+    freshProvenance: provenance,
+    legacyReferenceArtifact,
+    frozenSelectionArtifact,
+    frozenSelectionCommit,
+    researchRiskProfile: CROSS_SYMBOL_RESEARCH_RISK_V1,
+    freshArtifactId: ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID,
+  });
+  await writeFile(
+    resolve(PROJECT_ROOT, ZSCORE_RISK_NORMALIZED_FORWARD_RESULT_PATH),
+    serializeZScoreForwardResult(result),
+    "utf8",
+  );
   return result;
 }
 

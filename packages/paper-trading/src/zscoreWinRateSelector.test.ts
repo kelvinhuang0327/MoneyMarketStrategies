@@ -3,15 +3,25 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { parseHistoricalCsv } from "./historicalBaseline.js";
+import { runPaperSession } from "./sessionRunner.js";
+import {
+  CROSS_SYMBOL_RESEARCH_RISK_V1,
+  type CrossSymbolResearchRiskProfile,
+} from "./crossSymbolResearchRisk.js";
+import { rollingCloseZScore, RollingZScoreMeanReversionV1Strategy } from "./zscoreStrategy.js";
 import {
   buildZScoreCandidateGrid,
   buildZScoreRollingOriginFolds,
+  evaluateZScoreFold,
   isZScoreCandidateEligible,
   rankZScoreCandidates,
+  selectRiskNormalizedZScoreWinRateCandidate,
   selectZScoreWinRateCandidate,
   serializeZScoreSelectionArtifact,
   ZSCORE_HISTORICAL_INPUT_PATH,
   ZSCORE_HISTORICAL_INPUT_SHA256,
+  ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH,
+  ZSCORE_SELECTION_ARTIFACT_PATH,
   ZSCORE_WIN_RATE_SYMBOLS,
   type ZScoreCandidateDiagnostics,
   type ZScoreParameters,
@@ -63,6 +73,21 @@ describe("z-score historical win-rate selection", () => {
     expect(new Set(grid.map(({ parameters }) => parameters.entryZ))).toEqual(new Set([0.75, 1, 1.25]));
     expect(new Set(grid.map(({ parameters }) => parameters.exitZ))).toEqual(new Set([-0.25, 0]));
     expect(new Set(grid.map(({ parameters }) => parameters.maxHoldBars))).toEqual(new Set([10, 20]));
+    expect(grid.every(({ parameters }) => Object.keys(parameters).sort().join(",") === "entryZ,exitZ,lookback,maxHoldBars")).toBe(true);
+    expect(grid.every(({ parameters }) => !Object.hasOwn(parameters, "maxExposureMinor"))).toBe(true);
+  });
+
+  it("defines one fixed TWD research profile and keeps its artifact separate", () => {
+    expect(CROSS_SYMBOL_RESEARCH_RISK_V1).toEqual({
+      id: "CROSS_SYMBOL_RESEARCH_RISK_V1",
+      initialCapitalMinor: 10_000_000n,
+      maxExposureMinor: 2_000_000n,
+      maxExposureFractionOfInitialCapital: 0.20,
+      currency: "TWD",
+      minorUnitsPerMajor: 100,
+    });
+    expect(ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH).toBe("packages/paper-trading/zscore-win-rate-strategy-risk-normalized-v1.json");
+    expect(ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH).not.toBe(ZSCORE_SELECTION_ARTIFACT_PATH);
   });
 
   it("starts each validation fold strictly after its training prefix", () => {
@@ -116,6 +141,97 @@ describe("z-score historical win-rate selection", () => {
     expect(serializeZScoreSelectionArtifact(first)).toBe(serializeZScoreSelectionArtifact(second));
     expect(first["selectionStatus"]).toBe("NO_ELIGIBLE_CANDIDATE");
     expect(first["candidateDiagnostics"]).toHaveLength(24);
+
+    const normalizedFirst = selectRiskNormalizedZScoreWinRateCandidate(parsedBySymbol, "a".repeat(64));
+    const normalizedSecond = selectRiskNormalizedZScoreWinRateCandidate(parsedBySymbol, "a".repeat(64));
+    expect(serializeZScoreSelectionArtifact(normalizedFirst)).toBe(serializeZScoreSelectionArtifact(normalizedSecond));
+    expect(normalizedFirst["riskProfile"]).toMatchObject({
+      id: "CROSS_SYMBOL_RESEARCH_RISK_V1",
+      initialCapitalMinor: 10_000_000,
+      maxExposureMinor: 2_000_000,
+      currency: "TWD",
+      minorUnitsPerMajor: 100,
+    });
+  });
+
+  it("preserves 2330 and 2454 entry signals while removing the exposure-only rejection", async () => {
+    const bytes = await readFile(resolve(PROJECT_ROOT, ZSCORE_HISTORICAL_INPUT_PATH));
+    const inputSha256 = createHash("sha256").update(bytes).digest("hex");
+    const contents = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+    const oldExposureProbe: CrossSymbolResearchRiskProfile = Object.freeze({
+      ...CROSS_SYMBOL_RESEARCH_RISK_V1,
+      maxExposureMinor: 50_000n,
+    });
+
+    for (const symbol of ["2330", "2454"] as const) {
+      const parsed = parseHistoricalCsv(contents, symbol, ZSCORE_HISTORICAL_INPUT_PATH, "twse-daily-ohlcv-close-v1");
+      let selected: { readonly index: number; readonly parameters: ZScoreParameters } | undefined;
+      for (const { parameters } of buildZScoreCandidateGrid()) {
+        const index = parsed.session.events.findIndex((event, eventIndex) => {
+          if (event.priceMinor <= oldExposureProbe.maxExposureMinor) return false;
+          const zScore = rollingCloseZScore(parsed.session.events.slice(0, eventIndex), event.priceMinor, parameters.lookback);
+          return zScore !== null && zScore <= -parameters.entryZ;
+        });
+        if (index >= 1) {
+          selected = { index, parameters };
+          break;
+        }
+      }
+      expect(selected, `${symbol} should have a historical high-price entry signal`).toBeDefined();
+      const { index, parameters } = selected!;
+      const event = parsed.session.events[index]!;
+      const oneEventFold = Object.freeze({
+        id: "risk-profile-probe",
+        trainingEndIndex: index,
+        validationStartIndex: index,
+        validationEndIndex: index + 1,
+      });
+      const oldCapOutcome = evaluateZScoreFold(parsed, oneEventFold, parameters, inputSha256, oldExposureProbe);
+      const normalizedOutcome = evaluateZScoreFold(
+        parsed,
+        oneEventFold,
+        parameters,
+        inputSha256,
+        CROSS_SYMBOL_RESEARCH_RISK_V1,
+      );
+      expect(normalizedOutcome.entrySignalTrace).toEqual(oldCapOutcome.entrySignalTrace);
+      expect(normalizedOutcome.entrySignalTrace).toEqual([{ timestamp: event.timestamp, zScore: expect.any(Number) }]);
+      expect(normalizedOutcome.entryIntentCount).toBe(1);
+      expect(oldCapOutcome.entryIntentCount).toBe(1);
+      expect(oldCapOutcome.rejectedEntryOrderCountByReason["MAX_EXPOSURE_EXCEEDED"]).toBe(1);
+      expect(normalizedOutcome.rejectedEntryOrderCountByReason["MAX_EXPOSURE_EXCEEDED"] ?? 0).toBe(0);
+      expect(normalizedOutcome.acceptedEntryOrderCount).toBe(1);
+
+      const nextEvent = parsed.session.events[index + 1];
+      expect(nextEvent).toBeDefined();
+      const strategy = new RollingZScoreMeanReversionV1Strategy({
+        ...parameters,
+        activeFromTimestamp: event.timestamp,
+      });
+      const sessionThroughNextEvent = Object.freeze({
+        ...parsed.session,
+        events: Object.freeze(parsed.session.events.slice(0, index + 2)),
+      });
+      const normalizedRun = runPaperSession(
+        sessionThroughNextEvent,
+        inputSha256,
+        undefined,
+        strategy,
+        CROSS_SYMBOL_RESEARCH_RISK_V1,
+      );
+      const journal = normalizedRun["journal"] as readonly Record<string, unknown>[];
+      const entryDecision = journal.find((row) => row.kind === "decision" && row.sourceEventId === event.eventId);
+      const fill = journal.find((row) => row.kind === "fill");
+      const account = normalizedRun["accountSummary"] as Record<string, unknown>;
+      expect(entryDecision).toMatchObject({
+        timestamp: event.timestamp,
+        targetPositionQuantity: strategy.strategyParameters.targetQuantity,
+        status: "order-submitted",
+        reasonCode: "ORDER_ACCEPTED",
+      });
+      expect(fill).toMatchObject({ timestamp: nextEvent!.timestamp, sourceMarketEventId: nextEvent!.eventId });
+      expect(account["cashMinor"]).toBeGreaterThanOrEqual(0n);
+    }
   });
 
   it("leaves the pinned historical input bytes unchanged", async () => {

@@ -5,14 +5,23 @@ import { dirname, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { parseHistoricalCsv, type ParsedHistoricalCsv } from "./historicalBaseline.js";
 import { runPaperSession } from "./sessionRunner.js";
-import { ROLLING_ZSCORE_MEAN_REVERSION_V1, RollingZScoreMeanReversionV1Strategy } from "./zscoreStrategy.js";
+import {
+  ROLLING_ZSCORE_MEAN_REVERSION_V1,
+  RollingZScoreMeanReversionV1Strategy,
+  rollingCloseZScore,
+} from "./zscoreStrategy.js";
 import { WIN_RATE_OBJECTIVE, wilsonLowerBound95 } from "./winRateOptimizerV2.js";
 import type { MarketEvent } from "./types.js";
+import {
+  CROSS_SYMBOL_RESEARCH_RISK_V1,
+  type CrossSymbolResearchRiskProfile,
+} from "./crossSymbolResearchRisk.js";
 
 export const ZSCORE_WIN_RATE_SYMBOLS = Object.freeze(["0050", "0056", "2317", "2330", "2454"] as const);
 export const ZSCORE_HISTORICAL_CUTOFF = "2026-08-11" as const;
 export const ZSCORE_HISTORICAL_INPUT_SHA256 = "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7" as const;
 export const ZSCORE_SELECTION_ARTIFACT_PATH = "packages/paper-trading/zscore-win-rate-strategy-v1.json" as const;
+export const ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH = "packages/paper-trading/zscore-win-rate-strategy-risk-normalized-v1.json" as const;
 export const ZSCORE_HISTORICAL_INPUT_PATH = "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv" as const;
 
 const SOURCE_PROFILE = "twse-daily-ohlcv-close-v1" as const;
@@ -52,8 +61,16 @@ export interface ZScoreMetrics {
   readonly fees: string;
 }
 
+export interface ZScoreEntryRiskDiagnostics {
+  readonly entrySignalCount: number;
+  readonly entryIntentCount: number;
+  readonly acceptedEntryOrderCount: number;
+  readonly rejectedEntryOrderCountByReason: Readonly<Record<string, number>>;
+}
+
 export interface ZScoreSymbolDiagnostics extends ZScoreMetrics {
   readonly symbol: string;
+  readonly riskDiagnostics?: ZScoreEntryRiskDiagnostics;
 }
 
 export interface ZScoreCandidateDiagnostics {
@@ -73,6 +90,10 @@ export interface ZScoreFoldOutcome {
   readonly BREAKEVEN: number;
   readonly netPnlMinor: bigint;
   readonly feesMinor: bigint;
+  readonly entrySignalTrace: readonly { readonly timestamp: number; readonly zScore: number }[];
+  readonly entryIntentCount: number;
+  readonly acceptedEntryOrderCount: number;
+  readonly rejectedEntryOrderCountByReason: Readonly<Record<string, number>>;
 }
 
 function formatZ(value: number): string {
@@ -216,6 +237,7 @@ export function evaluateZScoreFold(
   fold: ZScoreRollingOriginFold,
   parameters: ZScoreParameters,
   inputSha256: string,
+  researchRiskProfile?: CrossSymbolResearchRiskProfile,
 ): ZScoreFoldOutcome {
   if (!/^[a-f0-9]{64}$/.test(inputSha256)) throw new TypeError("inputSha256 must be a lowercase SHA-256 digest");
   const events = parsed.session.events;
@@ -230,6 +252,14 @@ export function evaluateZScoreFold(
   }
   const firstValidationEvent = events[fold.validationStartIndex];
   if (!firstValidationEvent) throw new TypeError("validation fold has no first event");
+  const entrySignalTrace = Object.freeze(events.slice(fold.validationStartIndex, fold.validationEndIndex)
+    .flatMap((event, offset): { readonly timestamp: number; readonly zScore: number }[] => {
+      const index = fold.validationStartIndex + offset;
+      const zScore = rollingCloseZScore(events.slice(0, index), event.priceMinor, parameters.lookback);
+      return zScore !== null && zScore <= -parameters.entryZ
+        ? [Object.freeze({ timestamp: event.timestamp, zScore })]
+        : [];
+    }));
   const strategy = new RollingZScoreMeanReversionV1Strategy({
     ...parameters,
     activeFromTimestamp: firstValidationEvent.timestamp,
@@ -238,7 +268,7 @@ export function evaluateZScoreFold(
     ...parsed.session,
     events: Object.freeze(events.slice(0, fold.validationEndIndex)),
   });
-  const result = runPaperSession(foldSession, inputSha256, undefined, strategy);
+  const result = runPaperSession(foldSession, inputSha256, undefined, strategy, researchRiskProfile);
   const statistics = asRecord(result["tradingStatistics"], "paper session tradingStatistics");
   const account = asRecord(result["accountSummary"], "paper session accountSummary");
   const completedTrades = statistics["completedTrades"];
@@ -254,6 +284,26 @@ export function evaluateZScoreFold(
     const trade = asRecord(rawTrade, `completedTrades[${index}]`);
     return sum + integerMinor(trade["netPnlMinor"], `completedTrades[${index}].netPnlMinor`);
   }, 0n);
+  const journal = result["journal"];
+  if (!Array.isArray(journal)) throw new TypeError("paper session journal must be an array");
+  const entryDecisions = journal.map((event, index) => asRecord(event, `journal[${index}]`))
+    .filter((event) => event["kind"] === "decision")
+    .filter((decision) => (
+      typeof decision["targetPositionQuantity"] === "number"
+      && typeof decision["currentPositionQuantity"] === "number"
+      && decision["targetPositionQuantity"] > decision["currentPositionQuantity"]
+    ));
+  const entryIntentDecisions = entryDecisions.filter((decision) => (
+    decision["status"] === "risk-rejected" || decision["status"] === "order-submitted"
+  ));
+  const acceptedEntryOrderCount = entryIntentDecisions.filter((decision) => decision["status"] === "order-submitted").length;
+  const rejectedEntryOrderCountByReason: Record<string, number> = {};
+  for (const decision of entryIntentDecisions) {
+    if (decision["status"] !== "risk-rejected") continue;
+    const reason = decision["reasonCode"];
+    if (typeof reason !== "string" || reason.length === 0) throw new TypeError("rejected entry decision is missing its reason code");
+    rejectedEntryOrderCountByReason[reason] = (rejectedEntryOrderCountByReason[reason] ?? 0) + 1;
+  }
   return Object.freeze({
     foldId: fold.id,
     completedTradeCount,
@@ -262,6 +312,10 @@ export function evaluateZScoreFold(
     BREAKEVEN,
     netPnlMinor,
     feesMinor: integerMinor(account["feesPaidMinor"], "accountSummary.feesPaidMinor"),
+    entrySignalTrace,
+    entryIntentCount: entryIntentDecisions.length,
+    acceptedEntryOrderCount,
+    rejectedEntryOrderCountByReason: Object.freeze(rejectedEntryOrderCountByReason),
   });
 }
 
@@ -322,14 +376,35 @@ export function evaluateZScoreCandidate(
   parsedBySymbol: ReadonlyMap<string, ParsedHistoricalCsv>,
   candidate: ZScoreCandidate,
   inputSha256: string,
+  researchRiskProfile?: CrossSymbolResearchRiskProfile,
 ): ZScoreCandidateDiagnostics {
   const perSymbol = ZSCORE_WIN_RATE_SYMBOLS.map((symbol) => {
     const parsed = parsedBySymbol.get(symbol);
     if (!parsed) throw new Error(`missing historical input for ${symbol}`);
     const folds = buildZScoreRollingOriginFolds(parsed.rowCount);
-    const outcomes = folds.map((fold) => evaluateZScoreFold(parsed, fold, candidate.parameters, inputSha256));
+    const outcomes = folds.map((fold) => evaluateZScoreFold(
+      parsed,
+      fold,
+      candidate.parameters,
+      inputSha256,
+      researchRiskProfile,
+    ));
     const counts = combineFoldOutcomes(outcomes);
-    return Object.freeze({ symbol, ...metricsFromCounts(counts) });
+    const rejectedEntryOrderCountByReason: Record<string, number> = {};
+    for (const outcome of outcomes) {
+      for (const [reason, count] of Object.entries(outcome.rejectedEntryOrderCountByReason)) {
+        rejectedEntryOrderCountByReason[reason] = (rejectedEntryOrderCountByReason[reason] ?? 0) + count;
+      }
+    }
+    const riskDiagnostics = Object.freeze({
+      entrySignalCount: outcomes.reduce((sum, outcome) => sum + outcome.entrySignalTrace.length, 0),
+      entryIntentCount: outcomes.reduce((sum, outcome) => sum + outcome.entryIntentCount, 0),
+      acceptedEntryOrderCount: outcomes.reduce((sum, outcome) => sum + outcome.acceptedEntryOrderCount, 0),
+      rejectedEntryOrderCountByReason: Object.freeze(rejectedEntryOrderCountByReason),
+    });
+    return researchRiskProfile === undefined
+      ? Object.freeze({ symbol, ...metricsFromCounts(counts) })
+      : Object.freeze({ symbol, ...metricsFromCounts(counts), riskDiagnostics });
   });
   const aggregateCounts = {
     completedTradeCount: perSymbol.reduce((sum, row) => sum + row.completedTradeCount, 0),
@@ -355,9 +430,10 @@ export function evaluateZScoreCandidate(
   });
 }
 
-export function selectZScoreWinRateCandidate(
+function selectZScoreWinRateCandidateWithRiskProfile(
   parsedBySymbol: ReadonlyMap<string, ParsedHistoricalCsv>,
   historicalInputSha256: string,
+  researchRiskProfile?: CrossSymbolResearchRiskProfile,
 ): Record<string, unknown> {
   if (!/^[a-f0-9]{64}$/.test(historicalInputSha256)) throw new TypeError("historicalInputSha256 must be a lowercase SHA-256 digest");
   for (const symbol of ZSCORE_WIN_RATE_SYMBOLS) {
@@ -369,13 +445,53 @@ export function selectZScoreWinRateCandidate(
   const grid = buildZScoreCandidateGrid();
   if (grid.length !== 24) throw new Error("the frozen z-score candidate grid must contain exactly 24 candidates");
   const candidateDiagnostics = Object.freeze(grid.map((candidate) => (
-    evaluateZScoreCandidate(parsedBySymbol, candidate, historicalInputSha256)
+    evaluateZScoreCandidate(parsedBySymbol, candidate, historicalInputSha256, researchRiskProfile)
   )));
   const selected = rankZScoreCandidates(candidateDiagnostics)[0] ?? null;
   const foldPolicy = foldPolicyForSymbols(parsedBySymbol);
+  const riskDiagnostics = researchRiskProfile === undefined
+    ? undefined
+    : Object.freeze({
+        previousExposureCapRca: Object.freeze({
+          maxExposureMinor: 50_000,
+          minorUnitsPerMajor: 100,
+          perSymbol: Object.freeze([
+            Object.freeze({ symbol: "2330", entrySignals: 5_720, intentsReachingRisk: 5_720, maxExposureRejected: 5_720 }),
+            Object.freeze({ symbol: "2454", entrySignals: 6_452, intentsReachingRisk: 6_452, maxExposureRejected: 6_452 }),
+          ]),
+        }),
+        normalizedProfileAcrossCandidateFolds: Object.freeze(ZSCORE_WIN_RATE_SYMBOLS.map((symbol) => {
+          const rows = candidateDiagnostics.flatMap(({ perSymbol }) => perSymbol).filter((row) => row.symbol === symbol);
+          const rejectedEntryOrderCountByReason: Record<string, number> = {};
+          for (const row of rows) {
+            for (const [reason, count] of Object.entries(row.riskDiagnostics?.rejectedEntryOrderCountByReason ?? {})) {
+              rejectedEntryOrderCountByReason[reason] = (rejectedEntryOrderCountByReason[reason] ?? 0) + count;
+            }
+          }
+          return Object.freeze({
+            symbol,
+            entrySignalCount: rows.reduce((sum, row) => sum + (row.riskDiagnostics?.entrySignalCount ?? 0), 0),
+            entryIntentCount: rows.reduce((sum, row) => sum + (row.riskDiagnostics?.entryIntentCount ?? 0), 0),
+            acceptedEntryOrderCount: rows.reduce((sum, row) => sum + (row.riskDiagnostics?.acceptedEntryOrderCount ?? 0), 0),
+            rejectedEntryOrderCountByReason: Object.freeze(rejectedEntryOrderCountByReason),
+            completedTradeCount: rows.reduce((sum, row) => sum + row.completedTradeCount, 0),
+          });
+        })),
+      });
   return Object.freeze({
     schemaVersion: 1,
     strategyFamily: ROLLING_ZSCORE_MEAN_REVERSION_V1,
+    ...(researchRiskProfile === undefined ? {} : {
+      riskProfile: Object.freeze({
+        id: researchRiskProfile.id,
+        initialCapitalMinor: Number(researchRiskProfile.initialCapitalMinor),
+        maxExposureMinor: Number(researchRiskProfile.maxExposureMinor),
+        maxExposureFractionOfInitialCapital: researchRiskProfile.maxExposureFractionOfInitialCapital,
+        currency: researchRiskProfile.currency,
+        minorUnitsPerMajor: researchRiskProfile.minorUnitsPerMajor,
+      }),
+      riskDiagnostics,
+    }),
     objective: WIN_RATE_OBJECTIVE,
     historicalInputSha256,
     historicalDataEnd: ZSCORE_HISTORICAL_CUTOFF,
@@ -428,6 +544,24 @@ export function selectZScoreWinRateCandidate(
   });
 }
 
+export function selectZScoreWinRateCandidate(
+  parsedBySymbol: ReadonlyMap<string, ParsedHistoricalCsv>,
+  historicalInputSha256: string,
+): Record<string, unknown> {
+  return selectZScoreWinRateCandidateWithRiskProfile(parsedBySymbol, historicalInputSha256);
+}
+
+export function selectRiskNormalizedZScoreWinRateCandidate(
+  parsedBySymbol: ReadonlyMap<string, ParsedHistoricalCsv>,
+  historicalInputSha256: string,
+): Record<string, unknown> {
+  return selectZScoreWinRateCandidateWithRiskProfile(
+    parsedBySymbol,
+    historicalInputSha256,
+    CROSS_SYMBOL_RESEARCH_RISK_V1,
+  );
+}
+
 export function serializeZScoreSelectionArtifact(artifact: Record<string, unknown>): string {
   return `${JSON.stringify(artifact, null, 2)}\n`;
 }
@@ -466,6 +600,17 @@ export async function runZScoreWinRateSelection(): Promise<Record<string, unknow
   const { inputSha256, parsedBySymbol } = await loadZScoreHistoricalDevelopment();
   const artifact = selectZScoreWinRateCandidate(parsedBySymbol, inputSha256);
   await writeFile(resolve(PROJECT_ROOT, ZSCORE_SELECTION_ARTIFACT_PATH), serializeZScoreSelectionArtifact(artifact), "utf8");
+  return artifact;
+}
+
+export async function runRiskNormalizedZScoreWinRateSelection(): Promise<Record<string, unknown>> {
+  const { inputSha256, parsedBySymbol } = await loadZScoreHistoricalDevelopment();
+  const artifact = selectRiskNormalizedZScoreWinRateCandidate(parsedBySymbol, inputSha256);
+  await writeFile(
+    resolve(PROJECT_ROOT, ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH),
+    serializeZScoreSelectionArtifact(artifact),
+    "utf8",
+  );
   return artifact;
 }
 

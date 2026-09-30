@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
+import { CROSS_SYMBOL_RESEARCH_RISK_V1 } from "./crossSymbolResearchRisk.js";
 import { CROSS_SYMBOL_VALIDATION_AUTHORITY_PATH } from "./crossSymbolWinRateValidationV1.js";
 import { wilsonLowerBound95 } from "./winRateOptimizerV2.js";
 import { buildZScoreCandidateGrid, ZSCORE_HISTORICAL_CUTOFF } from "./zscoreWinRateSelector.js";
@@ -15,6 +16,7 @@ import {
   ZSCORE_FORWARD_EVALUATOR_VERSION,
   ZSCORE_FORWARD_SOURCE,
   ZSCORE_FORWARD_SYMBOLS,
+  ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID,
 } from "./zscoreCrossSymbolForwardEvaluator.js";
 
 const PROJECT_ROOT = resolve(process.cwd());
@@ -51,12 +53,16 @@ function flatRows(): { readonly bytes: Uint8Array; readonly rowsBySymbol: Readon
   return Object.freeze({ bytes: new TextEncoder().encode(`${lines.join("\n")}\n`), rowsBySymbol: Object.freeze(rowsBySymbol) });
 }
 
-function provenance(bytes: Uint8Array, rowsBySymbol: Readonly<Record<string, number>>) {
+function provenance(
+  bytes: Uint8Array,
+  rowsBySymbol: Readonly<Record<string, number>>,
+  artifactId: string = "cross-symbol-forward-v1",
+) {
   const allRows = new TextDecoder().decode(bytes).trim().split("\n").slice(1);
   const dates = allRows.map((line) => line.split(",")[1]!).sort();
   return Object.freeze({
     schemaVersion: 1,
-    artifactId: "cross-symbol-forward-v1",
+    artifactId,
     symbols: ZSCORE_FORWARD_SYMBOLS,
     source: ZSCORE_FORWARD_SOURCE,
     providerVersion: ZSCORE_FORWARD_EVALUATOR_VERSION,
@@ -68,6 +74,21 @@ function provenance(bytes: Uint8Array, rowsBySymbol: Readonly<Record<string, num
     purpose: "BLIND_CROSS_SYMBOL_FORWARD_EVALUATION",
     sourceUrls: Object.freeze(ZSCORE_FORWARD_SYMBOLS.map((symbol) => `https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260801&stockNo=${symbol}`)),
   });
+}
+
+function highPriceCycleRows(): { readonly bytes: Uint8Array; readonly rowsBySymbol: Readonly<Record<string, number>> } {
+  const lines = [CSV_HEADER];
+  const rowsBySymbol: Record<string, number> = {};
+  for (const symbol of ZSCORE_FORWARD_SYMBOLS) {
+    const closes = [...Array(40).fill(1_000) as number[], 900, 900, 1_000, 1_100, 1_100, 1_000];
+    rowsBySymbol[symbol] = closes.length;
+    closes.forEach((price, index) => {
+      const date = new Date(Date.UTC(2026, 7, 12 + index)).toISOString().slice(0, 10);
+      const decimal = price.toFixed(2);
+      lines.push([symbol, date, decimal, decimal, decimal, decimal, "1000", ZSCORE_FORWARD_CSV_SOURCE].join(","));
+    });
+  }
+  return Object.freeze({ bytes: new TextEncoder().encode(`${lines.join("\n")}\n`), rowsBySymbol: Object.freeze(rowsBySymbol) });
 }
 
 function frozenSelectionArtifact() {
@@ -96,10 +117,15 @@ async function legacyArtifact(): Promise<unknown> {
   return JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(bytes)) as unknown;
 }
 
-function evaluateFixture(bytes: Uint8Array, rowsBySymbol: Readonly<Record<string, number>>) {
+function evaluateFixture(
+  bytes: Uint8Array,
+  rowsBySymbol: Readonly<Record<string, number>>,
+  useResearchRiskProfile = false,
+) {
+  const artifactId = useResearchRiskProfile ? ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID : "cross-symbol-forward-v1";
   return evaluateZScoreCrossSymbolForward({
     freshDataBytes: bytes,
-    freshProvenance: provenance(bytes, rowsBySymbol),
+    freshProvenance: provenance(bytes, rowsBySymbol, artifactId),
     legacyReferenceArtifact: {
       schemaVersion: 1,
       strategyFamily: "ROLLING_MEAN_REVERSION_V1",
@@ -114,6 +140,10 @@ function evaluateFixture(bytes: Uint8Array, rowsBySymbol: Readonly<Record<string
     },
     frozenSelectionArtifact: frozenSelectionArtifact(),
     frozenSelectionCommit: FREEZE_COMMIT,
+    ...(useResearchRiskProfile ? {
+      researchRiskProfile: CROSS_SYMBOL_RESEARCH_RISK_V1,
+      freshArtifactId: ZSCORE_RISK_NORMALIZED_FRESH_ARTIFACT_ID,
+    } : {}),
   });
 }
 
@@ -128,6 +158,27 @@ describe("blind z-score cross-symbol forward evaluation", () => {
     expect((result["newFrozenChallenger"] as Record<string, unknown>)["perSymbol"])
       .toHaveLength(ZSCORE_FORWARD_SYMBOLS.length);
     expect(result["freshDataSha256"]).toBe(createHash("sha256").update(fixture.bytes).digest("hex"));
+  });
+
+  it("applies the same fixed research risk to the legacy and z-score strategies", () => {
+    const fixture = highPriceCycleRows();
+    const defaultRisk = evaluateFixture(fixture.bytes, fixture.rowsBySymbol);
+    const normalizedRisk = evaluateFixture(fixture.bytes, fixture.rowsBySymbol, true);
+    expect(normalizedRisk["riskProfile"]).toMatchObject({
+      id: "CROSS_SYMBOL_RESEARCH_RISK_V1",
+      initialCapitalMinor: 10_000_000,
+      maxExposureMinor: 2_000_000,
+    });
+    const defaultLegacy = (defaultRisk["legacyReference"] as Record<string, unknown>)["perSymbol"] as readonly Record<string, unknown>[];
+    const defaultChallenger = (defaultRisk["newFrozenChallenger"] as Record<string, unknown>)["perSymbol"] as readonly Record<string, unknown>[];
+    const normalizedLegacy = (normalizedRisk["legacyReference"] as Record<string, unknown>)["perSymbol"] as readonly Record<string, unknown>[];
+    const normalizedChallenger = (normalizedRisk["newFrozenChallenger"] as Record<string, unknown>)["perSymbol"] as readonly Record<string, unknown>[];
+    expect(defaultLegacy.every(({ completedTradeCount }) => completedTradeCount === 0)).toBe(true);
+    expect(defaultChallenger.every(({ completedTradeCount }) => completedTradeCount === 0)).toBe(true);
+    expect(normalizedLegacy.every(({ completedTradeCount }) => Number(completedTradeCount) > 0)).toBe(true);
+    expect(normalizedChallenger.every(({ completedTradeCount }) => Number(completedTradeCount) > 0)).toBe(true);
+    expect(normalizedRisk["comparisonStatus"]).toBe("INSUFFICIENT_FRESH_TRADES");
+    expect(normalizedRisk["tradingWinRateImprovement"]).toBe("NOT EVALUABLE");
   });
 
   it("rejects historical-cutoff rows, duplicate dates, unsupported symbols, and malformed OHLCV", () => {
