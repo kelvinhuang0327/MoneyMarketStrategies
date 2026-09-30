@@ -14,7 +14,6 @@ import {
 } from "./crossSymbolWinRateValidationV1.js";
 import { wilsonLowerBound95 } from "./winRateOptimizerV2.js";
 import {
-  buildZScoreCandidateGrid,
   formatTwdMinor,
   ZSCORE_HISTORICAL_CUTOFF,
   ZSCORE_RISK_NORMALIZED_SELECTION_ARTIFACT_PATH,
@@ -58,7 +57,7 @@ const REQUEST_TIMEOUT_MS = 15_000;
 const MAX_RETRIES = 3;
 const PRICE_PATTERN = /^\d+(?:\.\d{1,2})?$/;
 
-interface FreshMarketRow {
+export interface FreshMarketRow {
   readonly symbol: string;
   readonly date: string;
   readonly open: string;
@@ -206,7 +205,7 @@ export function validateFreshCrossSymbolCsv(contents: string): readonly FreshMar
   return parseFreshCsv(contents);
 }
 
-function csvForRows(rows: readonly FreshMarketRow[]): string {
+export function serializeFreshCrossSymbolCsv(rows: readonly FreshMarketRow[]): string {
   const ordered = rows.slice().sort((left, right) => {
     const leftSymbol = ZSCORE_FORWARD_SYMBOLS.indexOf(left.symbol as (typeof ZSCORE_FORWARD_SYMBOLS)[number]);
     const rightSymbol = ZSCORE_FORWARD_SYMBOLS.indexOf(right.symbol as (typeof ZSCORE_FORWARD_SYMBOLS)[number]);
@@ -354,6 +353,27 @@ function monthsFromCutoffTo(endDate: string): readonly string[] {
   return Object.freeze(months);
 }
 
+function monthsFromDateTo(startDate: string, endDate: string): readonly string[] {
+  if (!validDate(startDate) || !validDate(endDate)) throw new TypeError("forward fetch dates must be valid ISO dates");
+  if (startDate > endDate) return Object.freeze([]);
+  const [startYear = "", startMonth = ""] = startDate.split("-");
+  const [endYear = "", endMonth = ""] = endDate.split("-");
+  let year = Number(startYear);
+  let month = Number(startMonth);
+  const lastYear = Number(endYear);
+  const lastMonth = Number(endMonth);
+  const months: string[] = [];
+  while (year < lastYear || (year === lastYear && month <= lastMonth)) {
+    months.push(`${year}${String(month).padStart(2, "0")}01`);
+    month += 1;
+    if (month === 13) {
+      year += 1;
+      month = 1;
+    }
+  }
+  return Object.freeze(months);
+}
+
 function rangeFor(rows: readonly FreshMarketRow[]): { readonly start: string | null; readonly end: string | null } {
   if (rows.length === 0) return Object.freeze({ start: null, end: null });
   const dates = rows.map(({ date }) => date).sort();
@@ -476,14 +496,49 @@ function validateFrozenChallenger(
   ) {
     throw new TypeError("frozen z-score artifact is incomplete or has an unsupported selection identity");
   }
-  const candidate = buildZScoreCandidateGrid().find(({ candidateId }) => candidateId === selected["id"]);
-  const parameters = asRecord(selected["parameters"], "selectedFutureCandidate.parameters");
-  if (!candidate || JSON.stringify(candidate.parameters) !== JSON.stringify(parameters)) {
-    throw new TypeError("frozen z-score candidate is not an exact member of the declared grid");
+  const rawParameters = asRecord(selected["parameters"], "selectedFutureCandidate.parameters");
+  const parameterKeys = Object.keys(rawParameters).sort();
+  if (JSON.stringify(parameterKeys) !== JSON.stringify(["entryZ", "exitZ", "lookback", "maxHoldBars"].sort())) {
+    throw new TypeError("frozen z-score parameters have unsupported fields");
   }
+  const lookback = rawParameters["lookback"];
+  const entryZ = rawParameters["entryZ"];
+  const exitZ = rawParameters["exitZ"];
+  const maxHoldBars = rawParameters["maxHoldBars"];
+  if (!Number.isSafeInteger(lookback) || (lookback as number) <= 0) {
+    throw new TypeError("frozen z-score lookback must be a positive safe integer");
+  }
+  if (typeof entryZ !== "number" || !Number.isFinite(entryZ) || entryZ <= 0) {
+    throw new TypeError("frozen z-score entryZ must be a positive finite number");
+  }
+  if (typeof exitZ !== "number" || !Number.isFinite(exitZ) || exitZ >= entryZ) {
+    throw new TypeError("frozen z-score exitZ must be finite and below entryZ");
+  }
+  if (!Number.isSafeInteger(maxHoldBars) || (maxHoldBars as number) <= 0) {
+    throw new TypeError("frozen z-score maxHoldBars must be a positive safe integer");
+  }
+  const parameters: ZScoreParameters = Object.freeze({
+    lookback: lookback as number,
+    entryZ,
+    exitZ,
+    maxHoldBars: maxHoldBars as number,
+  });
+  const formatZ = (number: number): string => {
+    const fixed = number.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
+    return fixed.startsWith("-") ? `neg${fixed.slice(1).replace(".", "p")}` : fixed.replace(".", "p");
+  };
+  const derivedId = `lookback-${parameters.lookback}-entryz-${formatZ(parameters.entryZ)}-exitz-${formatZ(parameters.exitZ)}-hold-${parameters.maxHoldBars}`;
+  if (selected["id"] !== derivedId) throw new TypeError("frozen z-score candidate id does not match its authority parameters");
   const diagnostics = artifact["candidateDiagnostics"];
   if (!Array.isArray(diagnostics) || diagnostics.length !== 24) throw new TypeError("frozen artifact must record all 24 candidate diagnostics");
-  return Object.freeze({ id: candidate.candidateId, parameters: candidate.parameters });
+  return Object.freeze({ id: derivedId, parameters });
+}
+
+export function validateRiskNormalizedFrozenSelection(value: unknown): {
+  readonly id: string;
+  readonly parameters: ZScoreParameters;
+} {
+  return validateFrozenChallenger(value, true);
 }
 
 function tradeMetrics(
@@ -722,6 +777,25 @@ function officialMonthUrl(month: string, symbol: string): string {
   return `https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=${month}&stockNo=${symbol}`;
 }
 
+export async function fetchZScoreForwardRowsAfter(previousForwardEnd: string): Promise<{
+  readonly rows: readonly FreshMarketRow[];
+  readonly fetchedAtUtc: string;
+}> {
+  if (!validDate(previousForwardEnd)) throw new TypeError("previousForwardEnd must be a valid ISO date");
+  const throughDate = taipeiDate();
+  const fetchedRows: FreshMarketRow[] = [];
+  for (const symbol of ZSCORE_FORWARD_SYMBOLS) {
+    for (const month of monthsFromDateTo(previousForwardEnd, throughDate)) {
+      const url = officialMonthUrl(month, symbol);
+      const monthRows = await fetchTwseMonth(url, symbol, month, throughDate);
+      fetchedRows.push(...monthRows);
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, 180));
+    }
+  }
+  const rows = parseFreshCsv(serializeFreshCrossSymbolCsv(fetchedRows));
+  return Object.freeze({ rows, fetchedAtUtc: new Date().toISOString() });
+}
+
 function currentGitFreezeIdentity(
   expectedBranch: string = ZSCORE_FORWARD_TASK_BRANCH,
   expectedSubject: string = ZSCORE_FREEZE_COMMIT_SUBJECT,
@@ -761,7 +835,7 @@ async function fetchAndWriteFreshData(
       await new Promise((resolveDelay) => setTimeout(resolveDelay, 180));
     }
   }
-  const contents = csvForRows(fetchedRows);
+  const contents = serializeFreshCrossSymbolCsv(fetchedRows);
   const validatedRows = parseFreshCsv(contents);
   const bytes = encodeUtf8(contents);
   const perSymbolRowCounts = Object.fromEntries(ZSCORE_FORWARD_SYMBOLS.map((symbol) => [

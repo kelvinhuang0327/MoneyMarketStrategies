@@ -1,0 +1,180 @@
+{
+  "schemaVersion": 1,
+  "strategyAuthorities": {
+    "legacyReference": {
+      "path": "packages/paper-trading/win-rate-strategy-family-v1.json",
+      "identity": "ROLLING_MEAN_REVERSION_V1",
+      "candidateId": "lookback-20-entry-0.04-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      }
+    },
+    "frozenChallenger": {
+      "path": "packages/paper-trading/zscore-win-rate-strategy-risk-normalized-v1.json",
+      "identity": "ROLLING_ZSCORE_MEAN_REVERSION_V1",
+      "candidateId": "lookback-40-entryz-1-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      }
+    }
+  },
+  "riskProfile": {
+    "id": "CROSS_SYMBOL_RESEARCH_RISK_V1",
+    "initialCapitalMinor": 10000000,
+    "maxExposureMinor": 2000000,
+    "maxExposureFractionOfInitialCapital": 0.2,
+    "currency": "TWD",
+    "minorUnitsPerMajor": 100
+  },
+  "historicalCutoff": "2026-08-11",
+  "firstForwardDate": "2026-08-12",
+  "latestForwardDate": "2026-09-30",
+  "batchCount": 1,
+  "batchHashes": [
+    {
+      "dateRange": {
+        "start": "2026-08-12",
+        "end": "2026-09-30"
+      },
+      "sha256": "48638edc85ca924119499c53020c5748feacf42f4432b65bbbbc7edfbbde3e18"
+    }
+  ],
+  "legacyReference": {
+    "perSymbol": [
+      {
+        "symbol": "0056",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      },
+      {
+        "symbol": "2317",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      },
+      {
+        "symbol": "2330",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      },
+      {
+        "symbol": "2454",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      }
+    ],
+    "aggregate": {
+      "completedTradeCount": 0,
+      "WIN": 0,
+      "LOSS": 0,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": null,
+      "WilsonLowerBound95": null,
+      "netPnl": "0.00",
+      "fees": "0.00"
+    }
+  },
+  "frozenChallenger": {
+    "perSymbol": [
+      {
+        "symbol": "0056",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      },
+      {
+        "symbol": "2317",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      },
+      {
+        "symbol": "2330",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      },
+      {
+        "symbol": "2454",
+        "completedTradeCount": 0,
+        "WIN": 0,
+        "LOSS": 0,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": null,
+        "WilsonLowerBound95": null,
+        "netPnl": "0.00",
+        "fees": "0.00"
+      }
+    ],
+    "aggregate": {
+      "completedTradeCount": 0,
+      "WIN": 0,
+      "LOSS": 0,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": null,
+      "WilsonLowerBound95": null,
+      "netPnl": "0.00",
+      "fees": "0.00"
+    }
+  },
+  "sufficiency": {
+    "minimumSymbolsWithAtLeastOneCompletedTrade": 3,
+    "minimumAggregateCompletedTrades": 12,
+    "legacyReference": {
+      "symbolsWithCompletedTrades": 0,
+      "aggregateCompletedTrades": 0,
+      "sufficient": false
+    },
+    "frozenChallenger": {
+      "symbolsWithCompletedTrades": 0,
+      "aggregateCompletedTrades": 0,
+      "sufficient": false
+    }
+  },
+  "forwardEvidenceStatus": "NO_NEW_DATA",
+  "tradingWinRateImprovement": "NOT_EVALUABLE"
+}
