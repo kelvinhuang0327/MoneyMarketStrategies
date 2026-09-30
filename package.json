@@ -17,6 +17,7 @@
     "paper:demo": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/demo.js",
     "paper:run": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/sessionRunner.js",
     "paper:baseline": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/historicalBaseline.js",
+    "paper:optimize-win-rate": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/winRateOptimizer.js",
     "verify": "npm run lint && npm run build && npm run typecheck && npm test",
     "research:tw": "node scripts/runTwStrategyResearchStudy.mjs",
     "inspect:prediction-result": "node scripts/inspectPredictionRetrainingResult.mjs",
