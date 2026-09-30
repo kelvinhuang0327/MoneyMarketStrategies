@@ -20,6 +20,7 @@
     "paper:optimize-win-rate": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/winRateOptimizer.js",
     "paper:optimize-win-rate-v2": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/winRateOptimizerV2.js",
     "paper:select-win-rate-strategy-v1": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/winRateStrategySelectorV1.js",
+    "paper:validate-cross-symbol-win-rate": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/crossSymbolWinRateValidationV1.js",
     "paper:evaluate-forward-win-rate": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/forwardWinRateEvaluator.js",
     "verify": "npm run lint && npm run build && npm run typecheck && npm test",
     "research:tw": "node scripts/runTwStrategyResearchStudy.mjs",

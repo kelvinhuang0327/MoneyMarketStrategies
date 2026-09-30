@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "strategyFamily": "ROLLING_MEAN_REVERSION_V1",
+  "frozenChallengerId": "lookback-20-entry-0.04-take-0.04-hold-10",
+  "parameters": {
+    "lookback": 20,
+    "entryDiscount": 0.04,
+    "takeProfit": 0.04,
+    "maxHoldBars": 10
+  },
+  "inputSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "validationSymbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "perSymbol": [
+    {
+      "symbol": "0056",
+      "WIN": 7,
+      "LOSS": 13,
+      "BREAKEVEN": 0,
+      "diagnosticNetPnl": "-50.06",
+      "diagnosticFees": "11.69",
+      "completedTradeCount": 20,
+      "rawNetWinRate": 0.35,
+      "WilsonLowerBound95": 0.1811895478679446
+    },
+    {
+      "symbol": "2317",
+      "WIN": 10,
+      "LOSS": 10,
+      "BREAKEVEN": 0,
+      "diagnosticNetPnl": "-192.13",
+      "diagnosticFees": "37.60",
+      "completedTradeCount": 20,
+      "rawNetWinRate": 0.5,
+      "WilsonLowerBound95": 0.2992949144298199
+    },
+    {
+      "symbol": "2330",
+      "WIN": 0,
+      "LOSS": 0,
+      "BREAKEVEN": 0,
+      "diagnosticNetPnl": "0.00",
+      "diagnosticFees": "0.00",
+      "completedTradeCount": 0,
+      "rawNetWinRate": null,
+      "WilsonLowerBound95": null
+    },
+    {
+      "symbol": "2454",
+      "WIN": 0,
+      "LOSS": 0,
+      "BREAKEVEN": 0,
+      "diagnosticNetPnl": "0.00",
+      "diagnosticFees": "0.00",
+      "completedTradeCount": 0,
+      "rawNetWinRate": null,
+      "WilsonLowerBound95": null
+    }
+  ],
+  "aggregate": {
+    "completedTradeCount": 40,
+    "WIN": 17,
+    "LOSS": 23,
+    "BREAKEVEN": 0,
+    "rawNetWinRate": 0.425,
+    "WilsonLowerBound95": 0.2850916852481588
+  },
+  "coverage": {
+    "symbolsWithTrades": [
+      "0056",
+      "2317"
+    ],
+    "symbolsWithoutTrades": [
+      "2330",
+      "2454"
+    ]
+  },
+  "validationStatus": "INSUFFICIENT_CROSS_SYMBOL_TRADES",
+  "futureTemporalEvaluation": {
+    "status": "AWAITING_UNSEEN_DATA",
+    "unseenAfter": "2026-09-29"
+  }
+}
