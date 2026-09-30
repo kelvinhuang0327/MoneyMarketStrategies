@@ -6,6 +6,7 @@ import { parseHistoricalCsv, runHistoricalCsvFile } from "./historicalBaseline.j
 import { runPaperSession } from "./sessionRunner.js";
 
 const FIXTURE_PATH = "packages/paper-trading/fixtures/historical.synthetic.csv";
+const TWSE_PROFILE = "twse-daily-ohlcv-close-v1";
 let syntheticCsv = "";
 
 function evaluateCsv(contents: string) {
@@ -14,13 +15,132 @@ function evaluateCsv(contents: string) {
   return runPaperSession(parsed.session, digest);
 }
 
+function twseCsv(rows: readonly string[]): string {
+  return ["symbol,date,open,high,low,close,volume", ...rows].join("\n");
+}
+
+function twsePriceMinor(close: string): bigint {
+  const contents = twseCsv([`0050,2024-01-02,ignored,ignored,ignored,${close},ignored`]);
+  const parsed = parseHistoricalCsv(contents, "0050", "TWSE test input", TWSE_PROFILE);
+  return parsed.session.events[0]!.priceMinor;
+}
+
+function evaluateTwseCsv(contents: string) {
+  const parsed = parseHistoricalCsv(contents, "0050", "TWSE test input", TWSE_PROFILE);
+  const digest = createHash("sha256").update(contents).digest("hex");
+  return runPaperSession(parsed.session, digest);
+}
+
 function asRecord(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>;
+}
+
+function engineResult(result: Record<string, unknown>) {
+  return {
+    eventProcessingResults: result["eventProcessingResults"],
+    journal: result["journal"],
+    tradingStatistics: result["tradingStatistics"],
+    accountSummary: result["accountSummary"],
+    accountReconciliation: result["accountReconciliation"],
+  };
 }
 
 describe("historical CSV baseline adapter", () => {
   beforeAll(async () => {
     syntheticCsv = await readFile(FIXTURE_PATH, "utf8");
+  });
+
+  it("converts TWSE close decimal text exactly to TWD minor units", () => {
+    expect(twsePriceMinor("51")).toBe(5100n);
+    expect(twsePriceMinor("51.2")).toBe(5120n);
+    expect(twsePriceMinor("51.25")).toBe(5125n);
+    expect(twsePriceMinor("51.250")).toBe(5125n);
+    expect(twsePriceMinor("90071992547409.93")).toBe(9007199254740993n);
+  });
+
+  it("rejects unsupported close precision and malformed, zero, or negative close values", () => {
+    expect(() => twsePriceMinor("51.251")).toThrow("cannot be represented exactly");
+    for (const close of ["", "NaN", "Infinity", "-1", "0", "0.00"]) {
+      expect(() => twsePriceMinor(close)).toThrow();
+    }
+  });
+
+  it("uses the declared daily-close event time and preserves next-event fills", () => {
+    const contents = twseCsv([
+      "0050,2024-01-02,90,91,89,90,100",
+      "0050,2024-01-03,90,91,89,90,100",
+      "0050,2024-01-04,110,111,109,110,100",
+    ]);
+    const parsed = parseHistoricalCsv(contents, "0050", "TWSE test input", TWSE_PROFILE);
+    expect(parsed).toMatchObject({
+      sourceProfile: "TWSE_DAILY_OHLCV_CLOSE_V1",
+      minorUnitsPerMajor: 100,
+      sourcePriceColumn: "close",
+      startDate: "2024-01-02",
+      endDate: "2024-01-04",
+      rowCount: 3,
+    });
+    expect(parsed.session.asset).toMatchObject({ symbol: "0050", currencyCode: "TWD", minorUnit: "0.01" });
+    expect(parsed.session.events.map((event) => event.timestamp)).toEqual([
+      Date.parse("2024-01-02T13:30:00+08:00"),
+      Date.parse("2024-01-03T13:30:00+08:00"),
+      Date.parse("2024-01-04T13:30:00+08:00"),
+    ]);
+
+    const result = evaluateTwseCsv(contents);
+    const fill = (result.journal as readonly Record<string, unknown>[]).find((event) => event.kind === "fill");
+    expect(fill).toMatchObject({
+      timestamp: Date.parse("2024-01-03T13:30:00+08:00"),
+      sourceMarketEventId: "historical-0050-2024-01-03",
+    });
+  });
+
+  it("rejects duplicate and descending dates for the selected TWSE symbol", () => {
+    const selected = (date: string) => `0050,${date},1,2,1,1,10`;
+    expect(() => parseHistoricalCsv(
+      twseCsv([selected("2024-01-02"), selected("2024-01-02")]),
+      "0050",
+      "TWSE test input",
+      TWSE_PROFILE,
+    )).toThrow("duplicate or out of chronological order");
+    expect(() => parseHistoricalCsv(
+      twseCsv([selected("2024-01-03"), selected("2024-01-02")]),
+      "0050",
+      "TWSE test input",
+      TWSE_PROFILE,
+    )).toThrow("duplicate or out of chronological order");
+  });
+
+  it("does not use open, high, low, or volume as strategy inputs", () => {
+    const closes = [
+      "0050,2024-01-02,90,91,89,90,100",
+      "0050,2024-01-03,90,91,89,90,100",
+      "0050,2024-01-04,110,111,109,110,100",
+    ];
+    const changedOhlv = [
+      "0050,2024-01-02,open-x,high-x,low-x,90,volume-x",
+      "0050,2024-01-03,open-y,high-y,low-y,90,volume-y",
+      "0050,2024-01-04,open-z,high-z,low-z,110,volume-z",
+    ];
+    expect(engineResult(evaluateTwseCsv(twseCsv(changedOhlv))))
+      .toEqual(engineResult(evaluateTwseCsv(twseCsv(closes))));
+  });
+
+  it("keeps earlier decisions unchanged when a future TWSE close changes", () => {
+    const original = twseCsv([
+      "0050,2024-01-02,90,91,89,90,100",
+      "0050,2024-01-03,95,96,94,95,100",
+      "0050,2024-01-04,110,111,109,110,100",
+      "0050,2024-01-05,105,106,104,105,100",
+    ]);
+    const changed = original.replace("2024-01-05,105,106,104,105,100", "2024-01-05,105,106,104,999,100");
+    const originalResult = evaluateTwseCsv(original);
+    const changedResult = evaluateTwseCsv(changed);
+    const prefixTimestamp = Date.parse("2024-01-04T13:30:00+08:00");
+    const earlierJournal = (result: Record<string, unknown>) =>
+      (result["journal"] as readonly Record<string, unknown>[])
+        .filter((event) => Number(event["timestamp"]) <= prefixTimestamp);
+    expect(earlierJournal(changedResult)).toEqual(earlierJournal(originalResult));
   });
 
   it("runs chronological CSV rows through the fixed runner and produces reconciled W/L/BE results", async () => {
