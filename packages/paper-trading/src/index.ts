@@ -6,6 +6,11 @@ export {
   PaperJournalError,
   PaperJournalReplayError,
 } from "./durablePaperSession.js";
+export { DurableGatewayPaperSession } from "./durableExecutionSession.js";
+export type {
+  DurableGatewayMarketResult,
+  GatewayRecoveryState,
+} from "./durableExecutionSession.js";
 export {
   PriceBandStrategy,
   RollingMeanReversionV1Strategy,
