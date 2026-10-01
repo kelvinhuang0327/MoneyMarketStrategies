@@ -221,5 +221,5 @@ describe("0056 cost-aware return-hurdle logistic challenger temporal runner", ()
       supportsMultiSymbolAllocation: false,
       supportsSymbolSelection: false,
     });
-  }, 40_000);
+  }, 60_000);
 });

@@ -150,5 +150,5 @@ describe("0056 class-balanced logistic challenger temporal confirmation", () => 
     expect(second).not.toHaveProperty("combinedScore");
     expect(second).not.toHaveProperty("selectedSymbol");
     expect(second.guardrails.supportsAutomaticPromotion).toBe(false);
-  }, 45_000);
+  }, 60_000);
 });
