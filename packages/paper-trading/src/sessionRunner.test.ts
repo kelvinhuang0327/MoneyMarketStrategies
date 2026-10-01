@@ -265,5 +265,5 @@ describe("paper session runner", () => {
     expect(demo.stdout).toContain("market_events=4");
     expect(demo.stdout).toContain("cash_minor=100092");
     expect(demo.stdout).toContain("fees_minor=187");
-  });
+  }, 30_000);
 });

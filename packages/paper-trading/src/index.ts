@@ -1,5 +1,12 @@
 export { PaperTradingEngine } from "./engine.js";
 export {
+  DurablePaperTradingSession,
+  PaperJournalConflictError,
+  PaperJournalCorruptError,
+  PaperJournalError,
+  PaperJournalReplayError,
+} from "./durablePaperSession.js";
+export {
   PriceBandStrategy,
   RollingMeanReversionV1Strategy,
   ROLLING_MEAN_REVERSION_V1,
