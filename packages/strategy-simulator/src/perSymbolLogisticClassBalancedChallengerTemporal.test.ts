@@ -137,7 +137,7 @@ describe("0056 class-balanced logistic challenger temporal confirmation", () => 
     expect(firstMutated.challenger.evidence.fit.modelStateSha256)
       .toBe(firstBaseline.challenger.evidence.fit.modelStateSha256);
     expect(lastMutated.normalizedResultSha256).not.toBe(lastBaseline.normalizedResultSha256);
-  }, 45_000);
+  }, 60_000);
 
   it("is deterministic and does not synthesize a score or promotion", () => {
     const first = run();

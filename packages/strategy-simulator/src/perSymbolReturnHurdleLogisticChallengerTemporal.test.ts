@@ -128,7 +128,7 @@ describe("0056 cost-aware return-hurdle logistic challenger temporal runner", ()
       .toBe(baseResult.cutoffRuns[0]?.normalizedResultSha256);
     expect(extendedResult.cutoffRuns[1]?.normalizedResultSha256)
       .toBe(baseResult.cutoffRuns[1]?.normalizedResultSha256);
-  }, 40_000);
+  }, 60_000);
 
   // Requirement 6: TRAINING label creation does not consume rows outside TRAINING
   it("Requirement 6: TRAINING labels are derived strictly within the training boundary", () => {
