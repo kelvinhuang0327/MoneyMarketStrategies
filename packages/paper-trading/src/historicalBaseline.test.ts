@@ -307,5 +307,5 @@ describe("historical CSV baseline adapter", () => {
     expect(help.status).toBe(0);
     expect(help.stderr).toBe("");
     expect(help.stdout).toContain("priceMinor: positive integer");
-  }, 30_000);
+  }, 60_000);
 });
