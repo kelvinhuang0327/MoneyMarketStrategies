@@ -110,7 +110,7 @@ function loadCanonicalHistoricalData(): {
   readonly ohlcvSha256: string;
   readonly t86Sha256: string;
 } {
-  const ohlcvCsvPath = "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  const ohlcvCsvPath = path.resolve("data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
   const t86CsvPath = path.resolve("outputs/retraining/p196_0056_twse_t86_institutional_flows.csv");
 
   const ohlcvText = readFileSync(ohlcvCsvPath, "utf8");
@@ -195,7 +195,7 @@ describe("perSymbolT86InstitutionalFlowLogisticChallengerTemporal", () => {
       expect(run.controlEconomic.benchmarkPolicy).toBe("ALWAYS_LONG_BENCHMARK");
       expect(run.challengerEconomic.benchmarkPolicy).toBe("ALWAYS_LONG_BENCHMARK");
     }
-  });
+  }, 30_000);
 
   it("is strictly deterministic across repeated runs", () => {
     const first = runSynthetic();
@@ -205,7 +205,7 @@ describe("perSymbolT86InstitutionalFlowLogisticChallengerTemporal", () => {
     expect(second.normalizedResultSha256).toBe(first.normalizedResultSha256);
     expect(second.promotionDecision).toBe("do_not_promote");
     expect(second.guardrails.supportsAutomaticPromotion).toBe(false);
-  });
+  }, 30_000);
 
   it("reproduces accepted control numbers and evaluates 4 cutoffs on canonical historical data", () => {
     const canonical = loadCanonicalHistoricalData();

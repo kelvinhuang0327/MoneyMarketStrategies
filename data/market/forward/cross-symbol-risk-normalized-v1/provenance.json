@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "cross-symbol-risk-normalized-forward-v1",
+  "symbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "source": "TWSE STOCK_DAY monthly report API",
+  "providerVersion": "TWSE exchangeReport/STOCK_DAY monthly report API response=json",
+  "fetchedAtUtc": "2026-09-30T13:14:41.159Z",
+  "historicalCutoff": "2026-08-11",
+  "actualDateRange": {
+    "start": "2026-08-12",
+    "end": "2026-09-30"
+  },
+  "perSymbolRowCounts": {
+    "2317": 34,
+    "2330": 34,
+    "2454": 34,
+    "0056": 34
+  },
+  "sha256": "48638edc85ca924119499c53020c5748feacf42f4432b65bbbbc7edfbbde3e18",
+  "purpose": "BLIND_CROSS_SYMBOL_FORWARD_EVALUATION",
+  "sourceUrls": [
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260801&stockNo=0056",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260901&stockNo=0056",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260801&stockNo=2317",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260901&stockNo=2317",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260801&stockNo=2330",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260901&stockNo=2330",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260801&stockNo=2454",
+    "https://www.twse.com.tw/exchangeReport/STOCK_DAY?response=json&date=20260901&stockNo=2454"
+  ]
+}

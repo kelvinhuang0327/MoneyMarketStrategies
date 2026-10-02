@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "dataKind": "SYNTHETIC",
+  "sourceLabel": "MMS paper session example (generated prices)",
+  "asset": {
+    "symbol": "SYNTH",
+    "currencyCode": "TWD",
+    "minorUnit": "0.01"
+  },
+  "simulation": {
+    "initialCashMinor": "100000",
+    "risk": {
+      "maxPositionQuantity": 1,
+      "maxExposureMinor": "50000",
+      "maxMarketAgeMs": 60000
+    },
+    "terms": {
+      "label": "SYNTHETIC_ONLY",
+      "feeBps": 0,
+      "slippageBps": 0
+    },
+    "strategy": {
+      "entryAtOrBelowMinor": "90",
+      "exitAtOrAboveMinor": "120",
+      "targetQuantity": 1
+    }
+  },
+  "events": [
+    { "eventId": "synthetic-001", "timestamp": 1700000000001, "symbol": "SYNTH", "priceMinor": "90" },
+    { "eventId": "synthetic-002", "timestamp": 1700000000002, "symbol": "SYNTH", "priceMinor": "100" },
+    { "eventId": "synthetic-003", "timestamp": 1700000000003, "symbol": "SYNTH", "priceMinor": "120" },
+    { "eventId": "synthetic-004", "timestamp": 1700000000004, "symbol": "SYNTH", "priceMinor": "110" },
+    { "eventId": "synthetic-005", "timestamp": 1700000000005, "symbol": "SYNTH", "priceMinor": "90" },
+    { "eventId": "synthetic-006", "timestamp": 1700000000006, "symbol": "SYNTH", "priceMinor": "100" },
+    { "eventId": "synthetic-007", "timestamp": 1700000000007, "symbol": "SYNTH", "priceMinor": "120" },
+    { "eventId": "synthetic-008", "timestamp": 1700000000008, "symbol": "SYNTH", "priceMinor": "95" }
+  ]
+}

@@ -1,0 +1,1011 @@
+{
+  "schemaVersion": 1,
+  "strategyFamily": "ROLLING_MEAN_REVERSION_V1",
+  "legacyStrategyStatus": "LEGACY_EXECUTION_TEST_REFERENCE",
+  "objective": "WIN_RATE_WILSON_LOWER_BOUND_95",
+  "developmentDataEnd": "2026-09-29",
+  "developmentData": {
+    "symbol": "0050",
+    "rowCount": 1632,
+    "dateRange": {
+      "start": "2020-01-02",
+      "end": "2026-09-29"
+    }
+  },
+  "inputHashes": {
+    "historicalSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+    "observedForwardSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf"
+  },
+  "foldPolicy": {
+    "version": "rolling-origin-expanding-history-three-fold-v1",
+    "foldCount": 3,
+    "folds": [
+      {
+        "id": "fold-1",
+        "training": {
+          "startDate": "2020-01-02",
+          "endDate": "2021-09-03",
+          "rowCount": 408
+        },
+        "validation": {
+          "startDate": "2021-09-06",
+          "endDate": "2023-05-15",
+          "rowCount": 408
+        }
+      },
+      {
+        "id": "fold-2",
+        "training": {
+          "startDate": "2020-01-02",
+          "endDate": "2023-05-15",
+          "rowCount": 816
+        },
+        "validation": {
+          "startDate": "2023-05-16",
+          "endDate": "2025-01-13",
+          "rowCount": 408
+        }
+      },
+      {
+        "id": "fold-3",
+        "training": {
+          "startDate": "2020-01-02",
+          "endDate": "2025-01-13",
+          "rowCount": 1224
+        },
+        "validation": {
+          "startDate": "2025-01-14",
+          "endDate": "2026-09-29",
+          "rowCount": 408
+        }
+      }
+    ]
+  },
+  "candidateGrid": {
+    "lookback": [
+      10,
+      20,
+      40
+    ],
+    "entryDiscount": [
+      0.02,
+      0.04
+    ],
+    "takeProfit": [
+      0.02,
+      0.04
+    ],
+    "maxHoldBars": [
+      10,
+      20
+    ],
+    "candidateCount": 24,
+    "fixedTargetQuantity": 3
+  },
+  "candidates": [
+    {
+      "candidateId": "lookback-10-entry-0.02-take-0.02-hold-10",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.02,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 16
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 12
+        }
+      ],
+      "aggregateCompletedTradeCount": 33,
+      "WIN": 14,
+      "LOSS": 19,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.42424242424242425,
+      "WilsonLowerBound95": 0.272353589950299,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-22679",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-22679",
+        "denominator": 33
+      },
+      "feesMinor": "6836"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.02-take-0.02-hold-20",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.02,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 13
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 10
+        }
+      ],
+      "aggregateCompletedTradeCount": 28,
+      "WIN": 16,
+      "LOSS": 12,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5714285714285714,
+      "WilsonLowerBound95": 0.390704789856154,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-14244",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-14244",
+        "denominator": 28
+      },
+      "feesMinor": "5992"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.02-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 16
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 12
+        }
+      ],
+      "aggregateCompletedTradeCount": 33,
+      "WIN": 12,
+      "LOSS": 21,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.36363636363636365,
+      "WilsonLowerBound95": 0.22186966167959873,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-21589",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-21589",
+        "denominator": 33
+      },
+      "feesMinor": "6838"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.02-take-0.04-hold-20",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.04,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 12
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 4
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 10
+        }
+      ],
+      "aggregateCompletedTradeCount": 26,
+      "WIN": 14,
+      "LOSS": 12,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5384615384615384,
+      "WilsonLowerBound95": 0.35457636204430115,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-12357",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-12357",
+        "denominator": 26
+      },
+      "feesMinor": "5506"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.04-take-0.02-hold-10",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.02,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 4
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 5
+        }
+      ],
+      "aggregateCompletedTradeCount": 10,
+      "WIN": 5,
+      "LOSS": 5,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5,
+      "WilsonLowerBound95": 0.2365895936154873,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "1940",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "1940",
+        "denominator": 10
+      },
+      "feesMinor": "2038"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.04-take-0.02-hold-20",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.02,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 4
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 5
+        }
+      ],
+      "aggregateCompletedTradeCount": 10,
+      "WIN": 5,
+      "LOSS": 5,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5,
+      "WilsonLowerBound95": 0.2365895936154873,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-591",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-591",
+        "denominator": 10
+      },
+      "feesMinor": "2031"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.04-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 4
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 4
+        }
+      ],
+      "aggregateCompletedTradeCount": 9,
+      "WIN": 6,
+      "LOSS": 3,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.6666666666666666,
+      "WilsonLowerBound95": 0.35419734749908977,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "695",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "695",
+        "denominator": 9
+      },
+      "feesMinor": "1861"
+    },
+    {
+      "candidateId": "lookback-10-entry-0.04-take-0.04-hold-20",
+      "parameters": {
+        "lookback": 10,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 4
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 4
+        }
+      ],
+      "aggregateCompletedTradeCount": 9,
+      "WIN": 7,
+      "LOSS": 2,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.7777777777777778,
+      "WilsonLowerBound95": 0.4525833436728054,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "1468",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "1468",
+        "denominator": 9
+      },
+      "feesMinor": "1865"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.02-take-0.02-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.02,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 17
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 6
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 10
+        }
+      ],
+      "aggregateCompletedTradeCount": 33,
+      "WIN": 13,
+      "LOSS": 20,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.3939393939393939,
+      "WilsonLowerBound95": 0.24682882231508205,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-19323",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-19323",
+        "denominator": 33
+      },
+      "feesMinor": "6870"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.02-take-0.02-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.02,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 12
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 6
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 9
+        }
+      ],
+      "aggregateCompletedTradeCount": 27,
+      "WIN": 15,
+      "LOSS": 12,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5555555555555556,
+      "WilsonLowerBound95": 0.3731271947957688,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-12796",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-12796",
+        "denominator": 27
+      },
+      "feesMinor": "5750"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.02-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 16
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 10
+        }
+      ],
+      "aggregateCompletedTradeCount": 31,
+      "WIN": 11,
+      "LOSS": 20,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.3548387096774194,
+      "WilsonLowerBound95": 0.21116447741565816,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-19979",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-19979",
+        "denominator": 31
+      },
+      "feesMinor": "6398"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.02-take-0.04-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.04,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 11
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 8
+        }
+      ],
+      "aggregateCompletedTradeCount": 24,
+      "WIN": 13,
+      "LOSS": 11,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5416666666666666,
+      "WilsonLowerBound95": 0.3507455355310663,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-10267",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-10267",
+        "denominator": 24
+      },
+      "feesMinor": "5078"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.04-take-0.02-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.02,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 12
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 2
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 9
+        }
+      ],
+      "aggregateCompletedTradeCount": 23,
+      "WIN": 13,
+      "LOSS": 10,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5652173913043478,
+      "WilsonLowerBound95": 0.36811049305016963,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-5954",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-5954",
+        "denominator": 23
+      },
+      "feesMinor": "4562"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.04-take-0.02-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.02,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 8
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 2
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 9
+        }
+      ],
+      "aggregateCompletedTradeCount": 19,
+      "WIN": 12,
+      "LOSS": 7,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.631578947368421,
+      "WilsonLowerBound95": 0.41039157498156714,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-4251",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-4251",
+        "denominator": 19
+      },
+      "feesMinor": "3759"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.04-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 10
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 2
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 7
+        }
+      ],
+      "aggregateCompletedTradeCount": 19,
+      "WIN": 13,
+      "LOSS": 6,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.6842105263157895,
+      "WilsonLowerBound95": 0.4601001017506463,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-1617",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-1617",
+        "denominator": 19
+      },
+      "feesMinor": "3840"
+    },
+    {
+      "candidateId": "lookback-20-entry-0.04-take-0.04-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 7
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 2
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 7
+        }
+      ],
+      "aggregateCompletedTradeCount": 16,
+      "WIN": 11,
+      "LOSS": 5,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.6875,
+      "WilsonLowerBound95": 0.4440393186673406,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 3,
+      "totalNetPnlMinor": "-878",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-878",
+        "denominator": 16
+      },
+      "feesMinor": "3239"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.02-take-0.02-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.02,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 18
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 7
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 12
+        }
+      ],
+      "aggregateCompletedTradeCount": 37,
+      "WIN": 16,
+      "LOSS": 21,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.43243243243243246,
+      "WilsonLowerBound95": 0.2867148684035132,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-19403",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-19403",
+        "denominator": 37
+      },
+      "feesMinor": "7403"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.02-take-0.02-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.02,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 12
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 11
+        }
+      ],
+      "aggregateCompletedTradeCount": 28,
+      "WIN": 18,
+      "LOSS": 10,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.6428571428571429,
+      "WilsonLowerBound95": 0.4582997758222724,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-11703",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-11703",
+        "denominator": 28
+      },
+      "feesMinor": "5653"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.02-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 18
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 7
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 10
+        }
+      ],
+      "aggregateCompletedTradeCount": 35,
+      "WIN": 17,
+      "LOSS": 18,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.4857142857142857,
+      "WilsonLowerBound95": 0.32993980391252736,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-13330",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-13330",
+        "denominator": 35
+      },
+      "feesMinor": "7177"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.02-take-0.04-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.02,
+        "takeProfit": 0.04,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 11
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 5
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 7
+        }
+      ],
+      "aggregateCompletedTradeCount": 23,
+      "WIN": 14,
+      "LOSS": 9,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.6086956521739131,
+      "WilsonLowerBound95": 0.40785179603745997,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-8573",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-8573",
+        "denominator": 23
+      },
+      "feesMinor": "4911"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.04-take-0.02-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.02,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 12
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 10
+        }
+      ],
+      "aggregateCompletedTradeCount": 23,
+      "WIN": 11,
+      "LOSS": 12,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.4782608695652174,
+      "WilsonLowerBound95": 0.29236869539945726,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-12193",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-12193",
+        "denominator": 23
+      },
+      "feesMinor": "4318"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.04-take-0.02-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.02,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 8
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 9
+        }
+      ],
+      "aggregateCompletedTradeCount": 18,
+      "WIN": 10,
+      "LOSS": 8,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5555555555555556,
+      "WilsonLowerBound95": 0.33716069428251627,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-5165",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-5165",
+        "denominator": 18
+      },
+      "feesMinor": "3416"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.04-take-0.04-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 10
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 12
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 8
+        }
+      ],
+      "aggregateCompletedTradeCount": 21,
+      "WIN": 10,
+      "LOSS": 11,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.47619047619047616,
+      "WilsonLowerBound95": 0.28343712296762946,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-10713",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-10713",
+        "denominator": 21
+      },
+      "feesMinor": "4047"
+    },
+    {
+      "candidateId": "lookback-40-entry-0.04-take-0.04-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryDiscount": 0.04,
+        "takeProfit": 0.04,
+        "maxHoldBars": 20
+      },
+      "perFoldCompletedTradeCount": [
+        {
+          "foldId": "fold-1",
+          "completedTradeCount": 7
+        },
+        {
+          "foldId": "fold-2",
+          "completedTradeCount": 1
+        },
+        {
+          "foldId": "fold-3",
+          "completedTradeCount": 6
+        }
+      ],
+      "aggregateCompletedTradeCount": 14,
+      "WIN": 8,
+      "LOSS": 6,
+      "BREAKEVEN": 0,
+      "rawNetWinRate": 0.5714285714285714,
+      "WilsonLowerBound95": 0.3259026690286936,
+      "eligible": true,
+      "parameterDistanceFromGridCenter": 5,
+      "totalNetPnlMinor": "-2206",
+      "averageCompletedTradePnlMinor": {
+        "numeratorMinor": "-2206",
+        "denominator": 14
+      },
+      "feesMinor": "2830"
+    }
+  ],
+  "selectionStatus": "SELECTED_FUTURE_CHALLENGER",
+  "selectedFutureChallenger": {
+    "id": "lookback-20-entry-0.04-take-0.04-hold-10",
+    "strategyFamily": "ROLLING_MEAN_REVERSION_V1",
+    "parameters": {
+      "lookback": 20,
+      "entryDiscount": 0.04,
+      "takeProfit": 0.04,
+      "maxHoldBars": 10
+    },
+    "aggregateCompletedTradeCount": 19,
+    "WIN": 13,
+    "LOSS": 6,
+    "BREAKEVEN": 0,
+    "rawNetWinRate": 0.6842105263157895,
+    "WilsonLowerBound95": 0.4601001017506463
+  },
+  "FROZEN_CHALLENGER_ID": "lookback-20-entry-0.04-take-0.04-hold-10",
+  "FROZEN_PARAMETERS": {
+    "lookback": 20,
+    "entryDiscount": 0.04,
+    "takeProfit": 0.04,
+    "maxHoldBars": 10
+  },
+  "FROZEN_SELECTION_DATA_END": "2026-09-29",
+  "FROZEN_SELECTION_INPUT_HASHES": {
+    "historicalSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+    "observedForwardSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf"
+  },
+  "FROZEN_SELECTION_POLICY": "wilson-rolling-mean-reversion-v1",
+  "FUTURE_PROMOTION_STATUS": "AWAITING_UNSEEN_DATA",
+  "futureEvaluation": {
+    "status": "AWAITING_UNSEEN_DATA",
+    "unseenAfter": "2026-09-29"
+  },
+  "freshDataWinRateImprovement": "NOT_EVALUATED"
+}

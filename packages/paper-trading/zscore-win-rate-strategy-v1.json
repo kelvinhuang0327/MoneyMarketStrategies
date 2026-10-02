@@ -1,0 +1,2223 @@
+{
+  "schemaVersion": 1,
+  "strategyFamily": "ROLLING_ZSCORE_MEAN_REVERSION_V1",
+  "objective": "WIN_RATE_WILSON_LOWER_BOUND_95",
+  "historicalInputSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "historicalDataEnd": "2026-08-11",
+  "candidateGrid": {
+    "lookback": [
+      20,
+      40
+    ],
+    "entryZ": [
+      0.75,
+      1,
+      1.25
+    ],
+    "exitZ": [
+      -0.25,
+      0
+    ],
+    "maxHoldBars": [
+      10,
+      20
+    ],
+    "candidateCount": 24
+  },
+  "foldPolicy": {
+    "policy": "ROLLING_ORIGIN_3_EQUAL_ROW_FOLDS_PER_SYMBOL",
+    "foldCountPerSymbol": 3,
+    "boundaryIndicesZeroBased": "floor(n/4), floor(n/2), floor(3n/4), n; each validation slice is evaluated only after its training prefix",
+    "perSymbolBoundaries": [
+      {
+        "symbol": "0050",
+        "rowCount": 1599,
+        "folds": [
+          {
+            "id": "fold-1",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 400,
+              "startDate": "2020-01-02",
+              "endDate": "2021-08-23",
+              "rowCount": 399
+            },
+            "validation": {
+              "startRowInclusive": 400,
+              "endRowExclusive": 800,
+              "startDate": "2021-08-24",
+              "endDate": "2023-04-19",
+              "rowCount": 400
+            }
+          },
+          {
+            "id": "fold-2",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 800,
+              "startDate": "2020-01-02",
+              "endDate": "2023-04-19",
+              "rowCount": 799
+            },
+            "validation": {
+              "startRowInclusive": 800,
+              "endRowExclusive": 1200,
+              "startDate": "2023-04-20",
+              "endDate": "2024-12-06",
+              "rowCount": 400
+            }
+          },
+          {
+            "id": "fold-3",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 1200,
+              "startDate": "2020-01-02",
+              "endDate": "2024-12-06",
+              "rowCount": 1199
+            },
+            "validation": {
+              "startRowInclusive": 1200,
+              "endRowExclusive": 1600,
+              "startDate": "2024-12-09",
+              "endDate": "2026-08-11",
+              "rowCount": 400
+            }
+          }
+        ]
+      },
+      {
+        "symbol": "0056",
+        "rowCount": 1604,
+        "folds": [
+          {
+            "id": "fold-1",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 402,
+              "startDate": "2020-01-02",
+              "endDate": "2021-08-25",
+              "rowCount": 401
+            },
+            "validation": {
+              "startRowInclusive": 402,
+              "endRowExclusive": 803,
+              "startDate": "2021-08-26",
+              "endDate": "2023-04-24",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-2",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 803,
+              "startDate": "2020-01-02",
+              "endDate": "2023-04-24",
+              "rowCount": 802
+            },
+            "validation": {
+              "startRowInclusive": 803,
+              "endRowExclusive": 1204,
+              "startDate": "2023-04-25",
+              "endDate": "2024-12-12",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-3",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 1204,
+              "startDate": "2020-01-02",
+              "endDate": "2024-12-12",
+              "rowCount": 1203
+            },
+            "validation": {
+              "startRowInclusive": 1204,
+              "endRowExclusive": 1605,
+              "startDate": "2024-12-13",
+              "endDate": "2026-08-11",
+              "rowCount": 401
+            }
+          }
+        ]
+      },
+      {
+        "symbol": "2317",
+        "rowCount": 1603,
+        "folds": [
+          {
+            "id": "fold-1",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 401,
+              "startDate": "2020-01-02",
+              "endDate": "2021-08-24",
+              "rowCount": 400
+            },
+            "validation": {
+              "startRowInclusive": 401,
+              "endRowExclusive": 802,
+              "startDate": "2021-08-25",
+              "endDate": "2023-04-21",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-2",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 802,
+              "startDate": "2020-01-02",
+              "endDate": "2023-04-21",
+              "rowCount": 801
+            },
+            "validation": {
+              "startRowInclusive": 802,
+              "endRowExclusive": 1203,
+              "startDate": "2023-04-24",
+              "endDate": "2024-12-11",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-3",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 1203,
+              "startDate": "2020-01-02",
+              "endDate": "2024-12-11",
+              "rowCount": 1202
+            },
+            "validation": {
+              "startRowInclusive": 1203,
+              "endRowExclusive": 1604,
+              "startDate": "2024-12-12",
+              "endDate": "2026-08-11",
+              "rowCount": 401
+            }
+          }
+        ]
+      },
+      {
+        "symbol": "2330",
+        "rowCount": 1604,
+        "folds": [
+          {
+            "id": "fold-1",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 402,
+              "startDate": "2020-01-02",
+              "endDate": "2021-08-25",
+              "rowCount": 401
+            },
+            "validation": {
+              "startRowInclusive": 402,
+              "endRowExclusive": 803,
+              "startDate": "2021-08-26",
+              "endDate": "2023-04-24",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-2",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 803,
+              "startDate": "2020-01-02",
+              "endDate": "2023-04-24",
+              "rowCount": 802
+            },
+            "validation": {
+              "startRowInclusive": 803,
+              "endRowExclusive": 1204,
+              "startDate": "2023-04-25",
+              "endDate": "2024-12-12",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-3",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 1204,
+              "startDate": "2020-01-02",
+              "endDate": "2024-12-12",
+              "rowCount": 1203
+            },
+            "validation": {
+              "startRowInclusive": 1204,
+              "endRowExclusive": 1605,
+              "startDate": "2024-12-13",
+              "endDate": "2026-08-11",
+              "rowCount": 401
+            }
+          }
+        ]
+      },
+      {
+        "symbol": "2454",
+        "rowCount": 1604,
+        "folds": [
+          {
+            "id": "fold-1",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 402,
+              "startDate": "2020-01-02",
+              "endDate": "2021-08-25",
+              "rowCount": 401
+            },
+            "validation": {
+              "startRowInclusive": 402,
+              "endRowExclusive": 803,
+              "startDate": "2021-08-26",
+              "endDate": "2023-04-24",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-2",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 803,
+              "startDate": "2020-01-02",
+              "endDate": "2023-04-24",
+              "rowCount": 802
+            },
+            "validation": {
+              "startRowInclusive": 803,
+              "endRowExclusive": 1204,
+              "startDate": "2023-04-25",
+              "endDate": "2024-12-12",
+              "rowCount": 401
+            }
+          },
+          {
+            "id": "fold-3",
+            "training": {
+              "startRowInclusive": 1,
+              "endRowExclusive": 1204,
+              "startDate": "2020-01-02",
+              "endDate": "2024-12-12",
+              "rowCount": 1203
+            },
+            "validation": {
+              "startRowInclusive": 1204,
+              "endRowExclusive": 1605,
+              "startDate": "2024-12-13",
+              "endDate": "2026-08-11",
+              "rowCount": 401
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "selectionRanking": [
+    "highest pooled validation WilsonLowerBound95",
+    "higher pooled validation rawNetWinRate",
+    "smallest summed ordinal distance from the center of the four fixed grid axes",
+    "lexicographically smallest candidate id"
+  ],
+  "eligibilityPolicy": {
+    "minimumSymbolsWithAtLeastTwoCompletedValidationTrades": 4,
+    "requiredSymbolCount": 5,
+    "minimumAggregateCompletedValidationTrades": 20,
+    "requiresNonNullPooledWilsonLowerBound95": true
+  },
+  "candidateDiagnostics": [
+    {
+      "candidateId": "lookback-20-entryz-0p75-exitz-neg0p25-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 0.75,
+        "exitZ": -0.25,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 44,
+          "WIN": 7,
+          "LOSS": 37,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1590909090909091,
+          "WilsonLowerBound95": 0.07926576557718398,
+          "netPnl": "-395.57",
+          "fees": "93.35"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 58,
+          "WIN": 5,
+          "LOSS": 53,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.08620689655172414,
+          "WilsonLowerBound95": 0.03738483193379337,
+          "netPnl": "-157.98",
+          "fees": "36.59"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 42,
+          "WIN": 10,
+          "LOSS": 32,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.23809523809523808,
+          "WilsonLowerBound95": 0.13480820811018185,
+          "netPnl": "-366.34",
+          "fees": "81.94"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 144,
+        "WIN": 22,
+        "LOSS": 122,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.1527777777777778,
+        "WilsonLowerBound95": 0.10310810700831431,
+        "netPnl": "-919.89",
+        "fees": "211.88"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-0p75-exitz-neg0p25-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 0.75,
+        "exitZ": -0.25,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 34,
+          "WIN": 7,
+          "LOSS": 27,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.20588235294117646,
+          "WilsonLowerBound95": 0.10349396022351322,
+          "netPnl": "-321.31",
+          "fees": "71.86"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 49,
+          "WIN": 5,
+          "LOSS": 44,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.10204081632653061,
+          "WilsonLowerBound95": 0.04437889248703989,
+          "netPnl": "-132.88",
+          "fees": "31.29"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 38,
+          "WIN": 8,
+          "LOSS": 30,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.21052631578947367,
+          "WilsonLowerBound95": 0.11074660352095932,
+          "netPnl": "-274.85",
+          "fees": "74.45"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 121,
+        "WIN": 20,
+        "LOSS": 101,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.1652892561983471,
+        "WilsonLowerBound95": 0.10962203759241998,
+        "netPnl": "-729.04",
+        "fees": "177.60"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-0p75-exitz-0-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 0.75,
+        "exitZ": 0,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 41,
+          "WIN": 7,
+          "LOSS": 34,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.17073170731707318,
+          "WilsonLowerBound95": 0.08525143995273898,
+          "netPnl": "-359.91",
+          "fees": "87.63"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 55,
+          "WIN": 7,
+          "LOSS": 48,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.12727272727272726,
+          "WilsonLowerBound95": 0.06304130417480196,
+          "netPnl": "-152.98",
+          "fees": "34.62"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 37,
+          "WIN": 11,
+          "LOSS": 26,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.2972972972972973,
+          "WilsonLowerBound95": 0.174893023464082,
+          "netPnl": "-313.53",
+          "fees": "71.82"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 133,
+        "WIN": 25,
+        "LOSS": 108,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.18796992481203006,
+        "WilsonLowerBound95": 0.13068596058578308,
+        "netPnl": "-826.42",
+        "fees": "194.07"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-0p75-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 0.75,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 31,
+          "WIN": 7,
+          "LOSS": 24,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.22580645161290322,
+          "WilsonLowerBound95": 0.113949915944988,
+          "netPnl": "-270.85",
+          "fees": "66.19"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 45,
+          "WIN": 6,
+          "LOSS": 39,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.13333333333333333,
+          "WilsonLowerBound95": 0.06257063634349681,
+          "netPnl": "-134.58",
+          "fees": "28.52"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 31,
+          "WIN": 7,
+          "LOSS": 24,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.22580645161290322,
+          "WilsonLowerBound95": 0.113949915944988,
+          "netPnl": "-231.39",
+          "fees": "60.60"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 107,
+        "WIN": 20,
+        "LOSS": 87,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.18691588785046728,
+        "WilsonLowerBound95": 0.12438379319362988,
+        "netPnl": "-636.82",
+        "fees": "155.31"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-1-exitz-neg0p25-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1,
+        "exitZ": -0.25,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 39,
+          "WIN": 7,
+          "LOSS": 32,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1794871794871795,
+          "WilsonLowerBound95": 0.08977151811469997,
+          "netPnl": "-351.46",
+          "fees": "82.84"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 45,
+          "WIN": 6,
+          "LOSS": 39,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.13333333333333333,
+          "WilsonLowerBound95": 0.06257063634349681,
+          "netPnl": "-129.76",
+          "fees": "28.15"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 34,
+          "WIN": 10,
+          "LOSS": 24,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.29411764705882354,
+          "WilsonLowerBound95": 0.16834452609931955,
+          "netPnl": "-288.45",
+          "fees": "66.00"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 118,
+        "WIN": 23,
+        "LOSS": 95,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.19491525423728814,
+        "WilsonLowerBound95": 0.1335397978223456,
+        "netPnl": "-769.67",
+        "fees": "176.99"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-20-entryz-1-exitz-neg0p25-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1,
+        "exitZ": -0.25,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 31,
+          "WIN": 6,
+          "LOSS": 25,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1935483870967742,
+          "WilsonLowerBound95": 0.09186883586347631,
+          "netPnl": "-292.53",
+          "fees": "64.65"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 40,
+          "WIN": 4,
+          "LOSS": 36,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1,
+          "WilsonLowerBound95": 0.03957888759557486,
+          "netPnl": "-114.58",
+          "fees": "25.21"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 31,
+          "WIN": 8,
+          "LOSS": 23,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.25806451612903225,
+          "WilsonLowerBound95": 0.1370154373686976,
+          "netPnl": "-202.20",
+          "fees": "60.42"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 102,
+        "WIN": 18,
+        "LOSS": 84,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.17647058823529413,
+        "WilsonLowerBound95": 0.11464223172099423,
+        "netPnl": "-609.31",
+        "fees": "150.28"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-20-entryz-1-exitz-0-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1,
+        "exitZ": 0,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 37,
+          "WIN": 9,
+          "LOSS": 28,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.24324324324324326,
+          "WilsonLowerBound95": 0.13361203432663307,
+          "netPnl": "-310.40",
+          "fees": "79.31"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 44,
+          "WIN": 7,
+          "LOSS": 37,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1590909090909091,
+          "WilsonLowerBound95": 0.07926576557718398,
+          "netPnl": "-124.79",
+          "fees": "27.47"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 31,
+          "WIN": 11,
+          "LOSS": 20,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.3548387096774194,
+          "WilsonLowerBound95": 0.21116447741565816,
+          "netPnl": "-260.76",
+          "fees": "60.30"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 112,
+        "WIN": 27,
+        "LOSS": 85,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.24107142857142858,
+        "WilsonLowerBound95": 0.17129352746057167,
+        "netPnl": "-695.95",
+        "fees": "167.08"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-20-entryz-1-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 29,
+          "WIN": 7,
+          "LOSS": 22,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.2413793103448276,
+          "WilsonLowerBound95": 0.12218268185062132,
+          "netPnl": "-241.87",
+          "fees": "61.15"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 37,
+          "WIN": 6,
+          "LOSS": 31,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.16216216216216217,
+          "WilsonLowerBound95": 0.07651103235297099,
+          "netPnl": "-108.31",
+          "fees": "23.17"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 25,
+          "WIN": 6,
+          "LOSS": 19,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.24,
+          "WilsonLowerBound95": 0.11496157730326727,
+          "netPnl": "-181.97",
+          "fees": "49.16"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 91,
+        "WIN": 19,
+        "LOSS": 72,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.2087912087912088,
+        "WilsonLowerBound95": 0.13793973578452018,
+        "netPnl": "-532.15",
+        "fees": "133.48"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-20-entryz-1p25-exitz-neg0p25-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1.25,
+        "exitZ": -0.25,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 34,
+          "WIN": 8,
+          "LOSS": 26,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.23529411764705882,
+          "WilsonLowerBound95": 0.12436838109244344,
+          "netPnl": "-310.47",
+          "fees": "72.42"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 41,
+          "WIN": 5,
+          "LOSS": 36,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.12195121951219512,
+          "WilsonLowerBound95": 0.05323257997340823,
+          "netPnl": "-111.42",
+          "fees": "25.50"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 25,
+          "WIN": 9,
+          "LOSS": 16,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.36,
+          "WilsonLowerBound95": 0.20247656431735636,
+          "netPnl": "-240.10",
+          "fees": "48.16"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 100,
+        "WIN": 22,
+        "LOSS": 78,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.22,
+        "WilsonLowerBound95": 0.15001174503655804,
+        "netPnl": "-661.99",
+        "fees": "146.08"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-1p25-exitz-neg0p25-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1.25,
+        "exitZ": -0.25,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 25,
+          "WIN": 6,
+          "LOSS": 19,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.24,
+          "WilsonLowerBound95": 0.11496157730326727,
+          "netPnl": "-210.89",
+          "fees": "53.54"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 37,
+          "WIN": 4,
+          "LOSS": 33,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.10810810810810811,
+          "WilsonLowerBound95": 0.04285120520506269,
+          "netPnl": "-105.39",
+          "fees": "23.07"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 23,
+          "WIN": 7,
+          "LOSS": 16,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.30434782608695654,
+          "WilsonLowerBound95": 0.15603828020972457,
+          "netPnl": "-162.12",
+          "fees": "44.37"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 85,
+        "WIN": 17,
+        "LOSS": 68,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.2,
+        "WilsonLowerBound95": 0.12878892241565565,
+        "netPnl": "-478.40",
+        "fees": "120.98"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-1p25-exitz-0-hold-10",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1.25,
+        "exitZ": 0,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 33,
+          "WIN": 11,
+          "LOSS": 22,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.3333333333333333,
+          "WilsonLowerBound95": 0.197500294678037,
+          "netPnl": "-268.99",
+          "fees": "70.27"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 41,
+          "WIN": 6,
+          "LOSS": 35,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.14634146341463414,
+          "WilsonLowerBound95": 0.0688415452945541,
+          "netPnl": "-107.29",
+          "fees": "25.51"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 24,
+          "WIN": 11,
+          "LOSS": 13,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.4583333333333333,
+          "WilsonLowerBound95": 0.27891058351681425,
+          "netPnl": "-236.17",
+          "fees": "46.21"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 98,
+        "WIN": 28,
+        "LOSS": 70,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.2857142857142857,
+        "WilsonLowerBound95": 0.20568632301416537,
+        "netPnl": "-612.45",
+        "fees": "141.99"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-20-entryz-1p25-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 20,
+        "entryZ": 1.25,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 24,
+          "WIN": 8,
+          "LOSS": 16,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.3333333333333333,
+          "WilsonLowerBound95": 0.17971978688379645,
+          "netPnl": "-168.39",
+          "fees": "51.39"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 34,
+          "WIN": 5,
+          "LOSS": 29,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.14705882352941177,
+          "WilsonLowerBound95": 0.06449346382626417,
+          "netPnl": "-98.15",
+          "fees": "21.14"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 20,
+          "WIN": 7,
+          "LOSS": 13,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.35,
+          "WilsonLowerBound95": 0.1811895478679446,
+          "netPnl": "-151.39",
+          "fees": "38.77"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 78,
+        "WIN": 20,
+        "LOSS": 58,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.2564102564102564,
+        "WilsonLowerBound95": 0.17255308571556624,
+        "netPnl": "-417.93",
+        "fees": "111.30"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-0p75-exitz-neg0p25-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 0.75,
+        "exitZ": -0.25,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 38,
+          "WIN": 12,
+          "LOSS": 26,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.3157894736842105,
+          "WilsonLowerBound95": 0.1908442002366664,
+          "netPnl": "-270.12",
+          "fees": "79.41"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 47,
+          "WIN": 7,
+          "LOSS": 40,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.14893617021276595,
+          "WilsonLowerBound95": 0.07406626087497503,
+          "netPnl": "-118.19",
+          "fees": "28.94"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 40,
+          "WIN": 13,
+          "LOSS": 27,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.325,
+          "WilsonLowerBound95": 0.20084316962661727,
+          "netPnl": "-291.75",
+          "fees": "76.83"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 125,
+        "WIN": 32,
+        "LOSS": 93,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.256,
+        "WilsonLowerBound95": 0.18756596643774243,
+        "netPnl": "-680.06",
+        "fees": "185.18"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-0p75-exitz-neg0p25-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 0.75,
+        "exitZ": -0.25,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 28,
+          "WIN": 11,
+          "LOSS": 17,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.39285714285714285,
+          "WilsonLowerBound95": 0.23565451827580033,
+          "netPnl": "-166.42",
+          "fees": "58.48"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 35,
+          "WIN": 8,
+          "LOSS": 27,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.22857142857142856,
+          "WilsonLowerBound95": 0.120657367461791,
+          "netPnl": "-77.82",
+          "fees": "22.27"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 30,
+          "WIN": 11,
+          "LOSS": 19,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.36666666666666664,
+          "WilsonLowerBound95": 0.21873702204017684,
+          "netPnl": "-148.73",
+          "fees": "58.07"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 93,
+        "WIN": 30,
+        "LOSS": 63,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.3225806451612903,
+        "WilsonLowerBound95": 0.23624803528547358,
+        "netPnl": "-392.97",
+        "fees": "138.82"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-0p75-exitz-0-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 0.75,
+        "exitZ": 0,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 37,
+          "WIN": 12,
+          "LOSS": 25,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.32432432432432434,
+          "WilsonLowerBound95": 0.1963307782081548,
+          "netPnl": "-247.79",
+          "fees": "78.49"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 46,
+          "WIN": 9,
+          "LOSS": 37,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1956521739130435,
+          "WilsonLowerBound95": 0.106504904441218,
+          "netPnl": "-111.80",
+          "fees": "28.31"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 37,
+          "WIN": 14,
+          "LOSS": 23,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.3783783783783784,
+          "WilsonLowerBound95": 0.2406378746389103,
+          "netPnl": "-247.56",
+          "fees": "71.31"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 120,
+        "WIN": 35,
+        "LOSS": 85,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.2916666666666667,
+        "WilsonLowerBound95": 0.21781442705981954,
+        "netPnl": "-607.15",
+        "fees": "178.11"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-0p75-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 0.75,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 26,
+          "WIN": 12,
+          "LOSS": 14,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.46153846153846156,
+          "WilsonLowerBound95": 0.28755582695234905,
+          "netPnl": "-157.03",
+          "fees": "55.31"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 33,
+          "WIN": 8,
+          "LOSS": 25,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.24242424242424243,
+          "WilsonLowerBound95": 0.12831561346647294,
+          "netPnl": "-69.48",
+          "fees": "20.98"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 26,
+          "WIN": 9,
+          "LOSS": 17,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.34615384615384615,
+          "WilsonLowerBound95": 0.19412014972852126,
+          "netPnl": "-95.05",
+          "fees": "50.77"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 85,
+        "WIN": 29,
+        "LOSS": 56,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.3411764705882353,
+        "WilsonLowerBound95": 0.2492177176176207,
+        "netPnl": "-321.56",
+        "fees": "127.06"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-1-exitz-neg0p25-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1,
+        "exitZ": -0.25,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 30,
+          "WIN": 13,
+          "LOSS": 17,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.43333333333333335,
+          "WilsonLowerBound95": 0.27377237430615114,
+          "netPnl": "-195.52",
+          "fees": "63.04"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 39,
+          "WIN": 6,
+          "LOSS": 33,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.15384615384615385,
+          "WilsonLowerBound95": 0.07247373845051468,
+          "netPnl": "-102.13",
+          "fees": "23.98"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 34,
+          "WIN": 12,
+          "LOSS": 22,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.35294117647058826,
+          "WilsonLowerBound95": 0.2148771489529607,
+          "netPnl": "-270.56",
+          "fees": "65.69"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 103,
+        "WIN": 31,
+        "LOSS": 72,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.30097087378640774,
+        "WilsonLowerBound95": 0.22085799615777002,
+        "netPnl": "-568.21",
+        "fees": "152.71"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-40-entryz-1-exitz-neg0p25-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1,
+        "exitZ": -0.25,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 22,
+          "WIN": 11,
+          "LOSS": 11,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.5,
+          "WilsonLowerBound95": 0.3072180469247956,
+          "netPnl": "-128.92",
+          "fees": "45.79"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 27,
+          "WIN": 6,
+          "LOSS": 21,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.2222222222222222,
+          "WilsonLowerBound95": 0.10607095489408955,
+          "netPnl": "-73.92",
+          "fees": "17.26"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 26,
+          "WIN": 10,
+          "LOSS": 16,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.38461538461538464,
+          "WilsonLowerBound95": 0.22428359511834425,
+          "netPnl": "-152.46",
+          "fees": "50.61"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 75,
+        "WIN": 27,
+        "LOSS": 48,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.36,
+        "WilsonLowerBound95": 0.26064766399338823,
+        "netPnl": "-355.30",
+        "fees": "113.66"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-40-entryz-1-exitz-0-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1,
+        "exitZ": 0,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 30,
+          "WIN": 13,
+          "LOSS": 17,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.43333333333333335,
+          "WilsonLowerBound95": 0.27377237430615114,
+          "netPnl": "-180.60",
+          "fees": "63.09"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 39,
+          "WIN": 9,
+          "LOSS": 30,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.23076923076923078,
+          "WilsonLowerBound95": 0.1264566242878376,
+          "netPnl": "-96.60",
+          "fees": "24.00"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 32,
+          "WIN": 12,
+          "LOSS": 20,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.375,
+          "WilsonLowerBound95": 0.2293366846595921,
+          "netPnl": "-266.42",
+          "fees": "61.97"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 101,
+        "WIN": 34,
+        "LOSS": 67,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.33663366336633666,
+        "WilsonLowerBound95": 0.25196434238298415,
+        "netPnl": "-543.62",
+        "fees": "149.06"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-40-entryz-1-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 20,
+          "WIN": 10,
+          "LOSS": 10,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.5,
+          "WilsonLowerBound95": 0.2992949144298199,
+          "netPnl": "-113.03",
+          "fees": "42.78"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 27,
+          "WIN": 7,
+          "LOSS": 20,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.25925925925925924,
+          "WilsonLowerBound95": 0.13170208422866778,
+          "netPnl": "-67.86",
+          "fees": "17.29"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 22,
+          "WIN": 8,
+          "LOSS": 14,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.36363636363636365,
+          "WilsonLowerBound95": 0.19732972772607899,
+          "netPnl": "-106.96",
+          "fees": "43.27"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 69,
+        "WIN": 25,
+        "LOSS": 44,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.36231884057971014,
+        "WilsonLowerBound95": 0.2589555625346011,
+        "netPnl": "-287.85",
+        "fees": "103.34"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 3
+    },
+    {
+      "candidateId": "lookback-40-entryz-1p25-exitz-neg0p25-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1.25,
+        "exitZ": -0.25,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 24,
+          "WIN": 10,
+          "LOSS": 14,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.4166666666666667,
+          "WilsonLowerBound95": 0.24467347246538232,
+          "netPnl": "-158.51",
+          "fees": "51.11"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 29,
+          "WIN": 5,
+          "LOSS": 24,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.1724137931034483,
+          "WilsonLowerBound95": 0.07597745271479932,
+          "netPnl": "-82.64",
+          "fees": "17.93"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 27,
+          "WIN": 10,
+          "LOSS": 17,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.37037037037037035,
+          "WilsonLowerBound95": 0.21532287067936856,
+          "netPnl": "-218.07",
+          "fees": "51.60"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 80,
+        "WIN": 25,
+        "LOSS": 55,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.3125,
+        "WilsonLowerBound95": 0.2215025832784764,
+        "netPnl": "-459.22",
+        "fees": "120.64"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-1p25-exitz-neg0p25-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1.25,
+        "exitZ": -0.25,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 16,
+          "WIN": 6,
+          "LOSS": 10,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.375,
+          "WilsonLowerBound95": 0.18480982554752803,
+          "netPnl": "-62.11",
+          "fees": "34.69"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 20,
+          "WIN": 5,
+          "LOSS": 15,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.25,
+          "WilsonLowerBound95": 0.11186005278940306,
+          "netPnl": "-59.80",
+          "fees": "12.61"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 20,
+          "WIN": 8,
+          "LOSS": 12,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.4,
+          "WilsonLowerBound95": 0.21880396741419272,
+          "netPnl": "-118.54",
+          "fees": "38.44"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 56,
+        "WIN": 19,
+        "LOSS": 37,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.3392857142857143,
+        "WilsonLowerBound95": 0.22919799319334652,
+        "netPnl": "-240.45",
+        "fees": "85.74"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-1p25-exitz-0-hold-10",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1.25,
+        "exitZ": 0,
+        "maxHoldBars": 10
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 24,
+          "WIN": 10,
+          "LOSS": 14,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.4166666666666667,
+          "WilsonLowerBound95": 0.24467347246538232,
+          "netPnl": "-159.26",
+          "fees": "51.11"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 29,
+          "WIN": 6,
+          "LOSS": 23,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.20689655172413793,
+          "WilsonLowerBound95": 0.09845936515585209,
+          "netPnl": "-82.84",
+          "fees": "17.92"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 26,
+          "WIN": 8,
+          "LOSS": 18,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.3076923076923077,
+          "WilsonLowerBound95": 0.1650112093979267,
+          "netPnl": "-232.10",
+          "fees": "49.64"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 79,
+        "WIN": 24,
+        "LOSS": 55,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.3037974683544304,
+        "WilsonLowerBound95": 0.21344318939311352,
+        "netPnl": "-474.20",
+        "fees": "118.67"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    },
+    {
+      "candidateId": "lookback-40-entryz-1p25-exitz-0-hold-20",
+      "parameters": {
+        "lookback": 40,
+        "entryZ": 1.25,
+        "exitZ": 0,
+        "maxHoldBars": 20
+      },
+      "perSymbol": [
+        {
+          "symbol": "0050",
+          "completedTradeCount": 15,
+          "WIN": 6,
+          "LOSS": 9,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.4,
+          "WilsonLowerBound95": 0.19824228082594664,
+          "netPnl": "-56.59",
+          "fees": "33.80"
+        },
+        {
+          "symbol": "0056",
+          "completedTradeCount": 20,
+          "WIN": 5,
+          "LOSS": 15,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.25,
+          "WilsonLowerBound95": 0.11186005278940306,
+          "netPnl": "-56.24",
+          "fees": "12.62"
+        },
+        {
+          "symbol": "2317",
+          "completedTradeCount": 17,
+          "WIN": 5,
+          "LOSS": 12,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": 0.29411764705882354,
+          "WilsonLowerBound95": 0.13279793865556402,
+          "netPnl": "-125.74",
+          "fees": "32.83"
+        },
+        {
+          "symbol": "2330",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        },
+        {
+          "symbol": "2454",
+          "completedTradeCount": 0,
+          "WIN": 0,
+          "LOSS": 0,
+          "BREAKEVEN": 0,
+          "rawNetWinRate": null,
+          "WilsonLowerBound95": null,
+          "netPnl": "0.00",
+          "fees": "0.00"
+        }
+      ],
+      "aggregate": {
+        "completedTradeCount": 52,
+        "WIN": 16,
+        "LOSS": 36,
+        "BREAKEVEN": 0,
+        "rawNetWinRate": 0.3076923076923077,
+        "WilsonLowerBound95": 0.19914562391353519,
+        "netPnl": "-238.57",
+        "fees": "79.25"
+      },
+      "eligible": false,
+      "parameterDistanceFromGridCenter": 5
+    }
+  ],
+  "selectionStatus": "NO_ELIGIBLE_CANDIDATE",
+  "selectedFutureCandidate": null,
+  "freshEvaluationPolicy": {
+    "symbols": [
+      "0056",
+      "2317",
+      "2330",
+      "2454"
+    ],
+    "historicalCutoff": "2026-08-11",
+    "dataSource": "TWSE STOCK_DAY monthly report API",
+    "dataFetchAllowedOnlyAfterFreezeCommit": true,
+    "evidencePurpose": "BLIND_CROSS_SYMBOL_FORWARD_EVALUATION",
+    "legacyReferenceCandidateId": "lookback-20-entry-0.04-take-0.04-hold-10",
+    "minimumSymbolsWithCompletedTradePerStrategy": 3,
+    "minimumAggregateCompletedTradesPerStrategy": 12,
+    "improvementRule": "new challenger aggregate WilsonLowerBound95 must be strictly greater than legacy reference"
+  }
+}
