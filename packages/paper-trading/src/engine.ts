@@ -30,6 +30,7 @@ interface MutableOrder {
   createdAt: number;
   createdEventId: string;
   status: OrderStatus;
+  cancelPending: boolean;
   rejectionReason?: string;
 }
 
@@ -269,7 +270,10 @@ export class PaperTradingEngine {
     order.filledQuantity += report.quantity;
     order.remainingQuantity = remainingAfter;
     order.status = remainingAfter === 0 ? "filled" : "partially-filled";
-    if (remainingAfter === 0) this.activeOrder = null;
+    if (remainingAfter === 0) {
+      order.cancelPending = false;
+      this.activeOrder = null;
+    }
     this.fillCanonicalById.set(report.fillId, { canonical, result: operation("accepted") });
     this.fills.push(acceptedReport);
     this.events.push(Object.freeze({
@@ -285,6 +289,25 @@ export class PaperTradingEngine {
       feeMinor: report.feeMinor,
     }));
     this.recordOrder(order, report.timestamp, report.marketEventId, order.status);
+    return operation("accepted");
+  }
+
+  requestCancelOrder(request: CancelRequest): OperationResult {
+    if (!request || !nonEmpty(request.eventId)) return rejected("INVALID_EVENT_ID");
+    if (!safeTimestamp(request.timestamp)) return rejected("INVALID_TIMESTAMP");
+    if (!nonEmpty(request.clientOrderId)) return rejected("INVALID_ORDER_ID");
+    const canonical = JSON.stringify(["cancel-request", request.eventId, request.timestamp, request.clientOrderId]);
+    const replay = this.checkInputReplay(request.eventId, canonical);
+    if (replay) return replay;
+    const timeReason = this.validateControlTime(request.timestamp);
+    if (timeReason) return rejected(timeReason);
+    this.inputCanonicalById.set(request.eventId, canonical);
+
+    if (!this.activeOrder || this.activeOrder.clientOrderId !== request.clientOrderId) {
+      return rejected("ORDER_NOT_ACTIVE");
+    }
+    this.activeOrder.cancelPending = true;
+    this.recordOrder(this.activeOrder, request.timestamp, request.eventId, "CANCEL_REQUESTED");
     return operation("accepted");
   }
 
@@ -534,6 +557,7 @@ export class PaperTradingEngine {
       referencePriceMinor: market.priceMinor,
       createdAt: market.timestamp,
       createdEventId: market.eventId,
+      cancelPending: false,
       status: riskReason ? "rejected" : "pending",
       ...(riskReason ? { rejectionReason: riskReason } : {}),
     };
@@ -575,6 +599,7 @@ export class PaperTradingEngine {
       quantity: order.quantity,
       filledQuantity: order.filledQuantity,
       remainingQuantity: order.remainingQuantity,
+      ...(order.cancelPending ? { cancelPending: true } : {}),
       ...(reasonCode ? { reasonCode } : {}),
     }));
   }
@@ -583,6 +608,7 @@ export class PaperTradingEngine {
     const order = this.activeOrder;
     if (!order) return;
     order.status = "cancelled";
+    order.cancelPending = false;
     order.rejectionReason = reasonCode;
     this.activeOrder = null;
     this.recordOrder(order, timestamp, sourceEventId, reasonCode);

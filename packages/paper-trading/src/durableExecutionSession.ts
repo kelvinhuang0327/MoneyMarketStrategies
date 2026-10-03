@@ -1,4 +1,5 @@
 import type {
+  CancelResult,
   ExecutionGateway,
   Fill,
   OrderIntent,
@@ -7,6 +8,7 @@ import type {
 import { DurablePaperTradingSession, PaperJournalError } from "./durablePaperSession.js";
 import type {
   AccountSnapshot,
+  CancelRequest,
   ExecutionReport,
   MarketEvent,
   OperationResult,
@@ -26,6 +28,10 @@ export type GatewayRecoveryState =
       readonly status: "reconciliationRequired";
       readonly clientOrderId: string;
       readonly reason: string;
+    }
+  | {
+      readonly status: "cancelPending";
+      readonly clientOrderId: string;
     };
 
 type UnreadyGatewayRecovery = Exclude<GatewayRecoveryState, { readonly status: "ready" }>;
@@ -135,6 +141,43 @@ export class DurableGatewayPaperSession {
     return this.exclusive(() => this.reconcileInternal());
   }
 
+  /** Persist the cancellation request before asking the gateway to cancel. */
+  async cancelOrder(request: CancelRequest): Promise<CancelResult | OperationResult> {
+    return this.exclusive(async () => {
+      const recorded = await this.paper.requestCancelOrder(request);
+      if (recorded.status !== "accepted") return recorded;
+
+      let result: CancelResult;
+      try {
+        result = await this.gateway.cancel(request.clientOrderId);
+      } catch (error) {
+        return {
+          outcome: "reconciliationRequired",
+          clientOrderId: request.clientOrderId,
+          reason: `gateway cancellation outcome is unknown: ${errorMessage(error)}`,
+        };
+      }
+      if (result.clientOrderId !== request.clientOrderId) {
+        return {
+          outcome: "reconciliationRequired",
+          clientOrderId: request.clientOrderId,
+          reason: "gateway cancellation returned a different clientOrderId",
+        };
+      }
+      if (result.outcome === "cancelled" || result.outcome === "notCancelled") {
+        const recovery = await this.reconcileInternal();
+        if (recovery.status !== "ready") {
+          return {
+            outcome: "reconciliationRequired",
+            clientOrderId: request.clientOrderId,
+            reason: "gateway cancellation response requires order reconciliation",
+          };
+        }
+      }
+      return result;
+    });
+  }
+
   /**
    * A new market event is held while an order outcome is unknown. A future fill
    * may advance only through its matching durable market event, so the ledger
@@ -144,6 +187,9 @@ export class DurableGatewayPaperSession {
     return this.exclusive(async () => {
       const before = await this.reconcileInternal();
       if (before.status === "reconciliationRequired") {
+        return { status: "notProcessed", recovery: before };
+      }
+      if (before.status === "cancelPending") {
         return { status: "notProcessed", recovery: before };
       }
       if (before.status === "waitingForMarketEvent" && event.timestamp > before.timestamp) {
@@ -191,6 +237,17 @@ export class DurableGatewayPaperSession {
         };
       }
       if (result.outcome === "notFound") {
+        if (order.cancelPending && order.filledQuantity === 0) {
+          const cancelled = await this.cancelLocalTerminalOrder(order.clientOrderId, "cancel-not-found");
+          if (!cancelled) {
+            return {
+              status: "reconciliationRequired",
+              clientOrderId: order.clientOrderId,
+              reason: "gateway confirmed absence but the local cancellation was not committed",
+            };
+          }
+          continue;
+        }
         if (order.filledQuantity !== 0) {
           return {
             status: "reconciliationRequired",
@@ -387,6 +444,9 @@ export class DurableGatewayPaperSession {
         clientOrderId: order.clientOrderId,
         reason: "durable order disappeared during reconciliation",
       };
+    }
+    if ((snapshot.status === "pending" || snapshot.status === "partiallyFilled") && currentOrder.cancelPending) {
+      return { status: "cancelPending", clientOrderId: order.clientOrderId };
     }
     if (snapshot.status === "cancelled" || snapshot.status === "rejected") {
       if (isOpenOrder(currentOrder)) {

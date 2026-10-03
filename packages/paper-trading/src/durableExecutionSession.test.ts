@@ -13,12 +13,14 @@ import type {
 } from "./types.js";
 
 type SubmitPlan = "accept" | "timeoutAfterAccept" | "timeoutWithoutAccept" | "reject";
+type CancelPlan = "cancelled" | "pending" | "notCancelled" | "reconciliationRequired";
 
 interface FakeOrder {
   readonly intent: OrderIntent;
   readonly brokerOrderId: string;
   readonly fills: Map<string, Fill>;
   cancelled: boolean;
+  cancelPending: boolean;
 }
 
 interface FakeGatewayStore {
@@ -26,6 +28,8 @@ interface FakeGatewayStore {
   readonly orders: Map<string, FakeOrder>;
   readonly submitAttempts: OrderIntent[];
   readonly submitPlans: SubmitPlan[];
+  readonly cancelAttempts: string[];
+  readonly cancelPlans: CancelPlan[];
   readonly unknownClientOrderIds: Set<string>;
   readonly reconcileCalls: string[];
   beforeSubmit: ((intent: OrderIntent) => Promise<void> | void) | undefined;
@@ -38,6 +42,8 @@ function fakeGatewayStore(): FakeGatewayStore {
     orders: new Map(),
     submitAttempts: [],
     submitPlans: [],
+    cancelAttempts: [],
+    cancelPlans: [],
     unknownClientOrderIds: new Set(),
     reconcileCalls: [],
     beforeSubmit: undefined,
@@ -93,6 +99,7 @@ class RestartableFakeGateway implements ExecutionGateway {
         brokerOrderId: `fake-broker:${intent.clientOrderId}`,
         fills: new Map(),
         cancelled: false,
+        cancelPending: false,
       };
       this.store.orders.set(intent.clientOrderId, order);
     }
@@ -111,10 +118,27 @@ class RestartableFakeGateway implements ExecutionGateway {
   }
 
   async cancel(clientOrderId: string): Promise<CancelResult> {
+    this.store.cancelAttempts.push(clientOrderId);
+    const order = this.store.orders.get(clientOrderId);
+    const plan = this.store.cancelPlans.shift() ?? "reconciliationRequired";
+    if (order === undefined || plan === "reconciliationRequired") {
+      return { outcome: "reconciliationRequired", clientOrderId, reason: "fake cancellation outcome is unknown" };
+    }
+    if (plan === "pending") {
+      order.cancelPending = true;
+      return { outcome: "pending", clientOrderId, brokerOrderId: order.brokerOrderId };
+    }
+    if (plan === "cancelled") {
+      order.cancelled = true;
+      order.cancelPending = false;
+      return { outcome: "cancelled", clientOrderId, brokerOrderId: order.brokerOrderId };
+    }
     return {
-      outcome: "reconciliationRequired",
+      outcome: "notCancelled",
       clientOrderId,
-      reason: "the integration test does not issue remote cancellations",
+      brokerOrderId: order.brokerOrderId,
+      orderStatus: order.cancelled ? "cancelled" : "pending",
+      reason: "fake order remains active",
     };
   }
 
@@ -154,6 +178,13 @@ class RestartableFakeGateway implements ExecutionGateway {
     const prior = order.fills.get(fill.fillId);
     if (prior !== undefined && !sameFill(prior, fill)) throw new Error(`conflicting fake fill ${fill.fillId}`);
     order.fills.set(fill.fillId, Object.freeze({ ...fill }));
+  }
+
+  resolveCancel(clientOrderId: string): void {
+    const order = this.store.orders.get(clientOrderId);
+    if (order === undefined) throw new Error(`missing fake order ${clientOrderId}`);
+    order.cancelled = true;
+    order.cancelPending = false;
   }
 }
 
@@ -236,7 +267,7 @@ async function processQuote(
 }
 
 describe("durable paper session with an execution gateway", () => {
-  it("reconciles an accepted order after a lost response and restart without resubmitting", async () => {
+  it("scenario 1: reconciles a lost submit response after restart without duplicate submission or fills", async () => {
     await withTemporaryRoot(async (root) => {
       const path = join(root, "journal");
       const store = fakeGatewayStore();
@@ -256,18 +287,122 @@ describe("durable paper session with an execution gateway", () => {
       expect(journalSequenceAtSubmit).toBeGreaterThan(0);
       expect(store.orders.size).toBe(1);
       expect(store.submitAttempts).toHaveLength(1);
-      expect(first.getSnapshot()).toMatchObject({ positionQuantity: 0, reservedCashMinor: 162n });
+      expect(first.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 162n,
+        availableCashMinor: 99_838n,
+      });
       first.close();
 
       const resumed = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
       expect(resumed.getOrders()[0]!.clientOrderId).toBe(clientOrderId);
-      expect(resumed.getSnapshot()).toMatchObject({ positionQuantity: 0, reservedCashMinor: 162n });
+      expect(resumed.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 162n,
+        availableCashMinor: 99_838n,
+      });
       expect(resumed.getFills()).toHaveLength(0);
       expect(store.orders.size).toBe(1);
       expect(store.intents.size).toBe(1);
       expect(store.submitAttempts).toHaveLength(1);
       expect(store.reconcileCalls.at(-1)).toBe(clientOrderId);
+
+      const brokerOrderId = store.orders.get(clientOrderId)!.brokerOrderId;
+      const firstFill = fill(brokerOrderId, "lost-submit-fill-one", 102);
+      new RestartableFakeGateway(store).addFill(clientOrderId, firstFill);
+      await processQuote(resumed, testHarness, quote("lost-submit-fill-one-market", 102, 80n));
+      expect(resumed.getSnapshot()).toMatchObject({
+        cashMinor: 99_919n,
+        positionQuantity: 1,
+        reservedCashMinor: 81n,
+        availableCashMinor: 99_838n,
+      });
+      expect(resumed.getFills().map(({ fillId }) => fillId)).toEqual(["lost-submit-fill-one"]);
+
+      new RestartableFakeGateway(store).addFill(
+        clientOrderId,
+        fill(brokerOrderId, "lost-submit-fill-two", 103),
+      );
+      await processQuote(resumed, testHarness, quote("lost-submit-fill-two-market", 103, 80n));
+      expect(resumed.getSnapshot()).toMatchObject({
+        cashMinor: 99_838n,
+        positionQuantity: 2,
+        reservedCashMinor: 0n,
+        availableCashMinor: 99_838n,
+      });
+      expect(resumed.getOrders()[0]!.status).toBe("filled");
+      expect(resumed.getFills().map(({ fillId }) => fillId)).toEqual([
+        "lost-submit-fill-one",
+        "lost-submit-fill-two",
+      ]);
+      const expected = state(resumed);
+      const sequence = resumed.getJournalSequence();
       resumed.close();
+
+      const replayed = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(state(replayed)).toEqual(expected);
+      expect(replayed.getJournalSequence()).toBe(sequence);
+      expect(store.submitAttempts).toHaveLength(1);
+      replayed.close();
+    });
+  });
+
+  it("scenario 2: keeps a cancel-pending order reserved across restart until terminal cancellation", async () => {
+    await withTemporaryRoot(async (root) => {
+      const path = join(root, "journal");
+      const store = fakeGatewayStore();
+      store.cancelPlans.push("pending");
+      const testHarness = harness();
+      let session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      await processQuote(session, testHarness, quote("cancel-entry", 201, 80n));
+      const clientOrderId = session.getOrders()[0]!.clientOrderId;
+
+      await expect(session.cancelOrder({
+        eventId: "cancel-request",
+        timestamp: 201,
+        clientOrderId,
+      })).resolves.toMatchObject({ outcome: "pending", clientOrderId });
+      expect(session.getOrders()[0]).toMatchObject({ status: "pending", cancelPending: true, remainingQuantity: 2 });
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 162n,
+        availableCashMinor: 99_838n,
+      });
+      expect(session.getFills()).toHaveLength(0);
+      const pendingState = state(session);
+      const pendingSequence = session.getJournalSequence();
+      session.close();
+
+      session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(await session.reconcile()).toMatchObject({ status: "cancelPending", clientOrderId });
+      expect(state(session)).toEqual(pendingState);
+      expect(session.getJournalSequence()).toBe(pendingSequence);
+      expect(store.cancelAttempts).toEqual([clientOrderId]);
+      expect(store.submitAttempts).toHaveLength(1);
+
+      new RestartableFakeGateway(store).resolveCancel(clientOrderId);
+      expect(await session.reconcile()).toEqual({ status: "ready" });
+      expect(session.getOrders()[0]).toMatchObject({ status: "cancelled", cancelPending: false, remainingQuantity: 2 });
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 0n,
+        availableCashMinor: 100_000n,
+      });
+      expect(session.getFills()).toHaveLength(0);
+      const cancelledState = state(session);
+      const cancelledSequence = session.getJournalSequence();
+      session.close();
+
+      const replayed = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(state(replayed)).toEqual(cancelledState);
+      expect(replayed.getJournalSequence()).toBe(cancelledSequence);
+      expect(store.cancelAttempts).toEqual([clientOrderId]);
+      expect(store.submitAttempts).toHaveLength(1);
+      replayed.close();
     });
   });
 
@@ -296,7 +431,7 @@ describe("durable paper session with an execution gateway", () => {
     });
   });
 
-  it("keeps unknown outcomes and risk unresolved without processing another event or inventing fills", async () => {
+  it("scenario 6: preserves unknown external state across two reconciliations and restarts", async () => {
     await withTemporaryRoot(async (root) => {
       const path = join(root, "journal");
       const store = fakeGatewayStore();
@@ -320,10 +455,50 @@ describe("durable paper session with an execution gateway", () => {
       expect(store.orders.size).toBe(1);
       expect(store.submitAttempts).toHaveLength(1);
       resumed.close();
+
+      const resumedAgain = await DurableGatewayPaperSession.open(
+        testHarness.config,
+        path,
+        new RestartableFakeGateway(store),
+      );
+      expect(await resumedAgain.reconcile()).toMatchObject({ status: "reconciliationRequired", clientOrderId });
+      expect(state(resumedAgain)).toEqual(before);
+      expect(resumedAgain.getJournalSequence()).toBe(sequence);
+      expect(resumedAgain.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 162n,
+        availableCashMinor: 99_838n,
+      });
+      expect(store.submitAttempts).toHaveLength(1);
+
+      store.unknownClientOrderIds.delete(clientOrderId);
+      new RestartableFakeGateway(store).resolveCancel(clientOrderId);
+      expect(await resumedAgain.reconcile()).toEqual({ status: "ready" });
+      expect(resumedAgain.getOrders()[0]!.status).toBe("cancelled");
+      expect(resumedAgain.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 0n,
+        availableCashMinor: 100_000n,
+      });
+      const terminalState = state(resumedAgain);
+      const terminalSequence = resumedAgain.getJournalSequence();
+      resumedAgain.close();
+
+      const terminalReplay = await DurableGatewayPaperSession.open(
+        testHarness.config,
+        path,
+        new RestartableFakeGateway(store),
+      );
+      expect(state(terminalReplay)).toEqual(terminalState);
+      expect(terminalReplay.getJournalSequence()).toBe(terminalSequence);
+      expect(store.submitAttempts).toHaveLength(1);
+      terminalReplay.close();
     });
   });
 
-  it("deduplicates partial fills across restart and matches uninterrupted ledger state", async () => {
+  it("scenario 3: replays a persisted partial fill before reconciling the remaining order", async () => {
     await withTemporaryRoot(async (root) => {
       const store = fakeGatewayStore();
       const testHarness = harness();
@@ -343,27 +518,46 @@ describe("durable paper session with an execution gateway", () => {
       expect(await session.reconcile()).toMatchObject({ status: "waitingForMarketEvent", timestamp: 402 });
       expect(session.getFills()).toHaveLength(0);
       await processQuote(session, testHarness, quote("fill-one-market", 402, 80n));
-      expect(session.getSnapshot()).toMatchObject({ positionQuantity: 1, reservedCashMinor: 81n, feesPaidMinor: 1n });
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_919n,
+        positionQuantity: 1,
+        reservedCashMinor: 81n,
+        availableCashMinor: 99_838n,
+        feesPaidMinor: 1n,
+      });
       expect(session.getFills()).toHaveLength(1);
       const partialSequence = session.getJournalSequence();
       const partialState = state(session);
-
-      // Repeated provider evidence and another restart must not book fill-one twice.
-      new RestartableFakeGateway(store).addFill(clientOrderId, firstFill);
-      expect(await session.reconcile()).toEqual({ status: "ready" });
-      expect(session.getJournalSequence()).toBe(partialSequence);
       session.close();
+
+      // The partial fill is already durable when this restart begins remaining-order reconciliation.
       session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
       expect(state(session)).toEqual(partialState);
       expect(session.getJournalSequence()).toBe(partialSequence);
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_919n,
+        positionQuantity: 1,
+        reservedCashMinor: 81n,
+        availableCashMinor: 99_838n,
+        feesPaidMinor: 1n,
+      });
+      expect(session.getFills().map(({ fillId }) => fillId)).toEqual(["fill-one"]);
+      expect(store.submitAttempts).toHaveLength(1);
 
       const secondFill = fill(brokerOrderId, "fill-two", 403);
       new RestartableFakeGateway(store).addFill(clientOrderId, secondFill);
       await processQuote(session, testHarness, quote("fill-two-market", 403, 80n));
-      expect(session.getSnapshot()).toMatchObject({ positionQuantity: 2, reservedCashMinor: 0n, feesPaidMinor: 2n });
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_838n,
+        positionQuantity: 2,
+        reservedCashMinor: 0n,
+        availableCashMinor: 99_838n,
+        feesPaidMinor: 2n,
+      });
       expect(session.getOrders()[0]!.status).toBe("filled");
       expect(session.getFills().map(({ fillId }) => fillId)).toEqual(["fill-one", "fill-two"]);
       const restartedState = state(session);
+      const terminalSequence = session.getJournalSequence();
       session.close();
 
       const uninterruptedPath = join(root, "uninterrupted-journal");
@@ -386,6 +580,129 @@ describe("durable paper session with an execution gateway", () => {
       await processQuote(uninterrupted, uninterruptedHarness, quote("fill-two-market", 403, 80n));
       expect(state(uninterrupted)).toEqual(restartedState);
       uninterrupted.close();
+
+      const replayed = await DurableGatewayPaperSession.open(
+        testHarness.config,
+        path,
+        new RestartableFakeGateway(store),
+      );
+      expect(state(replayed)).toEqual(restartedState);
+      expect(replayed.getJournalSequence()).toBe(terminalSequence);
+      expect(store.submitAttempts).toHaveLength(1);
+      replayed.close();
+    });
+  });
+
+  it("scenario 4: books an external fill received after a cancel request", async () => {
+    await withTemporaryRoot(async (root) => {
+      const path = join(root, "journal");
+      const store = fakeGatewayStore();
+      store.cancelPlans.push("pending");
+      const testHarness = harness();
+      let session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      await processQuote(session, testHarness, quote("cancel-fill-entry", 701, 80n));
+      const clientOrderId = session.getOrders()[0]!.clientOrderId;
+      const brokerOrderId = store.orders.get(clientOrderId)!.brokerOrderId;
+
+      await expect(session.cancelOrder({
+        eventId: "cancel-before-fill",
+        timestamp: 701,
+        clientOrderId,
+      })).resolves.toMatchObject({ outcome: "pending", clientOrderId });
+      expect(session.getSnapshot()).toMatchObject({ cashMinor: 100_000n, positionQuantity: 0, reservedCashMinor: 162n });
+      session.close();
+
+      const externalFill = fill(brokerOrderId, "fill-after-cancel", 702);
+      new RestartableFakeGateway(store).addFill(clientOrderId, externalFill);
+      new RestartableFakeGateway(store).resolveCancel(clientOrderId);
+      session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(session.getOrders()[0]).toMatchObject({ status: "pending", cancelPending: true, remainingQuantity: 2 });
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 100_000n,
+        positionQuantity: 0,
+        reservedCashMinor: 162n,
+        availableCashMinor: 99_838n,
+      });
+
+      await processQuote(session, testHarness, quote("fill-after-cancel-market", 702, 80n));
+      expect(session.getOrders()[0]).toMatchObject({ status: "cancelled", cancelPending: false, filledQuantity: 1, remainingQuantity: 1 });
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_919n,
+        positionQuantity: 1,
+        reservedCashMinor: 0n,
+        availableCashMinor: 99_919n,
+        feesPaidMinor: 1n,
+      });
+      expect(session.getFills().map(({ fillId }) => fillId)).toEqual(["fill-after-cancel"]);
+      const expected = state(session);
+      const sequence = session.getJournalSequence();
+      session.close();
+
+      const replayed = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(state(replayed)).toEqual(expected);
+      expect(replayed.getJournalSequence()).toBe(sequence);
+      expect(store.cancelAttempts).toEqual([clientOrderId]);
+      expect(store.submitAttempts).toHaveLength(1);
+      replayed.close();
+    });
+  });
+
+  it("scenario 5: ignores duplicate external fill evidence after journal replay", async () => {
+    await withTemporaryRoot(async (root) => {
+      const path = join(root, "journal");
+      const store = fakeGatewayStore();
+      const testHarness = harness();
+      let session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      await processQuote(session, testHarness, quote("duplicate-fill-entry", 801, 80n));
+      const clientOrderId = session.getOrders()[0]!.clientOrderId;
+      const brokerOrderId = store.orders.get(clientOrderId)!.brokerOrderId;
+      const firstFill = fill(brokerOrderId, "duplicate-after-replay", 802);
+      new RestartableFakeGateway(store).addFill(clientOrderId, firstFill);
+      await processQuote(session, testHarness, quote("duplicate-fill-market", 802, 80n));
+      const partialState = state(session);
+      const partialSequence = session.getJournalSequence();
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_919n,
+        positionQuantity: 1,
+        reservedCashMinor: 81n,
+        availableCashMinor: 99_838n,
+      });
+      session.close();
+
+      // The provider returns the already-journaled fill again after process restart.
+      new RestartableFakeGateway(store).addFill(clientOrderId, firstFill);
+      session = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(state(session)).toEqual(partialState);
+      expect(session.getJournalSequence()).toBe(partialSequence);
+      expect(session.getFills().map(({ fillId }) => fillId)).toEqual(["duplicate-after-replay"]);
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_919n,
+        positionQuantity: 1,
+        reservedCashMinor: 81n,
+        availableCashMinor: 99_838n,
+      });
+
+      new RestartableFakeGateway(store).addFill(clientOrderId, fill(brokerOrderId, "duplicate-fill-second", 803));
+      await processQuote(session, testHarness, quote("duplicate-fill-second-market", 803, 80n));
+      expect(session.getSnapshot()).toMatchObject({
+        cashMinor: 99_838n,
+        positionQuantity: 2,
+        reservedCashMinor: 0n,
+        availableCashMinor: 99_838n,
+      });
+      expect(session.getFills().map(({ fillId }) => fillId)).toEqual([
+        "duplicate-after-replay",
+        "duplicate-fill-second",
+      ]);
+      const terminalState = state(session);
+      const terminalSequence = session.getJournalSequence();
+      session.close();
+
+      const replayed = await DurableGatewayPaperSession.open(testHarness.config, path, new RestartableFakeGateway(store));
+      expect(state(replayed)).toEqual(terminalState);
+      expect(replayed.getJournalSequence()).toBe(terminalSequence);
+      expect(store.submitAttempts).toHaveLength(1);
+      replayed.close();
     });
   });
 
