@@ -6,6 +6,11 @@ import { pathToFileURL } from "node:url";
 import { parseHistoricalCsv, type ParsedHistoricalCsv } from "./historicalBaseline.js";
 import { runPaperSession } from "./sessionRunner.js";
 import {
+  FORWARD_0050_V2_ARTIFACT_ID,
+  FORWARD_0050_V2_CSV_PATH,
+  FORWARD_0050_V2_PROVENANCE_PATH,
+} from "./forward0050DataUpdater.js";
+import {
   determineFuturePromotionStatusV2,
   WIN_RATE_OBJECTIVE,
   WIN_RATE_OPTIMIZER_V2_SELECTION_POLICY_VERSION,
@@ -24,6 +29,9 @@ export const FORWARD_DATA_CSV_PATH = "data/market/forward/0050-forward-v1/0050_f
 export const FORWARD_DATA_PROVENANCE_PATH = "data/market/forward/0050-forward-v1/provenance.json" as const;
 export const WIN_RATE_V2_ARTIFACT_PATH = "packages/paper-trading/win-rate-optimizer-v2.json" as const;
 export const FORWARD_EVALUATION_OUTPUT_PATH = "packages/paper-trading/forward-win-rate-evaluation-v1.json" as const;
+export const FORWARD_DATA_V2_CSV_PATH = FORWARD_0050_V2_CSV_PATH;
+export const FORWARD_DATA_V2_PROVENANCE_PATH = FORWARD_0050_V2_PROVENANCE_PATH;
+export const FORWARD_EVALUATION_V2_OUTPUT_PATH = "packages/paper-trading/forward-win-rate-evaluation-v2.json" as const;
 const FORWARD_DATA_SOURCE = "TWSE STOCK_DAY monthly report API" as const;
 
 export type ForwardWinRateCliFailureCode =
@@ -165,7 +173,7 @@ interface ProvenanceDateRange {
 }
 
 interface FreshProvenance {
-  readonly artifactId: "0050-forward-v1";
+  readonly artifactId: "0050-forward-v1" | typeof FORWARD_0050_V2_ARTIFACT_ID;
   readonly symbol: "0050";
   readonly source: typeof FORWARD_DATA_SOURCE;
   readonly fetchedAtUtc: string;
@@ -204,6 +212,16 @@ export interface ForwardWinRateEvaluation {
     readonly diagnostics: ForwardCandidateDiagnostics;
   } & ForwardMetrics;
   readonly promotionStatus: PromotionStatus;
+}
+
+export interface ForwardWinRateEvaluationV2 extends ForwardWinRateEvaluation {
+  readonly forwardDataArtifactId: typeof FORWARD_0050_V2_ARTIFACT_ID;
+}
+
+export interface ForwardWinRateEvaluationInput {
+  readonly frozenArtifact: unknown;
+  readonly freshDataBytes: Uint8Array;
+  readonly freshProvenance: unknown;
 }
 
 function asRecord(value: unknown, label: string): Record<string, unknown> {
@@ -318,7 +336,7 @@ export function loadFrozenForwardIdentities(value: unknown): FrozenForwardIdenti
   });
 }
 
-function parseFreshProvenance(value: unknown): FreshProvenance {
+function parseFreshProvenance(value: unknown, expectedArtifactId: FreshProvenance["artifactId"]): FreshProvenance {
   const provenance = asRecord(value, "forward-data provenance");
   const dateRange = asRecord(provenance["dateRange"], "forward-data provenance.dateRange");
   const fetchedAtUtc = provenance["fetchedAtUtc"];
@@ -327,7 +345,7 @@ function parseFreshProvenance(value: unknown): FreshProvenance {
   const sha256 = provenance["sha256"];
   if (
     provenance["schemaVersion"] !== 1
-    || provenance["artifactId"] !== "0050-forward-v1"
+    || provenance["artifactId"] !== expectedArtifactId
     || provenance["symbol"] !== "0050"
     || provenance["purpose"] !== "FORWARD_EVALUATION_ONLY"
   ) {
@@ -359,7 +377,7 @@ function parseFreshProvenance(value: unknown): FreshProvenance {
     throw new TypeError("forward-data provenance dateRange is invalid");
   }
   return Object.freeze({
-    artifactId: "0050-forward-v1",
+    artifactId: expectedArtifactId,
     symbol: "0050",
     source,
     fetchedAtUtc,
@@ -907,13 +925,23 @@ export function determineForwardPromotionStatus(
   return determineFuturePromotionStatusV2(champion, challenger, firstEvidenceDate, historicalCutoff);
 }
 
-export function evaluateForwardWinRate(input: {
-  readonly frozenArtifact: unknown;
-  readonly freshDataBytes: Uint8Array;
-  readonly freshProvenance: unknown;
-}): ForwardWinRateEvaluation {
+export function evaluateForwardWinRate(input: ForwardWinRateEvaluationInput): ForwardWinRateEvaluation {
+  return evaluateForwardWinRateForArtifact(input, "0050-forward-v1");
+}
+
+export function evaluateForwardWinRateV2(input: ForwardWinRateEvaluationInput): ForwardWinRateEvaluationV2 {
+  return Object.freeze({
+    ...evaluateForwardWinRateForArtifact(input, FORWARD_0050_V2_ARTIFACT_ID),
+    forwardDataArtifactId: FORWARD_0050_V2_ARTIFACT_ID,
+  });
+}
+
+function evaluateForwardWinRateForArtifact(
+  input: ForwardWinRateEvaluationInput,
+  expectedArtifactId: FreshProvenance["artifactId"],
+): ForwardWinRateEvaluation {
   const identities = loadFrozenForwardIdentities(input.frozenArtifact);
-  const provenance = parseFreshProvenance(input.freshProvenance);
+  const provenance = parseFreshProvenance(input.freshProvenance, expectedArtifactId);
   if (provenance.historicalCutoff !== identities.historicalCutoff) {
     throw new ForwardWinRateInputError("STALE_FORWARD_SNAPSHOT", "forward-data provenance historicalCutoff does not match the frozen V2 cutoff");
   }
@@ -1066,6 +1094,19 @@ export async function runForwardWinRateEvaluationFiles(root = process.cwd()): Pr
   const freshProvenance = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(provenanceBytes)) as unknown;
   const result = evaluateForwardWinRate({ frozenArtifact, freshDataBytes, freshProvenance });
   await writeFile(resolve(root, FORWARD_EVALUATION_OUTPUT_PATH), `${JSON.stringify(result, null, 2)}\n`, "utf8");
+  return result;
+}
+
+export async function runForwardWinRateEvaluationV2Files(root = process.cwd()): Promise<ForwardWinRateEvaluationV2> {
+  const [frozenBytes, freshDataBytes, provenanceBytes] = await Promise.all([
+    readRequiredInput(root, WIN_RATE_V2_ARTIFACT_PATH),
+    readRequiredInput(root, FORWARD_DATA_V2_CSV_PATH),
+    readRequiredInput(root, FORWARD_DATA_V2_PROVENANCE_PATH),
+  ]);
+  const frozenArtifact = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(frozenBytes)) as unknown;
+  const freshProvenance = JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(provenanceBytes)) as unknown;
+  const result = evaluateForwardWinRateV2({ frozenArtifact, freshDataBytes, freshProvenance });
+  await writeFile(resolve(root, FORWARD_EVALUATION_V2_OUTPUT_PATH), `${JSON.stringify(result, null, 2)}\n`, "utf8");
   return result;
 }
 
