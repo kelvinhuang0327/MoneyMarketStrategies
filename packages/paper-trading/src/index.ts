@@ -1,5 +1,14 @@
 export { PaperTradingEngine } from "./engine.js";
 export {
+  evaluateSplitRebasedForwardSample,
+  evaluateSplitRebasedHistoricalBenchmark,
+  rebasePriceBandForSplit,
+  runSplitRebasedHistoricalBenchmarkFiles,
+  SPLIT_REBASED_BENCHMARK_VERSION,
+  SPLIT_REBASED_DIVIDENDS,
+} from "./splitRebasedHistoricalBenchmark.js";
+export type { SplitRebasedDividend } from "./splitRebasedHistoricalBenchmark.js";
+export {
   DurablePaperTradingSession,
   PaperJournalConflictError,
   PaperJournalCorruptError,
