@@ -109,6 +109,7 @@ interface ForwardStageCounts {
     readonly filled: number;
     readonly rejected: number;
     readonly cancelled: number;
+    readonly absent: number;
     readonly open: number;
     readonly cancelPending: number;
   };
@@ -554,9 +555,10 @@ function summarizeRunStages(
   const journal = rawJournal as readonly SimulationEvent[];
   const decisions = { noTrade: 0, riskRejected: 0, orderSubmitted: 0 };
   const orderStates = new Map<string, {
-    readonly status: "pending" | "partially-filled" | "filled" | "rejected" | "cancelled";
+    readonly status: string;
     readonly cancelPending: boolean;
     readonly cancelPendingSeen: boolean;
+    readonly filledQuantity: number;
   }>();
   const fillIds = new Set<string>();
   let fillQuantity = 0;
@@ -569,11 +571,13 @@ function summarizeRunStages(
       countReason(event.reasonCode);
     } else if (event.kind === "order") {
       const previous = orderStates.get(event.clientOrderId);
-      const cancelPending = event.cancelPending === true;
+      const status = event.status as string;
+      const cancelPending = status === "cancel-pending" || ("cancelPending" in event && event.cancelPending === true);
       orderStates.set(event.clientOrderId, {
-        status: event.status,
+        status,
         cancelPending,
         cancelPendingSeen: cancelPending || previous?.cancelPendingSeen === true,
+        filledQuantity: event.filledQuantity,
       });
       countReason(event.reasonCode);
     } else if (event.kind === "fill") {
@@ -596,13 +600,21 @@ function summarizeRunStages(
     filled: 0,
     rejected: 0,
     cancelled: 0,
+    absent: 0,
     open: 0,
     cancelPending: 0,
   };
   for (const state of orderStates.values()) {
-    orders[state.status === "partially-filled" ? "partiallyFilled" : state.status] += 1;
-    if (state.status === "pending" || state.status === "partially-filled") orders.open += 1;
-    if (state.cancelPending && (state.status === "pending" || state.status === "partially-filled")) {
+    const pending = state.status === "pending" || (state.status === "cancel-pending" && state.filledQuantity === 0);
+    const partiallyFilled = state.status === "partially-filled" || (state.status === "cancel-pending" && state.filledQuantity > 0);
+    if (pending) orders.pending += 1;
+    else if (partiallyFilled) orders.partiallyFilled += 1;
+    else if (state.status === "filled") orders.filled += 1;
+    else if (state.status === "rejected") orders.rejected += 1;
+    else if (state.status === "cancelled") orders.cancelled += 1;
+    else if (state.status === "absent") orders.absent += 1;
+    if (pending || partiallyFilled || state.status === "cancel-pending") orders.open += 1;
+    if (state.cancelPending && (pending || partiallyFilled || state.status === "cancel-pending")) {
       orders.cancelPending += 1;
     }
   }
@@ -733,7 +745,7 @@ function createEmptyDiagnostics(): ForwardCandidateDiagnostics {
       sourceRows: 0,
       processedEvents: Object.freeze({ accepted: 0, duplicate: 0, stale: 0 }),
       decisions: Object.freeze({ total: 0, noTrade: 0, riskRejected: 0, orderSubmitted: 0 }),
-      orders: Object.freeze({ attempted: 0, submitted: 0, pending: 0, partiallyFilled: 0, filled: 0, rejected: 0, cancelled: 0, open: 0, cancelPending: 0 }),
+      orders: Object.freeze({ attempted: 0, submitted: 0, pending: 0, partiallyFilled: 0, filled: 0, rejected: 0, cancelled: 0, absent: 0, open: 0, cancelPending: 0 }),
       fills: Object.freeze({ count: 0, quantity: 0, afterCancelPending: 0 }),
       completedTradeCount: 0,
       openPositionQuantity: 0,

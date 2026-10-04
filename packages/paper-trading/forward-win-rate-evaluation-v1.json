@@ -70,6 +70,7 @@
           "filled": 0,
           "rejected": 0,
           "cancelled": 0,
+          "absent": 0,
           "open": 0,
           "cancelPending": 0
         },
@@ -161,6 +162,7 @@
           "filled": 1,
           "rejected": 0,
           "cancelled": 0,
+          "absent": 0,
           "open": 0,
           "cancelPending": 0
         },
