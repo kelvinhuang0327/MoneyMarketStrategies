@@ -25,6 +25,7 @@
     "paper:update-0050-forward-v2": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/forward0050DataUpdater.js",
     "paper:evaluate-forward-win-rate-v2": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/forwardWinRateEvaluationV2.js",
     "paper:evaluate-split-rebased-benchmark": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/splitRebasedHistoricalBenchmark.js",
+    "paper:evaluate-trend-vs-hold": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/trendVsHoldDiagnostic.js",
     "paper:select-zscore-win-rate": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/zscoreWinRateSelector.js",
     "paper:select-zscore-risk-normalized-win-rate": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/zscoreRiskNormalizedWinRateSelector.js",
     "paper:evaluate-zscore-forward": "npm run build --workspace @mms/paper-trading && node packages/paper-trading/dist/zscoreCrossSymbolForwardEvaluator.js",

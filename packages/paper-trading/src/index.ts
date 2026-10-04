@@ -9,6 +9,13 @@ export {
 } from "./splitRebasedHistoricalBenchmark.js";
 export type { SplitRebasedDividend } from "./splitRebasedHistoricalBenchmark.js";
 export {
+  calculateTenMonthSmaSignals,
+  evaluateTrendVsHoldDiagnostic,
+  runTrendVsHoldDiagnosticFiles,
+  TREND_VS_HOLD_VERSION,
+} from "./trendVsHoldDiagnostic.js";
+export type { MonthEndTrendSignal, TenMonthTrendPlan, TrendEvaluationWindow } from "./trendVsHoldDiagnostic.js";
+export {
   DurablePaperTradingSession,
   PaperJournalConflictError,
   PaperJournalCorruptError,
