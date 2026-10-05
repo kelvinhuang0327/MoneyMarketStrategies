@@ -9,6 +9,16 @@
     "end": "2026-09-29"
   },
   "freshRowCount": 33,
+  "priceUnit": {
+    "currencyCode": "TWD",
+    "minorUnit": "0.01",
+    "minorUnitsPerMajor": 100
+  },
+  "dataCoverage": {
+    "inputIntegrity": "PROVENANCE_HASH_ROW_COUNT_AND_DATE_RANGE_MATCHED",
+    "providerSessionCompleteness": "UNKNOWN",
+    "providerCompletenessReason": "NO_EXCHANGE_CALENDAR_OR_PROVIDER_COMPLETENESS_ATTESTATION"
+  },
   "freshCompletedTradeCount": {
     "champion": 0,
     "challenger": 0
@@ -19,7 +29,11 @@
     "parameters": {
       "entryAtOrBelowMinor": "10000",
       "exitAtOrAboveMinor": "11000",
-      "targetQuantity": 3
+      "targetQuantity": 3,
+      "currencyCode": "TWD",
+      "minorUnit": "0.01",
+      "entryAtOrBelowTwd": "100.00",
+      "exitAtOrAboveTwd": "110.00"
     },
     "freshDataSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf",
     "completedTradeCount": 0,
@@ -28,7 +42,78 @@
     "losses": 0,
     "breakevens": 0,
     "rawNetWinRate": null,
-    "wilsonLowerBound95": null
+    "wilsonLowerBound95": null,
+    "diagnostics": {
+      "outcome": "NO_SIGNAL",
+      "inconclusiveReasonCodes": [
+        "NO_COMPLETED_TRADES",
+        "NO_SIGNAL"
+      ],
+      "stages": {
+        "sourceRows": 33,
+        "processedEvents": {
+          "accepted": 33,
+          "duplicate": 0,
+          "stale": 0
+        },
+        "decisions": {
+          "total": 33,
+          "noTrade": 33,
+          "riskRejected": 0,
+          "orderSubmitted": 0
+        },
+        "orders": {
+          "attempted": 0,
+          "submitted": 0,
+          "pending": 0,
+          "partiallyFilled": 0,
+          "filled": 0,
+          "rejected": 0,
+          "cancelled": 0,
+          "absent": 0,
+          "open": 0,
+          "cancelPending": 0
+        },
+        "fills": {
+          "count": 0,
+          "quantity": 0,
+          "afterCancelPending": 0
+        },
+        "completedTradeCount": 0,
+        "openPositionQuantity": 0,
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 33
+        }
+      },
+      "economics": {
+        "returnBasis": "MARK_TO_MARKET_AFTER_SIMULATED_FEES_AND_SLIPPAGE",
+        "currencyCode": "TWD",
+        "initialCapitalMinor": "100000",
+        "endingEquityMinor": "100000",
+        "realizedPnlMinor": "0",
+        "completedTradeNetPnlMinor": "0",
+        "openTradeRealizedPnlMinor": "0",
+        "unrealizedPnlMinor": "0",
+        "feesPaidMinor": "0",
+        "netReturnFraction": "0.00000000",
+        "maximumDrawdownFraction": "0.00000000",
+        "costMatchedBenchmark": {
+          "policy": "ALWAYS_LONG",
+          "sizingPolicy": "SAME_FROZEN_TARGET_QUANTITY",
+          "fillModel": "alwaysFillNextEvent",
+          "status": "OPEN_POSITION_AT_CUTOFF",
+          "feeBps": 30,
+          "slippageBps": 100,
+          "initialCapitalMinor": "100000",
+          "endingEquityMinor": "100962",
+          "netReturnFraction": "0.00962000",
+          "maximumDrawdownFraction": "0.01498000",
+          "excessNetReturnFraction": "-0.00962000",
+          "feesPaidMinor": "97",
+          "openPositionQuantity": 3
+        }
+      }
+    }
   },
   "challenger": {
     "id": "entry-11000-exit-12000",
@@ -36,7 +121,11 @@
     "parameters": {
       "entryAtOrBelowMinor": "11000",
       "exitAtOrAboveMinor": "12000",
-      "targetQuantity": 3
+      "targetQuantity": 3,
+      "currencyCode": "TWD",
+      "minorUnit": "0.01",
+      "entryAtOrBelowTwd": "110.00",
+      "exitAtOrAboveTwd": "120.00"
     },
     "freshDataSha256": "9e66a3fd594c0614ac1641b7a50e9d926014eaa4839347b524e25d52567b0aaf",
     "completedTradeCount": 0,
@@ -45,7 +134,80 @@
     "losses": 0,
     "breakevens": 0,
     "rawNetWinRate": null,
-    "wilsonLowerBound95": null
+    "wilsonLowerBound95": null,
+    "diagnostics": {
+      "outcome": "OPEN_POSITION_AT_CUTOFF",
+      "inconclusiveReasonCodes": [
+        "NO_COMPLETED_TRADES",
+        "OPEN_POSITION_AT_CUTOFF"
+      ],
+      "stages": {
+        "sourceRows": 33,
+        "processedEvents": {
+          "accepted": 33,
+          "duplicate": 0,
+          "stale": 0
+        },
+        "decisions": {
+          "total": 33,
+          "noTrade": 32,
+          "riskRejected": 0,
+          "orderSubmitted": 1
+        },
+        "orders": {
+          "attempted": 1,
+          "submitted": 1,
+          "pending": 0,
+          "partiallyFilled": 0,
+          "filled": 1,
+          "rejected": 0,
+          "cancelled": 0,
+          "absent": 0,
+          "open": 0,
+          "cancelPending": 0
+        },
+        "fills": {
+          "count": 1,
+          "quantity": 3,
+          "afterCancelPending": 0
+        },
+        "completedTradeCount": 0,
+        "openPositionQuantity": 3,
+        "reasonCodeCounts": {
+          "filled": 1,
+          "NO_POSITION_CHANGE": 32,
+          "ORDER_ACCEPTED": 2
+        }
+      },
+      "economics": {
+        "returnBasis": "MARK_TO_MARKET_AFTER_SIMULATED_FEES_AND_SLIPPAGE",
+        "currencyCode": "TWD",
+        "initialCapitalMinor": "100000",
+        "endingEquityMinor": "100962",
+        "realizedPnlMinor": "0",
+        "completedTradeNetPnlMinor": "0",
+        "openTradeRealizedPnlMinor": "0",
+        "unrealizedPnlMinor": "962",
+        "feesPaidMinor": "97",
+        "netReturnFraction": "0.00962000",
+        "maximumDrawdownFraction": "0.01498000",
+        "costMatchedBenchmark": {
+          "policy": "ALWAYS_LONG",
+          "sizingPolicy": "SAME_FROZEN_TARGET_QUANTITY",
+          "fillModel": "alwaysFillNextEvent",
+          "status": "OPEN_POSITION_AT_CUTOFF",
+          "feeBps": 30,
+          "slippageBps": 100,
+          "initialCapitalMinor": "100000",
+          "endingEquityMinor": "100962",
+          "netReturnFraction": "0.00962000",
+          "maximumDrawdownFraction": "0.01498000",
+          "excessNetReturnFraction": "0.00000000",
+          "feesPaidMinor": "97",
+          "openPositionQuantity": 3
+        }
+      }
+    }
   },
   "promotionStatus": "INSUFFICIENT_FRESH_TRADES"
 }

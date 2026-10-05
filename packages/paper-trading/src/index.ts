@@ -1,11 +1,40 @@
 export { PaperTradingEngine } from "./engine.js";
 export {
+  evaluateHistoricalWindow,
+  reconcileHistoricalRun,
+  runHistoricalActionCostDiagnosticFiles,
+  sellTaxBounds,
+} from "./historicalActionCostDiagnostic.js";
+export type { HistoricalDividend, HistoricalDiagnosticWindow } from "./historicalActionCostDiagnostic.js";
+export { commonEligibilityWindow, relativePnlAttribution, runHistoricalExposureAuditFiles } from "./historicalExposureAudit.js";
+export {
+  evaluateSplitRebasedForwardSample,
+  evaluateSplitRebasedHistoricalBenchmark,
+  rebasePriceBandForSplit,
+  runSplitRebasedHistoricalBenchmarkFiles,
+  SPLIT_REBASED_BENCHMARK_VERSION,
+  SPLIT_REBASED_DIVIDENDS,
+} from "./splitRebasedHistoricalBenchmark.js";
+export type { SplitRebasedDividend } from "./splitRebasedHistoricalBenchmark.js";
+export {
+  calculateTenMonthSmaSignals,
+  evaluateTrendVsHoldDiagnostic,
+  runTrendVsHoldDiagnosticFiles,
+  TREND_VS_HOLD_VERSION,
+} from "./trendVsHoldDiagnostic.js";
+export type { MonthEndTrendSignal, TenMonthTrendPlan, TrendEvaluationWindow } from "./trendVsHoldDiagnostic.js";
+export {
   DurablePaperTradingSession,
   PaperJournalConflictError,
   PaperJournalCorruptError,
   PaperJournalError,
   PaperJournalReplayError,
 } from "./durablePaperSession.js";
+export { DurableGatewayPaperSession } from "./durableExecutionSession.js";
+export type {
+  DurableGatewayMarketResult,
+  GatewayRecoveryState,
+} from "./durableExecutionSession.js";
 export {
   PriceBandStrategy,
   RollingMeanReversionV1Strategy,

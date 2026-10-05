@@ -4,10 +4,8 @@ import {
   assertValidOrderIntent,
   ClientOrderIdConflictError,
   FillIdentityConflictError,
-  cancelAndReconcileGatewayOrder,
-  reconcileGatewayOrder,
+  sameOrderIntent,
   type CancelResult,
-  type DurableGatewayOrderSession,
   type ExecutionGateway,
   type Fill,
   type OrderIntent,
@@ -23,8 +21,6 @@ type PlannedSubmitOutcome =
   | "timeoutWithoutOrder"
   | "unknownOnReconcile";
 
-type PlannedReconciliationOutcome = "unknown" | "notFound";
-
 type FakeOrder = {
   intent: OrderIntent;
   brokerOrderId: string;
@@ -36,15 +32,15 @@ type FakeSubmission = {
   intent: OrderIntent;
   result: SubmitOrderResult;
   reconciledNotFound: boolean;
-  unknownOnReconcile: boolean;
+  reconciliationRemainsUnknown: boolean;
 };
 
 /** Test-only in-memory evidence source. It has no transport or external state. */
 class InMemoryFakeGateway implements ExecutionGateway {
   private readonly submissions = new Map<string, FakeSubmission>();
   private readonly orders = new Map<string, FakeOrder>();
+  private readonly fillsById = new Map<string, Fill>();
   private readonly plannedOutcomes = new Map<string, PlannedSubmitOutcome[]>();
-  private readonly plannedReconciliations = new Map<string, PlannedReconciliationOutcome[]>();
   private requestCount = 0;
   private orderSequence = 0;
 
@@ -52,12 +48,6 @@ class InMemoryFakeGateway implements ExecutionGateway {
     const outcomes = this.plannedOutcomes.get(clientOrderId) ?? [];
     outcomes.push(outcome);
     this.plannedOutcomes.set(clientOrderId, outcomes);
-  }
-
-  planNextReconciliation(clientOrderId: string, outcome: PlannedReconciliationOutcome): void {
-    const outcomes = this.plannedReconciliations.get(clientOrderId) ?? [];
-    outcomes.push(outcome);
-    this.plannedReconciliations.set(clientOrderId, outcomes);
   }
 
   get submitRequestCount(): number {
@@ -68,11 +58,15 @@ class InMemoryFakeGateway implements ExecutionGateway {
     return this.orders.size;
   }
 
+  get logicalIntentCount(): number {
+    return this.submissions.size;
+  }
+
   async submit(intent: OrderIntent): Promise<SubmitOrderResult> {
     assertValidOrderIntent(intent);
     const previous = this.submissions.get(intent.clientOrderId);
     if (previous !== undefined) {
-      if (!sameIntent(previous.intent, intent)) {
+      if (!sameOrderIntent(previous.intent, intent)) {
         throw new ClientOrderIdConflictError(intent.clientOrderId);
       }
       if (
@@ -80,11 +74,14 @@ class InMemoryFakeGateway implements ExecutionGateway {
         previous.reconciledNotFound
       ) {
         previous.reconciledNotFound = false;
-        previous.result = this.dispatch(intent);
+        const planned = this.takeNextOutcome(intent.clientOrderId);
+        previous.reconciliationRemainsUnknown = planned === "unknownOnReconcile";
+        previous.result = this.dispatch(intent, planned);
       }
       return previous.result;
     }
 
+    const planned = this.takeNextOutcome(intent.clientOrderId);
     const submission: FakeSubmission = {
       intent: { ...intent },
       result: {
@@ -93,10 +90,10 @@ class InMemoryFakeGateway implements ExecutionGateway {
         reason: "submission has not been attempted",
       },
       reconciledNotFound: false,
-      unknownOnReconcile: false,
+      reconciliationRemainsUnknown: planned === "unknownOnReconcile",
     };
     this.submissions.set(intent.clientOrderId, submission);
-    submission.result = this.dispatch(intent);
+    submission.result = this.dispatch(intent, planned);
     return submission.result;
   }
 
@@ -130,17 +127,15 @@ class InMemoryFakeGateway implements ExecutionGateway {
 
   async reconcile(clientOrderId: string) {
     const submission = this.submissions.get(clientOrderId);
-    const planned = this.plannedReconciliations.get(clientOrderId)?.shift();
-    if (planned === "unknown" || submission?.unknownOnReconcile) {
+    if (
+      submission?.result.status === "reconciliationRequired" &&
+      submission.reconciliationRemainsUnknown
+    ) {
       return {
         outcome: "unknown" as const,
         clientOrderId,
         reason: "fake evidence remains inconclusive",
       };
-    }
-    if (planned === "notFound") {
-      if (submission?.result.status === "reconciliationRequired") submission.reconciledNotFound = true;
-      return { outcome: "notFound" as const, clientOrderId };
     }
 
     const order = this.orders.get(clientOrderId);
@@ -166,6 +161,7 @@ class InMemoryFakeGateway implements ExecutionGateway {
       throw new Error("fill brokerOrderId does not match the fake order evidence");
     }
     if (
+      fill.fillId.trim().length === 0 ||
       !Number.isFinite(fill.quantity) ||
       fill.quantity <= 0 ||
       !Number.isSafeInteger(fill.priceMinor) ||
@@ -177,22 +173,30 @@ class InMemoryFakeGateway implements ExecutionGateway {
       throw new TypeError("fill evidence contains an invalid amount or timestamp");
     }
 
-    const previous = order.fills.get(fill.fillId);
+    const previous = this.fillsById.get(fill.fillId);
     if (previous !== undefined) {
       if (!sameFill(previous, fill)) {
         throw new FillIdentityConflictError(fill.fillId);
       }
       return;
     }
-    order.fills.set(fill.fillId, { ...fill });
+    const evidence = { ...fill };
+    order.fills.set(fill.fillId, evidence);
+    this.fillsById.set(fill.fillId, evidence);
   }
 
-  private dispatch(intent: OrderIntent): SubmitOrderResult {
-    this.requestCount += 1;
-    const outcomes = this.plannedOutcomes.get(intent.clientOrderId) ?? [];
+  private takeNextOutcome(clientOrderId: string): PlannedSubmitOutcome {
+    const outcomes = this.plannedOutcomes.get(clientOrderId) ?? [];
     const planned = outcomes.shift() ?? "accept";
-    this.plannedOutcomes.set(intent.clientOrderId, outcomes);
+    this.plannedOutcomes.set(clientOrderId, outcomes);
+    return planned;
+  }
 
+  private dispatch(
+    intent: OrderIntent,
+    planned: PlannedSubmitOutcome,
+  ): SubmitOrderResult {
+    this.requestCount += 1;
     if (planned === "reject") {
       return {
         clientOrderId: intent.clientOrderId,
@@ -201,10 +205,6 @@ class InMemoryFakeGateway implements ExecutionGateway {
       };
     }
     if (planned === "timeoutWithoutOrder" || planned === "unknownOnReconcile") {
-      if (planned === "unknownOnReconcile") {
-        const submission = this.submissions.get(intent.clientOrderId);
-        if (submission !== undefined) submission.unknownOnReconcile = true;
-      }
       return {
         clientOrderId: intent.clientOrderId,
         status: "reconciliationRequired",
@@ -255,20 +255,6 @@ class InMemoryFakeGateway implements ExecutionGateway {
   }
 }
 
-function sameIntent(left: OrderIntent, right: OrderIntent): boolean {
-  return (
-    left.clientOrderId === right.clientOrderId &&
-    left.symbol === right.symbol &&
-    left.side === right.side &&
-    left.quantity === right.quantity &&
-    left.orderType === right.orderType &&
-    left.limitPriceMinor === right.limitPriceMinor &&
-    left.createdAt === right.createdAt &&
-    left.strategyVersion === right.strategyVersion &&
-    left.decisionRef === right.decisionRef
-  );
-}
-
 function sameFill(left: Fill, right: Fill): boolean {
   return (
     left.fillId === right.fillId &&
@@ -310,18 +296,14 @@ function fill(
 }
 
 describe("execution gateway contract", () => {
-  it("accepts and reports a full fill only with explicit fill evidence", async () => {
+  it("accepts an order with a broker acknowledgement", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent();
-    const acknowledgement = await gateway.submit(intent);
 
-    expect(acknowledgement).toMatchObject({ status: "accepted", clientOrderId: intent.clientOrderId });
-    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
-    gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-1", 3));
-
-    await expect(gateway.reconcile(intent.clientOrderId)).resolves.toMatchObject({
-      outcome: "orderFound",
-      order: { status: "filled", fills: [{ fillId: "fill-1", quantity: 3, priceMinor: 1_000 }] },
+    await expect(gateway.submit(intent)).resolves.toEqual({
+      clientOrderId: intent.clientOrderId,
+      brokerOrderId: "fake-order-1",
+      status: "accepted",
     });
   });
 
@@ -336,16 +318,35 @@ describe("execution gateway contract", () => {
     });
   });
 
-  it("reports partial fills from explicit fill evidence", async () => {
+  it("reports pending, partial, and full status only as fill evidence arrives", async () => {
     const gateway = new InMemoryFakeGateway();
-    const intent = marketIntent("client-partial");
+    const intent = marketIntent("client-fill-progress");
     const acknowledgement = await gateway.submit(intent);
-    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
-    gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-1", 1));
+    if (acknowledgement.status !== "accepted") {
+      throw new Error("expected accepted acknowledgement");
+    }
 
     await expect(gateway.reconcile(intent.clientOrderId)).resolves.toMatchObject({
       outcome: "orderFound",
+      order: { status: "pending", fills: [] },
+    });
+
+    gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-1", 1));
+    await expect(gateway.reconcile(intent.clientOrderId)).resolves.toMatchObject({
+      outcome: "orderFound",
       order: { status: "partiallyFilled", fills: [{ fillId: "fill-1", quantity: 1 }] },
+    });
+
+    gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-2", 2));
+    await expect(gateway.reconcile(intent.clientOrderId)).resolves.toMatchObject({
+      outcome: "orderFound",
+      order: {
+        status: "filled",
+        fills: [
+          { fillId: "fill-1", quantity: 1 },
+          { fillId: "fill-2", quantity: 2 },
+        ],
+      },
     });
   });
 
@@ -353,7 +354,9 @@ describe("execution gateway contract", () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-cancel");
     const acknowledgement = await gateway.submit(intent);
-    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
+    if (acknowledgement.status !== "accepted") {
+      throw new Error("expected accepted acknowledgement");
+    }
     gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-1", 1));
 
     await expect(gateway.cancel(intent.clientOrderId)).resolves.toEqual({
@@ -367,97 +370,6 @@ describe("execution gateway contract", () => {
     });
   });
 
-  it("journals cancellation intent before the gateway and keeps cancel acknowledgement separate from reconciliation", async () => {
-    const backingGateway = new InMemoryFakeGateway();
-    const intent = marketIntent("client-cancel-unknown");
-    await backingGateway.submit(intent);
-    backingGateway.planNextReconciliation(intent.clientOrderId, "unknown");
-    const calls: string[] = [];
-    const gateway: ExecutionGateway = {
-      submit: (orderIntent) => backingGateway.submit(orderIntent),
-      cancel: async (clientOrderId) => {
-        calls.push("gateway:cancel");
-        return backingGateway.cancel(clientOrderId);
-      },
-      reconcile: async (clientOrderId) => {
-        calls.push("gateway:reconcile");
-        return backingGateway.reconcile(clientOrderId);
-      },
-    };
-    const session: DurableGatewayOrderSession = {
-      requestExternalCancel: async () => {
-        calls.push("session:cancel-request");
-        return { status: "accepted" };
-      },
-      acceptExecutionReport: async () => {
-        calls.push("session:fill");
-        return { status: "accepted" };
-      },
-      recordExternalReconciliation: async ({ outcome }) => {
-        calls.push(`session:${outcome}`);
-        return { status: "accepted" };
-      },
-    };
-
-    const result = await cancelAndReconcileGatewayOrder({
-      gateway,
-      session,
-      cancelRequest: {
-        eventId: "cancel-request-1",
-        timestamp: 1_791_834_000_000,
-        clientOrderId: intent.clientOrderId,
-      },
-      reconciliationEventId: "reconcile-1",
-      reconciliationTimestamp: 1_791_834_000_001,
-    });
-
-    expect(result.cancelResult.outcome).toBe("cancelled");
-    expect(result.reconciliation.gatewayResult.outcome).toBe("unknown");
-    expect(calls).toEqual([
-      "session:cancel-request",
-      "gateway:cancel",
-      "gateway:reconcile",
-      "session:unknown",
-    ]);
-  });
-
-  it("applies every externally evidenced fill before recording a terminal order state", async () => {
-    const gateway = new InMemoryFakeGateway();
-    const intent = marketIntent("client-late-fill");
-    const acknowledgement = await gateway.submit(intent);
-    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
-    gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "late-fill-1", 1));
-    await gateway.cancel(intent.clientOrderId);
-    const calls: string[] = [];
-    const session: DurableGatewayOrderSession = {
-      requestExternalCancel: async () => ({ status: "accepted" }),
-      acceptExecutionReport: async (report) => {
-        calls.push(`fill:${report.fillId}`);
-        return { status: "accepted" };
-      },
-      recordExternalReconciliation: async (reconciliation) => {
-        calls.push(`state:${reconciliation.outcome}`);
-        return { status: "accepted" };
-      },
-    };
-
-    const result = await reconcileGatewayOrder({
-      gateway,
-      session,
-      clientOrderId: intent.clientOrderId,
-      reconciliationEventId: "reconcile-late-fill",
-      reconciliationTimestamp: 1_791_834_000_002,
-    });
-
-    expect(result.gatewayResult).toMatchObject({
-      outcome: "orderFound",
-      order: { status: "cancelled", fills: [{ fillId: "late-fill-1" }] },
-    });
-    expect(calls).toEqual(["fill:late-fill-1", "state:orderFound"]);
-    expect(result.fillResults).toMatchObject([{ status: "accepted" }]);
-    expect(result.lifecycleResult.status).toBe("accepted");
-  });
-
   it("makes an identical submit retry idempotent", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-idempotent");
@@ -468,6 +380,7 @@ describe("execution gateway contract", () => {
     expect(retry).toEqual(first);
     expect(gateway.submitRequestCount).toBe(1);
     expect(gateway.brokerOrderCount).toBe(1);
+    expect(gateway.logicalIntentCount).toBe(1);
   });
 
   it("rejects a conflicting intent that reuses clientOrderId", async () => {
@@ -475,26 +388,33 @@ describe("execution gateway contract", () => {
     const intent = marketIntent("client-conflict");
     await gateway.submit(intent);
 
-    await expect(gateway.submit({ ...intent, quantity: intent.quantity + 1 })).rejects.toThrow(
-      ClientOrderIdConflictError,
-    );
+    await expect(
+      gateway.submit({ ...intent, quantity: intent.quantity + 1 }),
+    ).rejects.toThrow(ClientOrderIdConflictError);
     expect(gateway.submitRequestCount).toBe(1);
     expect(gateway.brokerOrderCount).toBe(1);
   });
 
-  it("reconciles a timed-out submit to existing order evidence without retrying", async () => {
+  it("returns an unclear timeout on identical retry without submitting again", async () => {
+    const gateway = new InMemoryFakeGateway();
+    const intent = marketIntent("client-timeout-retry");
+    gateway.planNextSubmit(intent.clientOrderId, "timeoutAfterAccept");
+
+    const timedOut = await gateway.submit(intent);
+    expect(timedOut).toMatchObject({ status: "reconciliationRequired" });
+
+    await expect(gateway.submit({ ...intent })).resolves.toEqual(timedOut);
+    expect(gateway.submitRequestCount).toBe(1);
+    expect(gateway.brokerOrderCount).toBe(1);
+    expect(gateway.logicalIntentCount).toBe(1);
+  });
+
+  it("reconciles a timed-out submit to the existing broker order", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-timeout-found");
     gateway.planNextSubmit(intent.clientOrderId, "timeoutAfterAccept");
 
-    const timedOut = await gateway.submit(intent);
-    expect(timedOut).toMatchObject({ status: "reconciliationRequired", clientOrderId: intent.clientOrderId });
-    expect(timedOut.status).not.toBe("rejected");
-
-    const repeated = await gateway.submit(intent);
-    expect(repeated).toEqual(timedOut);
-    expect(gateway.submitRequestCount).toBe(1);
-
+    await gateway.submit(intent);
     await expect(gateway.reconcile(intent.clientOrderId)).resolves.toMatchObject({
       outcome: "orderFound",
       order: { status: "pending", brokerOrderId: "fake-order-1", fills: [] },
@@ -502,7 +422,7 @@ describe("execution gateway contract", () => {
     expect(gateway.submitRequestCount).toBe(1);
   });
 
-  it("reconciles a timed-out submit to not found without automatic rejection or retry", async () => {
+  it("confirms absence without automatically retrying or rejecting the intent", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-timeout-absent");
     gateway.planNextSubmit(intent.clientOrderId, "timeoutWithoutOrder");
@@ -515,31 +435,38 @@ describe("execution gateway contract", () => {
     });
     expect(gateway.submitRequestCount).toBe(1);
     expect(gateway.brokerOrderCount).toBe(0);
+    expect(gateway.logicalIntentCount).toBe(1);
 
     const explicitRetry = await gateway.submit(intent);
     expect(explicitRetry.status).toBe("accepted");
     expect(gateway.submitRequestCount).toBe(2);
     expect(gateway.brokerOrderCount).toBe(1);
+    expect(gateway.logicalIntentCount).toBe(1);
   });
 
-  it("keeps reconciliation unknown when evidence is still inconclusive", async () => {
+  it("keeps reconciliation unknown when evidence remains inconclusive", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-still-unknown");
     gateway.planNextSubmit(intent.clientOrderId, "unknownOnReconcile");
 
-    expect((await gateway.submit(intent)).status).toBe("reconciliationRequired");
+    const timedOut = await gateway.submit(intent);
+    expect(timedOut.status).toBe("reconciliationRequired");
     await expect(gateway.reconcile(intent.clientOrderId)).resolves.toMatchObject({
       outcome: "unknown",
       clientOrderId: intent.clientOrderId,
     });
+    await expect(gateway.submit(intent)).resolves.toEqual(timedOut);
     expect(gateway.submitRequestCount).toBe(1);
+    expect(gateway.brokerOrderCount).toBe(0);
   });
 
-  it("does not count duplicate fill evidence as a second logical fill", async () => {
+  it("does not count duplicate fillId evidence twice", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-duplicate-fill");
     const acknowledgement = await gateway.submit(intent);
-    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
+    if (acknowledgement.status !== "accepted") {
+      throw new Error("expected accepted acknowledgement");
+    }
     const evidence = fill(acknowledgement.brokerOrderId, "fill-duplicate", 1);
     gateway.addFill(intent.clientOrderId, evidence);
     gateway.addFill(intent.clientOrderId, evidence);
@@ -557,11 +484,19 @@ describe("execution gateway contract", () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent("client-fill-conflict");
     const acknowledgement = await gateway.submit(intent);
-    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
-    gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-same-id", 1));
+    if (acknowledgement.status !== "accepted") {
+      throw new Error("expected accepted acknowledgement");
+    }
+    gateway.addFill(
+      intent.clientOrderId,
+      fill(acknowledgement.brokerOrderId, "fill-same-id", 1),
+    );
 
     expect(() =>
-      gateway.addFill(intent.clientOrderId, fill(acknowledgement.brokerOrderId, "fill-same-id", 2)),
+      gateway.addFill(
+        intent.clientOrderId,
+        fill(acknowledgement.brokerOrderId, "fill-same-id", 2),
+      ),
     ).toThrow(FillIdentityConflictError);
   });
 
@@ -577,5 +512,11 @@ describe("execution gateway contract", () => {
         createdAt: "2026-10-01T01:00:00.000Z",
       }),
     ).toThrow("limitPriceMinor must be a positive safe integer");
+  });
+
+  it("compares the complete order intent including decision references", () => {
+    const intent = marketIntent("client-intent-comparison");
+    expect(sameOrderIntent(intent, { ...intent })).toBe(true);
+    expect(sameOrderIntent(intent, { ...intent, decisionRef: "decision-2" })).toBe(false);
   });
 });

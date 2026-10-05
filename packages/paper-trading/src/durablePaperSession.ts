@@ -439,7 +439,7 @@ function encodeCommand(command: JournalCommand): Record<string, unknown> {
       priceMinor: command.payload.priceMinor.toString(),
     };
   }
-  if (command.kind === "cancel") {
+  if (command.kind === "cancel" || command.kind === "cancel-request") {
     return {
       eventId: command.payload.eventId,
       timestamp: command.payload.timestamp,
@@ -497,7 +497,7 @@ function decodeCommand(kind: JournalCommand["kind"], value: unknown, schemaVersi
       }),
     });
   }
-  if (kind === "cancel") {
+  if (kind === "cancel" || kind === "cancel-request") {
     exactKeys(value, "cancel journal payload", ["eventId", "timestamp", "clientOrderId"]);
     return Object.freeze({
       kind,
@@ -670,9 +670,11 @@ function decodeSimulationEvent(value: unknown, index: number, schemaVersion: Jou
   }
   if (kind === "order") {
     const hasReason = Object.hasOwn(value, "reasonCode");
+    const hasCancelPending = Object.hasOwn(value, "cancelPending");
     exactKeys(value, path, [
       "eventId", "timestamp", "kind", "sourceEventId", "clientOrderId", "status", "side", "quantity",
-      "filledQuantity", "remainingQuantity", ...(hasReason ? ["reasonCode"] : []),
+      "filledQuantity", "remainingQuantity", ...(hasCancelPending ? ["cancelPending"] : []),
+      ...(hasReason ? ["reasonCode"] : []),
     ]);
     const status = value["status"];
     const side = value["side"];
@@ -681,6 +683,8 @@ function decodeSimulationEvent(value: unknown, index: number, schemaVersion: Jou
       failCorrupt(`${path}.status is invalid`);
     }
     if (side !== "buy" && side !== "sell") failCorrupt(`${path}.side is invalid`);
+    const cancelPending = value["cancelPending"];
+    if (hasCancelPending && typeof cancelPending !== "boolean") failCorrupt(`${path}.cancelPending is invalid`);
     return Object.freeze({
       eventId,
       timestamp,
@@ -692,6 +696,7 @@ function decodeSimulationEvent(value: unknown, index: number, schemaVersion: Jou
       quantity: safeInteger(value["quantity"], `${path}.quantity`, 0),
       filledQuantity: safeInteger(value["filledQuantity"], `${path}.filledQuantity`, 0),
       remainingQuantity: safeInteger(value["remainingQuantity"], `${path}.remainingQuantity`, 0),
+      ...(hasCancelPending ? { cancelPending: cancelPending as boolean } : {}),
       ...(hasReason ? { reasonCode: optionalReason(value, path)! } : {}),
     });
   }
@@ -794,8 +799,8 @@ function decodeEntry(value: unknown, path: string): JournalEntry {
   if (value["recordType"] !== "event") failCorrupt(`${path} recordType is unsupported`);
   const sequence = safeInteger(value["sequence"], `${path}.sequence`, 1);
   const kind = value["kind"];
-  if (kind !== "market" && kind !== "cancel" && kind !== "halt" && kind !== "execution-report"
-    && !(value["schemaVersion"] === JOURNAL_SCHEMA_VERSION && (kind === "cancel-request" || kind === "external-reconciliation"))) {
+  if (kind !== "market" && kind !== "cancel" && kind !== "cancel-request" && kind !== "halt" && kind !== "execution-report"
+    && !(value["schemaVersion"] === JOURNAL_SCHEMA_VERSION && kind === "external-reconciliation")) {
     failCorrupt(`${path}.kind is unsupported`);
   }
   const schemaVersion = value["schemaVersion"] as JournalSchemaVersion;
@@ -1170,6 +1175,10 @@ export class DurablePaperTradingSession {
     return this.execute({ kind: "external-reconciliation", payload: reconciliation });
   }
 
+  async requestCancelOrder(request: CancelRequest): Promise<OperationResult> {
+    return this.execute({ kind: "cancel-request", payload: request }, LEGACY_JOURNAL_SCHEMA_VERSION);
+  }
+
   async halt(request: HaltRequest): Promise<OperationResult> {
     return this.execute({ kind: "halt", payload: request });
   }
@@ -1202,7 +1211,7 @@ export class DurablePaperTradingSession {
     }
   }
 
-  private async execute(rawCommand: JournalCommand): Promise<OperationResult> {
+  private async execute(rawCommand: JournalCommand, schemaVersion: JournalSchemaVersion = JOURNAL_SCHEMA_VERSION): Promise<OperationResult> {
     this.assertWritable();
     const command = decodeCallerCommand(rawCommand);
     const eventId = commandEventId(command);
@@ -1237,7 +1246,7 @@ export class DurablePaperTradingSession {
     let events: readonly SimulationEvent[];
     let orderIdentities: Map<string, OrderIdentity>;
     try {
-      outcome = this.apply(command);
+      outcome = this.apply(command, schemaVersion);
       events = this.engine.getEvents().slice(beforeEvents);
       orderIdentities = validateOrderIdentities(events, this.strategyVersion, this.orderIdentities);
       this.validateFillIdentities(command, events);
@@ -1248,7 +1257,7 @@ export class DurablePaperTradingSession {
     }
 
     const entry = Object.freeze({
-      schemaVersion: JOURNAL_SCHEMA_VERSION,
+      schemaVersion,
       recordType: "event",
       sequence: this.lastSequence + 1,
       eventId,
@@ -1273,11 +1282,13 @@ export class DurablePaperTradingSession {
     return outcome;
   }
 
-  private apply(command: JournalCommand): OperationResult {
+  private apply(command: JournalCommand, schemaVersion: JournalSchemaVersion = JOURNAL_SCHEMA_VERSION): OperationResult {
     switch (command.kind) {
       case "market": return this.engine.processMarketEvent(command.payload);
       case "cancel": return this.engine.cancelOrder(command.payload);
-      case "cancel-request": return this.engine.requestExternalCancel(command.payload);
+      case "cancel-request": return schemaVersion === LEGACY_JOURNAL_SCHEMA_VERSION
+        ? this.engine.requestCancelOrder(command.payload)
+        : this.engine.requestExternalCancel(command.payload);
       case "external-reconciliation": return this.engine.recordExternalReconciliation(command.payload);
       case "halt": return this.engine.halt(command.payload);
       case "execution-report": return this.engine.acceptExecutionReport(command.payload);
@@ -1353,7 +1364,7 @@ export class DurablePaperTradingSession {
 
     this.clockState.value = entry.clockTimestamp ?? Number.NaN;
     const beforeEvents = this.engine.getEvents().length;
-    const outcome = this.apply({ kind: entry.kind, payload: entry.payload } as JournalCommand);
+    const outcome = this.apply({ kind: entry.kind, payload: entry.payload } as JournalCommand, entry.schemaVersion);
     const events = this.engine.getEvents().slice(beforeEvents);
     const orderIdentities = validateOrderIdentities(entry.events, header.strategyVersion, this.orderIdentities);
     if (canonicalJson(outcome) !== canonicalJson(entry.outcome) || canonicalJson(events) !== canonicalJson(entry.events)) {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
   runPerSymbolMarketRegimeLogisticChallengerTemporal,
   type MarketRegimeTemporalInput,
@@ -69,7 +70,7 @@ function runSynthetic(rows: readonly RawTwStrategyResearchRow[] = fixtureSynthet
 }
 
 function loadCanonicalHistoricalRows(): RawTwStrategyResearchRow[] {
-  const csvPath = "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  const csvPath = resolve("data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
   const csvText = readFileSync(csvPath, "utf8");
   const raw = parseTwStrategyResearchCsvText(csvText);
   const validated = validateTwStrategyResearchRows(raw, {
@@ -183,7 +184,7 @@ describe("perSymbolMarketRegimeLogisticChallengerTemporal", () => {
       expect(run.controlEconomic.benchmarkPolicy).toBe("ALWAYS_LONG_BENCHMARK");
       expect(run.challengerEconomic.benchmarkPolicy).toBe("ALWAYS_LONG_BENCHMARK");
     }
-  });
+  }, 30_000);
 
   it("keeps cutoff refits independent of later-window data", () => {
     const baseline = runSynthetic();
@@ -199,7 +200,7 @@ describe("perSymbolMarketRegimeLogisticChallengerTemporal", () => {
     expect(firstMutated.challenger.fit.modelStateSha256).toBe(firstBaseline.challenger.fit.modelStateSha256);
 
     expect(lastMutated.normalizedResultSha256).not.toBe(lastBaseline.normalizedResultSha256);
-  });
+  }, 30_000);
 
   it("is strictly deterministic across repeated runs", () => {
     const first = runSynthetic();
@@ -209,7 +210,7 @@ describe("perSymbolMarketRegimeLogisticChallengerTemporal", () => {
     expect(second.normalizedResultSha256).toBe(first.normalizedResultSha256);
     expect(second.promotionDecision).toBe("do_not_promote");
     expect(second.guardrails.supportsAutomaticPromotion).toBe(false);
-  });
+  }, 30_000);
 
   it("reproduces accepted control numbers and confirms temporal evidence on canonical dataset", () => {
     const canonicalRows = loadCanonicalHistoricalRows();

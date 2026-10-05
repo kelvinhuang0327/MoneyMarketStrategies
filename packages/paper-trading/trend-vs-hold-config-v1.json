@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "0050-10m-sma-trend-vs-hold-config-v1",
+  "classification": "RETROSPECTIVE_DIAGNOSTIC_ONLY",
+  "researchHypothesis": "A fixed 10-month month-end close SMA filter may reduce exposure during sustained declines, at the cost of cash drag and whipsaw risk, versus holding the same 3-share quantity.",
+  "researchBasis": {
+    "title": "A Quantitative Approach to Tactical Asset Allocation",
+    "author": "Mebane T. Faber",
+    "version": "February 2013 update of 2006 working paper",
+    "url": "https://mebfaber.com/wp-content/uploads/2016/05/SSRN-id962461.pdf",
+    "sourceRule": "Update monthly on the last day of the month; buy when monthly price is above the 10-month SMA; sell to cash when below.",
+    "scopeLimit": "The paper tests multiple asset classes; it does not establish that this rule works for Taiwan 0050."
+  },
+  "lockedCandidate": {
+    "strategyVersion": "0050-month-end-10m-sma-long-cash-v1",
+    "lookbackCompletedMonthEndCloses": 10,
+    "signalTiming": "LAST_OBSERVED_TRADING_SESSION_OF_A_COMPLETED_CALENDAR_MONTH_AFTER_CLOSE",
+    "signalPrice": "RAW_MONTH_END_CLOSE",
+    "buyRule": "monthEndClose > arithmeticMeanOfCurrentAndPrior9CompletedMonthEndCloses => target 3 shares",
+    "sellRule": "monthEndClose < arithmeticMeanOfCurrentAndPrior9CompletedMonthEndCloses => target 0 shares",
+    "exactEqualityRule": "KEEP_CURRENT_POSITION",
+    "targetQuantity": 3,
+    "positionMode": "LONG_OR_CASH_ONLY",
+    "parameterSearch": false,
+    "candidateCount": 1
+  },
+  "economics": {
+    "currencyCode": "TWD",
+    "minorUnit": "0.01",
+    "initialCapitalMinor": "100000",
+    "feeBpsPerFill": 30,
+    "slippageBpsPerFill": 100,
+    "fillModel": "EXISTING_ALWAYS_FILL_NEXT_OBSERVED_CLOSE_EVENT",
+    "idleCashReturnFraction": "0",
+    "benchmark": "Cost-matched always-long 3 shares using the same initial capital, fee, slippage, fill model, and terminal mark.",
+    "terminalValuation": "MARK_TO_FINAL_RAW_CLOSE_WITHOUT_HYPOTHETICAL_LIQUIDATION_COST",
+    "distributionTreatment": "Use the three documented post-split distribution events listed below; accrue entitlement from holdings before the ex-date close, then move receivable to cash on pay date; do not reinvest.",
+    "taxTreatment": "EXCLUDED; no taxpayer-specific tax model or complete tax input is available.",
+    "cashYieldTreatment": "ZERO; no cash-rate series is included, so cash returns are not imputed."
+  },
+  "splitHandling": {
+    "effectiveDate": "2025-06-18",
+    "postToPreShareRatio": 4,
+    "comparisonPriceScale": "Multiply post-split raw close by 4 before comparing SMA values; retain pre-split raw close units. This keeps historical price comparisons exact without rounding fractional minor units.",
+    "evaluationStartDate": "2025-06-18",
+    "warmupStartDate": "2024-09-01",
+    "firstEligibleSignalMonth": "2025-06",
+    "lastEligibleSignalMonth": "2026-07",
+    "partialFinalMonthRule": "Do not generate an August 2026 monthly signal because the P194 archive ends on 2026-08-11 before that calendar month is complete."
+  },
+  "data": {
+    "sourceArtifact": "p194-twstock-ohlcv-v1",
+    "inputPath": "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
+    "sha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+    "symbol": "0050",
+    "rowCount": 1599,
+    "sourceDateRange": {
+      "start": "2020-01-02",
+      "end": "2026-08-11"
+    },
+    "evaluationDateRange": {
+      "start": "2025-06-18",
+      "end": "2026-08-11"
+    },
+    "evaluationWindows": [
+      {
+        "id": "post-split-2025-h2",
+        "start": "2025-06-18",
+        "end": "2025-12-31"
+      },
+      {
+        "id": "post-split-2026-h1",
+        "start": "2026-01-01",
+        "end": "2026-06-30"
+      },
+      {
+        "id": "post-split-2026-h2-to-cutoff",
+        "start": "2026-07-01",
+        "end": "2026-08-11"
+      }
+    ],
+    "alreadyObservedHistoricalData": true,
+    "unseenHoldoutWindows": [],
+    "newNetworkDownloads": 0,
+    "sourceAccessStatus": "REUSE_EXISTING_LOCAL_ARCHIVE_ONLY; AUTOMATED_DOWNLOAD_PERMISSION_NOT_REVERIFIED"
+  },
+  "distributionEvents": [
+    {
+      "exDate": "2025-07-21",
+      "payDate": "2025-08-08",
+      "amountPerShareMinor": "36",
+      "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3"
+    },
+    {
+      "exDate": "2026-01-22",
+      "payDate": "2026-02-11",
+      "amountPerShareMinor": "100",
+      "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3"
+    },
+    {
+      "exDate": "2026-07-21",
+      "payDate": "2026-08-10",
+      "amountPerShareMinor": "60",
+      "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3"
+    }
+  ],
+  "interpretationLimits": [
+    "Every P194 row and evaluation window predates this candidate review; none is a new unseen holdout.",
+    "This 0050 implementation is a retrospective adaptation, not a replication of the paper's total-return, close-of-signal execution, or Treasury-bill cash assumptions.",
+    "The raw-close signal does not adjust for distributions; portfolio wealth adds the three listed distribution entitlements separately.",
+    "Taxes are excluded and the limited recorded distribution schedule is not proof that all possible corporate actions were captured."
+  ]
+}

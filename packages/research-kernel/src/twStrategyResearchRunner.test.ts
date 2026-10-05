@@ -41,18 +41,16 @@ function addDaysIso(startIso: string, offset: number): string {
 }
 
 /**
- * Deterministic alternating-momentum walk: short blocks of consistent
- * up/down drift give `return_5d`/`return_20d` a learnable relationship with
- * the 5-row-forward target, so the fitted model's probabilityUp actually
- * spans a range that crosses the candidate thresholds in every fold
- * (a smooth single-direction or single-cycle walk tends to produce
- * degenerate all-cash calibration windows).
+ * Deterministic alternating-momentum walk: the phase-shifted 11-day
+ * regimes place the first non-overlapping calibration row's five-day
+ * feature and target windows inside the same up regime in each fold.
  */
 function syntheticMarketRows(symbol: string, dayCount: number, startIso = "2024-01-01"): MarketDataRow[] {
-  const blockLength = 8;
+  const blockLength = 11;
+  const phaseOffset = 6;
   let close = 100;
   return Array.from({ length: dayCount }, (_, index) => {
-    const trendUp = Math.floor(index / blockLength) % 2 === 0;
+    const trendUp = Math.floor((index + phaseOffset) / blockLength) % 2 === 0;
     const dailyReturn = trendUp ? 0.014 : -0.014;
     const wiggle = 0.002 * Math.sin(index * 1.3);
     const previousClose = close;

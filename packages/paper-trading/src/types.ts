@@ -81,6 +81,7 @@ export interface PaperOrder {
   readonly createdAt: number;
   readonly createdEventId: string;
   readonly status: OrderStatus;
+  readonly cancelPending: boolean;
   readonly rejectionReason?: string;
 }
 
@@ -146,6 +147,8 @@ export type SimulationEvent =
       readonly sourceEventId: string;
       readonly clientOrderId: string;
       readonly status: OrderStatus;
+      /** Omitted on legacy journal events when the order was not cancel-pending. */
+      readonly cancelPending?: boolean;
       readonly side: OrderSide;
       readonly quantity: number;
       readonly filledQuantity: number;

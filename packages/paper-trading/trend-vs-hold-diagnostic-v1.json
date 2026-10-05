@@ -1,0 +1,444 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "0050-10m-sma-trend-vs-hold-diagnostic-v1",
+  "classification": "RETROSPECTIVE_DIAGNOSTIC_ONLY",
+  "promotionStatus": "NOT_ELIGIBLE_RETROSPECTIVE_SINGLE_CANDIDATE_DIAGNOSTIC",
+  "winRateInterpretation": "A null completedTradeWinRate means there are no completed trades; 0% and PASS are not substituted.",
+  "config": {
+    "artifactId": "0050-10m-sma-trend-vs-hold-config-v1",
+    "sha256": "d81ad3c2cb67f5f25d873783b0c746658311a04352964ada19344741c8509281",
+    "committedBeforeReplay": true
+  },
+  "data": {
+    "sourceArtifact": "p194-twstock-ohlcv-v1",
+    "inputPath": "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
+    "sourceSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+    "sourceRowCount": 1599,
+    "sourceDateRange": {
+      "start": "2020-01-02",
+      "end": "2026-08-11"
+    },
+    "evaluationDateRange": {
+      "start": "2025-06-18",
+      "end": "2026-08-11"
+    },
+    "evaluationRowCount": 281,
+    "alreadyObservedHistoricalData": true,
+    "unseenHoldoutWindows": [],
+    "newNetworkDownloads": 0,
+    "sourceAccessStatus": "REUSE_EXISTING_LOCAL_ARCHIVE_ONLY; AUTOMATED_DOWNLOAD_PERMISSION_NOT_REVERIFIED"
+  },
+  "lockedCandidate": {
+    "strategyVersion": "0050-month-end-10m-sma-long-cash-v1",
+    "lookbackCompletedMonthEndCloses": 10,
+    "signalCount": 14,
+    "aboveSmaSignalCount": 14,
+    "belowSmaSignalCount": 0,
+    "equalSmaSignalCount": 0,
+    "signals": [
+      {
+        "month": "2025-06",
+        "signalDate": "2025-06-30",
+        "closeMinor": "4836",
+        "comparisonCloseMinor": "19344",
+        "movingAverageNumeratorMinor": "186709",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2025-07",
+        "signalDate": "2025-07-31",
+        "closeMinor": "5155",
+        "comparisonCloseMinor": "20620",
+        "movingAverageNumeratorMinor": "188934",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2025-08",
+        "signalDate": "2025-08-29",
+        "closeMinor": "5250",
+        "comparisonCloseMinor": "21000",
+        "movingAverageNumeratorMinor": "190754",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2025-09",
+        "signalDate": "2025-09-30",
+        "closeMinor": "5780",
+        "comparisonCloseMinor": "23120",
+        "movingAverageNumeratorMinor": "195149",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2025-10",
+        "signalDate": "2025-10-31",
+        "closeMinor": "6475",
+        "comparisonCloseMinor": "25900",
+        "movingAverageNumeratorMinor": "201474",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2025-11",
+        "signalDate": "2025-11-28",
+        "closeMinor": "6235",
+        "comparisonCloseMinor": "24940",
+        "movingAverageNumeratorMinor": "206284",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2025-12",
+        "signalDate": "2025-12-31",
+        "closeMinor": "6560",
+        "comparisonCloseMinor": "26240",
+        "movingAverageNumeratorMinor": "213274",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-01",
+        "signalDate": "2026-01-30",
+        "closeMinor": "7260",
+        "comparisonCloseMinor": "29040",
+        "movingAverageNumeratorMinor": "225039",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-02",
+        "signalDate": "2026-02-26",
+        "closeMinor": "8115",
+        "comparisonCloseMinor": "32460",
+        "movingAverageNumeratorMinor": "240639",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-03",
+        "signalDate": "2026-03-31",
+        "closeMinor": "7235",
+        "comparisonCloseMinor": "28940",
+        "movingAverageNumeratorMinor": "251604",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-04",
+        "signalDate": "2026-04-30",
+        "closeMinor": "9050",
+        "comparisonCloseMinor": "36200",
+        "movingAverageNumeratorMinor": "268460",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-05",
+        "signalDate": "2026-05-29",
+        "closeMinor": "10540",
+        "comparisonCloseMinor": "42160",
+        "movingAverageNumeratorMinor": "290000",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-06",
+        "signalDate": "2026-06-30",
+        "closeMinor": "10780",
+        "comparisonCloseMinor": "43120",
+        "movingAverageNumeratorMinor": "312120",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      {
+        "month": "2026-07",
+        "signalDate": "2026-07-31",
+        "closeMinor": "10285",
+        "comparisonCloseMinor": "41140",
+        "movingAverageNumeratorMinor": "330140",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      }
+    ],
+    "parameterSearch": false
+  },
+  "economics": {
+    "currencyCode": "TWD",
+    "minorUnit": "0.01",
+    "initialCapitalMinor": "100000",
+    "targetQuantity": 3,
+    "feeBpsPerFill": 30,
+    "slippageBpsPerFill": 100,
+    "fillModel": "alwaysFillNextEvent",
+    "distributionTreatment": "POST_SPLIT_CASH_ENTITLEMENTS_AT_EX_DATE_AND_PAY_DATE; NO_REINVESTMENT",
+    "cashYieldFraction": "0.00000000",
+    "taxes": "EXCLUDED",
+    "terminalMark": "FINAL_RAW_CLOSE; NO_HYPOTHETICAL_LIQUIDATION_FEE"
+  },
+  "splitNormalization": {
+    "effectiveDate": "2025-06-18",
+    "postToPreShareRatio": "4:1",
+    "comparisonPriceScale": "Scale post-split closes by 4 for SMA comparison; keep pre-split closes in original share units.",
+    "source": "https://www.twse.com.tw/zh/ETFortune/announcement?company=A00005&date=20250617&fund=0050&seq=1&type=other"
+  },
+  "corporateActions": {
+    "distributions": [
+      {
+        "exDate": "2025-07-21",
+        "payDate": "2025-08-08",
+        "amountPerShareMinor": "36",
+        "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3"
+      },
+      {
+        "exDate": "2026-01-22",
+        "payDate": "2026-02-11",
+        "amountPerShareMinor": "100",
+        "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3"
+      },
+      {
+        "exDate": "2026-07-21",
+        "payDate": "2026-08-10",
+        "amountPerShareMinor": "60",
+        "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3"
+      }
+    ],
+    "taxModel": "NOT_AVAILABLE",
+    "unrecordedHistoricalDistributionsAreNotImputed": true
+  },
+  "results": {
+    "candidate": {
+      "label": "10M_SMA_LONG_OR_CASH",
+      "strategyVersion": "0050-month-end-10m-sma-long-cash-v1",
+      "startingEquityMinor": "100000",
+      "endingEquityMinor": "117184",
+      "netReturnFraction": "0.17184000",
+      "maximumDrawdownFraction": "0.04299439",
+      "completedTradeCount": 0,
+      "wins": 0,
+      "losses": 0,
+      "breakevens": 0,
+      "completedTradeWinRate": null,
+      "tradeOutcomeStatus": "NOT_CALCULABLE_NO_COMPLETED_TRADES",
+      "openPositionQuantity": 3,
+      "fillCount": 1,
+      "filledQuantity": 3,
+      "orderSubmittedDecisionCount": 1,
+      "noTradeDecisionCount": 280,
+      "riskRejectedDecisionCount": 0,
+      "feesPaidMinor": "45",
+      "distributionCashMinor": "588",
+      "distributionReceivableMinor": "0",
+      "markedPositionValueAtCutoffMinor": "31380",
+      "firstInvestedDate": "2025-07-01",
+      "firstInvestedPositionValueMinor": "14592",
+      "firstInvestedCashRemainingMinor": "85216",
+      "firstInvestedPositionFractionOfStartingEquity": "0.14592000",
+      "maximumMarkedPositionValueMinor": "33345",
+      "maximumMarkedPositionFractionOfStartingEquity": "0.33345000",
+      "investedSessionCount": 272,
+      "evaluatedSessionCount": 281,
+      "investedSessionFraction": "0.96797153",
+      "chronologicalWindows": [
+        {
+          "id": "post-split-2025-h2",
+          "configuredDateRange": {
+            "start": "2025-06-18",
+            "end": "2025-12-31"
+          },
+          "observedDateRange": {
+            "start": "2025-06-18",
+            "end": "2025-12-31"
+          },
+          "rowCount": 136,
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105004",
+          "netReturnFraction": "0.05004000",
+          "maximumDrawdownFraction": "0.01489274",
+          "incrementalDistributionIncomeMinor": "108",
+          "investedSessionCount": 127,
+          "evaluatedMonthEndSignals": 7
+        },
+        {
+          "id": "post-split-2026-h1",
+          "configuredDateRange": {
+            "start": "2026-01-01",
+            "end": "2026-06-30"
+          },
+          "observedDateRange": {
+            "start": "2026-01-02",
+            "end": "2026-06-30"
+          },
+          "rowCount": 116,
+          "startingEquityMinor": "105004",
+          "endingEquityMinor": "117964",
+          "netReturnFraction": "0.12342387",
+          "maximumDrawdownFraction": "0.02400677",
+          "incrementalDistributionIncomeMinor": "300",
+          "investedSessionCount": 116,
+          "evaluatedMonthEndSignals": 6
+        },
+        {
+          "id": "post-split-2026-h2-to-cutoff",
+          "configuredDateRange": {
+            "start": "2026-07-01",
+            "end": "2026-08-11"
+          },
+          "observedDateRange": {
+            "start": "2026-07-01",
+            "end": "2026-08-11"
+          },
+          "rowCount": 29,
+          "startingEquityMinor": "117964",
+          "endingEquityMinor": "117184",
+          "netReturnFraction": "-0.00661219",
+          "maximumDrawdownFraction": "0.03863074",
+          "incrementalDistributionIncomeMinor": "180",
+          "investedSessionCount": 29,
+          "evaluatedMonthEndSignals": 1
+        }
+      ],
+      "excessNetReturnFractionVsBenchmark": "-0.00467000",
+      "endingEquityDeltaMinorVsBenchmark": "-467"
+    },
+    "costMatchedBenchmark": {
+      "label": "COST_MATCHED_ALWAYS_LONG_3_SHARES",
+      "strategyVersion": "cost-matched-always-long-benchmark-v1",
+      "startingEquityMinor": "100000",
+      "endingEquityMinor": "117651",
+      "netReturnFraction": "0.17651000",
+      "maximumDrawdownFraction": "0.04282628",
+      "completedTradeCount": 0,
+      "wins": 0,
+      "losses": 0,
+      "breakevens": 0,
+      "completedTradeWinRate": null,
+      "tradeOutcomeStatus": "NOT_CALCULABLE_NO_COMPLETED_TRADES",
+      "openPositionQuantity": 3,
+      "fillCount": 1,
+      "filledQuantity": 3,
+      "orderSubmittedDecisionCount": 1,
+      "noTradeDecisionCount": 280,
+      "riskRejectedDecisionCount": 0,
+      "feesPaidMinor": "43",
+      "distributionCashMinor": "588",
+      "distributionReceivableMinor": "0",
+      "markedPositionValueAtCutoffMinor": "31380",
+      "firstInvestedDate": "2025-06-19",
+      "firstInvestedPositionValueMinor": "14130",
+      "firstInvestedCashRemainingMinor": "85683",
+      "firstInvestedPositionFractionOfStartingEquity": "0.14130000",
+      "maximumMarkedPositionValueMinor": "33345",
+      "maximumMarkedPositionFractionOfStartingEquity": "0.33345000",
+      "investedSessionCount": 280,
+      "evaluatedSessionCount": 281,
+      "investedSessionFraction": "0.99644128",
+      "chronologicalWindows": [
+        {
+          "id": "post-split-2025-h2",
+          "configuredDateRange": {
+            "start": "2025-06-18",
+            "end": "2025-12-31"
+          },
+          "observedDateRange": {
+            "start": "2025-06-18",
+            "end": "2025-12-31"
+          },
+          "rowCount": 136,
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105471",
+          "netReturnFraction": "0.05471000",
+          "maximumDrawdownFraction": "0.01482664",
+          "incrementalDistributionIncomeMinor": "108",
+          "investedSessionCount": 135,
+          "evaluatedMonthEndSignals": 0
+        },
+        {
+          "id": "post-split-2026-h1",
+          "configuredDateRange": {
+            "start": "2026-01-01",
+            "end": "2026-06-30"
+          },
+          "observedDateRange": {
+            "start": "2026-01-02",
+            "end": "2026-06-30"
+          },
+          "rowCount": 116,
+          "startingEquityMinor": "105471",
+          "endingEquityMinor": "118431",
+          "netReturnFraction": "0.12287738",
+          "maximumDrawdownFraction": "0.02390525",
+          "incrementalDistributionIncomeMinor": "300",
+          "investedSessionCount": 116,
+          "evaluatedMonthEndSignals": 0
+        },
+        {
+          "id": "post-split-2026-h2-to-cutoff",
+          "configuredDateRange": {
+            "start": "2026-07-01",
+            "end": "2026-08-11"
+          },
+          "observedDateRange": {
+            "start": "2026-07-01",
+            "end": "2026-08-11"
+          },
+          "rowCount": 29,
+          "startingEquityMinor": "118431",
+          "endingEquityMinor": "117651",
+          "netReturnFraction": "-0.00658611",
+          "maximumDrawdownFraction": "0.03847901",
+          "incrementalDistributionIncomeMinor": "180",
+          "investedSessionCount": 29,
+          "evaluatedMonthEndSignals": 0
+        }
+      ]
+    },
+    "relativeOutcome": {
+      "candidateNetReturnFraction": "0.17184000",
+      "benchmarkNetReturnFraction": "0.17651000",
+      "excessNetReturnFraction": "-0.00467000",
+      "endingEquityDeltaMinor": "-467",
+      "measurement": "Candidate minus cost-matched 3-share holding benchmark, using identical TWD 1,000 initial capital and execution costs."
+    }
+  },
+  "evaluationWindows": [
+    {
+      "id": "post-split-2025-h2",
+      "startDate": "2025-06-18",
+      "endDate": "2025-12-31"
+    },
+    {
+      "id": "post-split-2026-h1",
+      "startDate": "2026-01-01",
+      "endDate": "2026-06-30"
+    },
+    {
+      "id": "post-split-2026-h2-to-cutoff",
+      "startDate": "2026-07-01",
+      "endDate": "2026-08-11"
+    }
+  ],
+  "interpretationLimits": [
+    "Every source row and evaluation period was already available before this review; no result is a new unseen holdout.",
+    "This is a fixed retrospective adaptation, not evidence that trend following is profitable or suitable for live use.",
+    "The source paper used total-return data and Treasury-bill cash returns; this diagnostic has raw-close signals and zero cash yield.",
+    "Taxes are excluded; only the three documented post-split distributions are modeled, so incomplete corporate-action history is not fabricated.",
+    "The 3-share benchmark uses only a minority of TWD 1,000 starting cash; its return is not the fully invested 0050 return."
+  ]
+}

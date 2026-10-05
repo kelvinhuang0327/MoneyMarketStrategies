@@ -54,6 +54,17 @@ interface EventProcessingResult {
   readonly reasonCode?: string;
 }
 
+export interface PaperSessionEquityPoint {
+  readonly eventId: string;
+  readonly timestamp: number;
+  readonly equityMinor: bigint;
+}
+
+export interface RunPaperSessionOptions {
+  /** Capture one marked-to-market equity point after each accepted market event. */
+  readonly captureEquityCurve?: boolean;
+}
+
 interface ExactAverage {
   /** The exact average in minor units is numeratorMinor / denominator. */
   readonly numeratorMinor: string;
@@ -362,6 +373,7 @@ export function runPaperSession(
   fillRule: SimulatedFillRule = (input) => alwaysFillNextEvent(input),
   strategyOverride?: PaperStrategy,
   researchRiskProfile?: CrossSymbolResearchRiskProfile,
+  options: RunPaperSessionOptions = {},
 ): Record<string, unknown> {
   if (!/^[a-f0-9]{64}$/.test(inputSha256)) throw new TypeError("inputSha256 must be a lowercase SHA-256 digest");
   if (researchRiskProfile && (
@@ -397,6 +409,7 @@ export function runPaperSession(
   });
 
   const eventProcessingResults: EventProcessingResult[] = [];
+  const equityCurve: PaperSessionEquityPoint[] = [];
   for (const event of session.events) {
     clock.set(event.timestamp);
     const result = engine.processMarketEvent(event);
@@ -409,6 +422,13 @@ export function runPaperSession(
       status: result.status,
       ...(result.status === "stale" ? { reasonCode: result.reasonCode } : {}),
     }));
+    if (options.captureEquityCurve === true && result.status === "accepted") {
+      equityCurve.push(Object.freeze({
+        eventId: event.eventId,
+        timestamp: event.timestamp,
+        equityMinor: engine.getSnapshot().equityMinor,
+      }));
+    }
   }
 
   const account = engine.getSnapshot();
@@ -460,6 +480,7 @@ export function runPaperSession(
     timeRange: Object.freeze(timeRange),
     eventProcessingResults: Object.freeze(eventProcessingResults),
     journal: engineEvents,
+    ...(options.captureEquityCurve === true ? { equityCurve: Object.freeze(equityCurve) } : {}),
     tradingStatistics: Object.freeze({
       completeTradeCount: trades.completedTrades.length,
       wins: trades.wins,

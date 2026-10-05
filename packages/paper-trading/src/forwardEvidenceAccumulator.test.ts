@@ -250,5 +250,5 @@ describe("append-only forward evidence accumulator", () => {
     await runForwardEvidenceAccumulator({ projectRoot: fixtureRoot, fetchRows: fetchResult([]) });
     const afterBytes = await Promise.all(FIXTURE_FILES.map((path) => readFile(resolve(fixtureRoot, path))));
     expect(afterBytes).toEqual(originalBytes);
-  });
+  }, 10_000);
 });

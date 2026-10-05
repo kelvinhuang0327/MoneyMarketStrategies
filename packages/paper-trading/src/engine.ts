@@ -31,6 +31,7 @@ interface MutableOrder {
   createdAt: number;
   createdEventId: string;
   status: OrderStatus;
+  cancelPending: boolean;
   rejectionReason?: string;
 }
 
@@ -292,7 +293,10 @@ export class PaperTradingEngine {
         : statusBeforeFill === "cancel-pending"
           ? "cancel-pending"
           : "partially-filled";
-    if (remainingAfter === 0 && this.activeOrder === order) this.activeOrder = null;
+    if (remainingAfter === 0) {
+      order.cancelPending = false;
+      if (this.activeOrder === order) this.activeOrder = null;
+    }
     this.fillCanonicalById.set(report.fillId, { canonical, result: operation("accepted") });
     this.fills.push(acceptedReport);
     this.events.push(Object.freeze({
@@ -339,6 +343,7 @@ export class PaperTradingEngine {
     }
 
     order.status = "cancel-pending";
+    order.cancelPending = true;
     this.events.push(Object.freeze({
       eventId: `cancel/${encode(request.eventId)}`,
       timestamp: request.timestamp,
@@ -439,6 +444,25 @@ export class PaperTradingEngine {
         : {}),
     }));
     return result;
+  }
+
+  requestCancelOrder(request: CancelRequest): OperationResult {
+    if (!request || !nonEmpty(request.eventId)) return rejected("INVALID_EVENT_ID");
+    if (!safeTimestamp(request.timestamp)) return rejected("INVALID_TIMESTAMP");
+    if (!nonEmpty(request.clientOrderId)) return rejected("INVALID_ORDER_ID");
+    const canonical = JSON.stringify(["cancel-request", request.eventId, request.timestamp, request.clientOrderId]);
+    const replay = this.checkInputReplay(request.eventId, canonical);
+    if (replay) return replay;
+    const timeReason = this.validateControlTime(request.timestamp);
+    if (timeReason) return rejected(timeReason);
+    this.inputCanonicalById.set(request.eventId, canonical);
+
+    if (!this.activeOrder || this.activeOrder.clientOrderId !== request.clientOrderId) {
+      return rejected("ORDER_NOT_ACTIVE");
+    }
+    this.activeOrder.cancelPending = true;
+    this.recordOrder(this.activeOrder, request.timestamp, request.eventId, "CANCEL_REQUESTED");
+    return operation("accepted");
   }
 
   cancelOrder(request: CancelRequest): OperationResult {
@@ -550,7 +574,7 @@ export class PaperTradingEngine {
   private processActiveOrderAt(market: MarketObservation): void {
     const order = this.activeOrder;
     if (!order) return;
-    if (order.status === "cancel-pending") return;
+    if (order.status === "cancel-pending" || order.cancelPending) return;
     if (order.side === "buy") {
       const pendingReason = pendingBuyRiskReason({
         positionQuantity: this.positionQuantity,
@@ -645,7 +669,7 @@ export class PaperTradingEngine {
     }
 
     const order = this.activeOrder;
-    if (order?.status === "cancel-pending") {
+    if (order?.status === "cancel-pending" || order?.cancelPending) {
       this.recordDecision(market, target, "no-trade", "CANCEL_PENDING_RECONCILIATION");
       return;
     }
@@ -692,6 +716,7 @@ export class PaperTradingEngine {
       referencePriceMinor: market.priceMinor,
       createdAt: market.timestamp,
       createdEventId: market.eventId,
+      cancelPending: false,
       status: riskReason ? "rejected" : "pending",
       ...(riskReason ? { rejectionReason: riskReason } : {}),
     };
@@ -733,14 +758,16 @@ export class PaperTradingEngine {
       quantity: order.quantity,
       filledQuantity: order.filledQuantity,
       remainingQuantity: order.remainingQuantity,
+      ...(order.cancelPending ? { cancelPending: true } : {}),
       ...(reasonCode ? { reasonCode } : {}),
     }));
   }
 
   private cancelActive(timestamp: number, sourceEventId: string, reasonCode: string): void {
     const order = this.activeOrder;
-    if (!order || order.status === "cancel-pending") return;
+    if (!order || order.status === "cancel-pending" || order.cancelPending) return;
     order.status = "cancelled";
+    order.cancelPending = false;
     order.rejectionReason = reasonCode;
     this.activeOrder = null;
     this.recordOrder(order, timestamp, sourceEventId, reasonCode);

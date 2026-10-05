@@ -1,0 +1,2187 @@
+{
+  "schemaVersion": 2,
+  "artifactId": "0050-historical-action-cost-diagnostic-v2",
+  "classification": "RETROSPECTIVE_DIAGNOSTIC_ONLY",
+  "promotionStatus": "NOT_ELIGIBLE_RETROSPECTIVE_DIAGNOSTIC",
+  "unseenHoldoutCount": 0,
+  "configSha256": "311344de3ef252035fcd9d91a49d2af1ad098e0c6b0a11621d9aa4d3a4b8bd6e",
+  "corporateActionsSha256": "f82f4aa3fcc9a19f1dda7cae5d31039e06685f0b450e4a087322e01f518c3e6b",
+  "sourceSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "sourceRowCount": 1599,
+  "evaluationRowCount": 1417,
+  "warmupRowCount": 182,
+  "sourceDateRange": {
+    "start": "2020-01-02",
+    "end": "2026-08-11"
+  },
+  "signalCount": 70,
+  "signals": [
+    {
+      "month": "2020-10",
+      "signalDate": "2020-10-30",
+      "closeMinor": "10300",
+      "comparisonCloseMinor": "10300",
+      "movingAverageNumeratorMinor": "92620",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2020-11",
+      "signalDate": "2020-11-30",
+      "closeMinor": "11330",
+      "comparisonCloseMinor": "11330",
+      "movingAverageNumeratorMinor": "94955",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2020-12",
+      "signalDate": "2020-12-31",
+      "closeMinor": "12225",
+      "comparisonCloseMinor": "12225",
+      "movingAverageNumeratorMinor": "98315",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-01",
+      "signalDate": "2021-01-29",
+      "closeMinor": "12820",
+      "comparisonCloseMinor": "12820",
+      "movingAverageNumeratorMinor": "103520",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-02",
+      "signalDate": "2021-02-26",
+      "closeMinor": "13340",
+      "comparisonCloseMinor": "13340",
+      "movingAverageNumeratorMinor": "108310",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-03",
+      "signalDate": "2021-03-31",
+      "closeMinor": "13475",
+      "comparisonCloseMinor": "13475",
+      "movingAverageNumeratorMinor": "113340",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-04",
+      "signalDate": "2021-04-29",
+      "closeMinor": "14060",
+      "comparisonCloseMinor": "14060",
+      "movingAverageNumeratorMinor": "118410",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-05",
+      "signalDate": "2021-05-31",
+      "closeMinor": "13710",
+      "comparisonCloseMinor": "13710",
+      "movingAverageNumeratorMinor": "121740",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-06",
+      "signalDate": "2021-06-30",
+      "closeMinor": "13895",
+      "comparisonCloseMinor": "13895",
+      "movingAverageNumeratorMinor": "125455",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-07",
+      "signalDate": "2021-07-30",
+      "closeMinor": "13605",
+      "comparisonCloseMinor": "13605",
+      "movingAverageNumeratorMinor": "128760",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-08",
+      "signalDate": "2021-08-31",
+      "closeMinor": "14035",
+      "comparisonCloseMinor": "14035",
+      "movingAverageNumeratorMinor": "132495",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-09",
+      "signalDate": "2021-09-30",
+      "closeMinor": "13705",
+      "comparisonCloseMinor": "13705",
+      "movingAverageNumeratorMinor": "134870",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-10",
+      "signalDate": "2021-10-29",
+      "closeMinor": "13580",
+      "comparisonCloseMinor": "13580",
+      "movingAverageNumeratorMinor": "136225",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2021-11",
+      "signalDate": "2021-11-30",
+      "closeMinor": "13800",
+      "comparisonCloseMinor": "13800",
+      "movingAverageNumeratorMinor": "137205",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2021-12",
+      "signalDate": "2021-12-30",
+      "closeMinor": "14550",
+      "comparisonCloseMinor": "14550",
+      "movingAverageNumeratorMinor": "138415",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2022-01",
+      "signalDate": "2022-01-26",
+      "closeMinor": "14155",
+      "comparisonCloseMinor": "14155",
+      "movingAverageNumeratorMinor": "139095",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2022-02",
+      "signalDate": "2022-02-25",
+      "closeMinor": "13850",
+      "comparisonCloseMinor": "13850",
+      "movingAverageNumeratorMinor": "138885",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-03",
+      "signalDate": "2022-03-31",
+      "closeMinor": "13810",
+      "comparisonCloseMinor": "13810",
+      "movingAverageNumeratorMinor": "138985",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-04",
+      "signalDate": "2022-04-29",
+      "closeMinor": "12875",
+      "comparisonCloseMinor": "12875",
+      "movingAverageNumeratorMinor": "137965",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-05",
+      "signalDate": "2022-05-31",
+      "closeMinor": "12980",
+      "comparisonCloseMinor": "12980",
+      "movingAverageNumeratorMinor": "137340",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-06",
+      "signalDate": "2022-06-30",
+      "closeMinor": "11580",
+      "comparisonCloseMinor": "11580",
+      "movingAverageNumeratorMinor": "134885",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-07",
+      "signalDate": "2022-07-29",
+      "closeMinor": "11800",
+      "comparisonCloseMinor": "11800",
+      "movingAverageNumeratorMinor": "132980",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-08",
+      "signalDate": "2022-08-31",
+      "closeMinor": "11760",
+      "comparisonCloseMinor": "11760",
+      "movingAverageNumeratorMinor": "131160",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-09",
+      "signalDate": "2022-09-30",
+      "closeMinor": "10345",
+      "comparisonCloseMinor": "10345",
+      "movingAverageNumeratorMinor": "127705",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-10",
+      "signalDate": "2022-10-31",
+      "closeMinor": "9905",
+      "comparisonCloseMinor": "9905",
+      "movingAverageNumeratorMinor": "123060",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-11",
+      "signalDate": "2022-11-30",
+      "closeMinor": "11635",
+      "comparisonCloseMinor": "11635",
+      "movingAverageNumeratorMinor": "120540",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2022-12",
+      "signalDate": "2022-12-30",
+      "closeMinor": "11020",
+      "comparisonCloseMinor": "11020",
+      "movingAverageNumeratorMinor": "117710",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2023-01",
+      "signalDate": "2023-01-31",
+      "closeMinor": "11830",
+      "comparisonCloseMinor": "11830",
+      "movingAverageNumeratorMinor": "115730",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-02",
+      "signalDate": "2023-02-24",
+      "closeMinor": "11880",
+      "comparisonCloseMinor": "11880",
+      "movingAverageNumeratorMinor": "114735",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-03",
+      "signalDate": "2023-03-31",
+      "closeMinor": "12160",
+      "comparisonCloseMinor": "12160",
+      "movingAverageNumeratorMinor": "113915",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-04",
+      "signalDate": "2023-04-28",
+      "closeMinor": "11740",
+      "comparisonCloseMinor": "11740",
+      "movingAverageNumeratorMinor": "114075",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-05",
+      "signalDate": "2023-05-31",
+      "closeMinor": "12615",
+      "comparisonCloseMinor": "12615",
+      "movingAverageNumeratorMinor": "114890",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-06",
+      "signalDate": "2023-06-30",
+      "closeMinor": "12910",
+      "comparisonCloseMinor": "12910",
+      "movingAverageNumeratorMinor": "116040",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-07",
+      "signalDate": "2023-07-31",
+      "closeMinor": "12880",
+      "comparisonCloseMinor": "12880",
+      "movingAverageNumeratorMinor": "118575",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-08",
+      "signalDate": "2023-08-31",
+      "closeMinor": "12570",
+      "comparisonCloseMinor": "12570",
+      "movingAverageNumeratorMinor": "121240",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-09",
+      "signalDate": "2023-09-28",
+      "closeMinor": "12265",
+      "comparisonCloseMinor": "12265",
+      "movingAverageNumeratorMinor": "121870",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-10",
+      "signalDate": "2023-10-31",
+      "closeMinor": "12115",
+      "comparisonCloseMinor": "12115",
+      "movingAverageNumeratorMinor": "122965",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2023-11",
+      "signalDate": "2023-11-30",
+      "closeMinor": "13135",
+      "comparisonCloseMinor": "13135",
+      "movingAverageNumeratorMinor": "124270",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2023-12",
+      "signalDate": "2023-12-29",
+      "closeMinor": "13545",
+      "comparisonCloseMinor": "13545",
+      "movingAverageNumeratorMinor": "125935",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-01",
+      "signalDate": "2024-01-31",
+      "closeMinor": "13435",
+      "comparisonCloseMinor": "13435",
+      "movingAverageNumeratorMinor": "127210",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-02",
+      "signalDate": "2024-02-29",
+      "closeMinor": "14330",
+      "comparisonCloseMinor": "14330",
+      "movingAverageNumeratorMinor": "129800",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-03",
+      "signalDate": "2024-03-29",
+      "closeMinor": "15790",
+      "comparisonCloseMinor": "15790",
+      "movingAverageNumeratorMinor": "132975",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-04",
+      "signalDate": "2024-04-30",
+      "closeMinor": "15825",
+      "comparisonCloseMinor": "15825",
+      "movingAverageNumeratorMinor": "135890",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-05",
+      "signalDate": "2024-05-31",
+      "closeMinor": "16600",
+      "comparisonCloseMinor": "16600",
+      "movingAverageNumeratorMinor": "139610",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-06",
+      "signalDate": "2024-06-28",
+      "closeMinor": "18645",
+      "comparisonCloseMinor": "18645",
+      "movingAverageNumeratorMinor": "145685",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-07",
+      "signalDate": "2024-07-31",
+      "closeMinor": "18085",
+      "comparisonCloseMinor": "18085",
+      "movingAverageNumeratorMinor": "151505",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-08",
+      "signalDate": "2024-08-30",
+      "closeMinor": "18135",
+      "comparisonCloseMinor": "18135",
+      "movingAverageNumeratorMinor": "157525",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-09",
+      "signalDate": "2024-09-30",
+      "closeMinor": "18395",
+      "comparisonCloseMinor": "18395",
+      "movingAverageNumeratorMinor": "162785",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-10",
+      "signalDate": "2024-10-30",
+      "closeMinor": "19180",
+      "comparisonCloseMinor": "19180",
+      "movingAverageNumeratorMinor": "168420",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-11",
+      "signalDate": "2024-11-29",
+      "closeMinor": "18725",
+      "comparisonCloseMinor": "18725",
+      "movingAverageNumeratorMinor": "173710",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2024-12",
+      "signalDate": "2024-12-31",
+      "closeMinor": "19575",
+      "comparisonCloseMinor": "19575",
+      "movingAverageNumeratorMinor": "178955",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-01",
+      "signalDate": "2025-01-22",
+      "closeMinor": "20130",
+      "comparisonCloseMinor": "20130",
+      "movingAverageNumeratorMinor": "183295",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-02",
+      "signalDate": "2025-02-27",
+      "closeMinor": "19250",
+      "comparisonCloseMinor": "19250",
+      "movingAverageNumeratorMinor": "186720",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-03",
+      "signalDate": "2025-03-31",
+      "closeMinor": "17275",
+      "comparisonCloseMinor": "17275",
+      "movingAverageNumeratorMinor": "187395",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2025-04",
+      "signalDate": "2025-04-30",
+      "closeMinor": "16860",
+      "comparisonCloseMinor": "16860",
+      "movingAverageNumeratorMinor": "185610",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2025-05",
+      "signalDate": "2025-05-29",
+      "closeMinor": "17975",
+      "comparisonCloseMinor": "17975",
+      "movingAverageNumeratorMinor": "185500",
+      "movingAverageDenominator": 10,
+      "relation": "BELOW",
+      "targetPositionQuantity": 0
+    },
+    {
+      "month": "2025-06",
+      "signalDate": "2025-06-30",
+      "closeMinor": "4836",
+      "comparisonCloseMinor": "19344",
+      "movingAverageNumeratorMinor": "186709",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-07",
+      "signalDate": "2025-07-31",
+      "closeMinor": "5155",
+      "comparisonCloseMinor": "20620",
+      "movingAverageNumeratorMinor": "188934",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-08",
+      "signalDate": "2025-08-29",
+      "closeMinor": "5250",
+      "comparisonCloseMinor": "21000",
+      "movingAverageNumeratorMinor": "190754",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-09",
+      "signalDate": "2025-09-30",
+      "closeMinor": "5780",
+      "comparisonCloseMinor": "23120",
+      "movingAverageNumeratorMinor": "195149",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-10",
+      "signalDate": "2025-10-31",
+      "closeMinor": "6475",
+      "comparisonCloseMinor": "25900",
+      "movingAverageNumeratorMinor": "201474",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-11",
+      "signalDate": "2025-11-28",
+      "closeMinor": "6235",
+      "comparisonCloseMinor": "24940",
+      "movingAverageNumeratorMinor": "206284",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2025-12",
+      "signalDate": "2025-12-31",
+      "closeMinor": "6560",
+      "comparisonCloseMinor": "26240",
+      "movingAverageNumeratorMinor": "213274",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-01",
+      "signalDate": "2026-01-30",
+      "closeMinor": "7260",
+      "comparisonCloseMinor": "29040",
+      "movingAverageNumeratorMinor": "225039",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-02",
+      "signalDate": "2026-02-26",
+      "closeMinor": "8115",
+      "comparisonCloseMinor": "32460",
+      "movingAverageNumeratorMinor": "240639",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-03",
+      "signalDate": "2026-03-31",
+      "closeMinor": "7235",
+      "comparisonCloseMinor": "28940",
+      "movingAverageNumeratorMinor": "251604",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-04",
+      "signalDate": "2026-04-30",
+      "closeMinor": "9050",
+      "comparisonCloseMinor": "36200",
+      "movingAverageNumeratorMinor": "268460",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-05",
+      "signalDate": "2026-05-29",
+      "closeMinor": "10540",
+      "comparisonCloseMinor": "42160",
+      "movingAverageNumeratorMinor": "290000",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-06",
+      "signalDate": "2026-06-30",
+      "closeMinor": "10780",
+      "comparisonCloseMinor": "43120",
+      "movingAverageNumeratorMinor": "312120",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    },
+    {
+      "month": "2026-07",
+      "signalDate": "2026-07-31",
+      "closeMinor": "10285",
+      "comparisonCloseMinor": "41140",
+      "movingAverageNumeratorMinor": "330140",
+      "movingAverageDenominator": 10,
+      "relation": "ABOVE",
+      "targetPositionQuantity": 3
+    }
+  ],
+  "corporateActions": {
+    "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3",
+    "sourcePageSha256": "d1976ad3d7723d58d30d2e579e963c898d1ae2f09573eb404924e510abe12a37",
+    "eventCount": 14,
+    "events": [
+      {
+        "exDate": "2020-01-31",
+        "payDate": "2020-03-06",
+        "amountPerShareMinor": "290",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2020/01/31",
+          "PAY_DATE": "2020/03/06",
+          "DIVIDEN_PER_UNIT": 2.9
+        }
+      },
+      {
+        "exDate": "2020-07-21",
+        "payDate": "2020-08-24",
+        "amountPerShareMinor": "70",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2020/07/21",
+          "PAY_DATE": "2020/08/24",
+          "DIVIDEN_PER_UNIT": 0.7
+        }
+      },
+      {
+        "exDate": "2021-01-22",
+        "payDate": "2021-03-09",
+        "amountPerShareMinor": "305",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2021/01/22",
+          "PAY_DATE": "2021/03/09",
+          "DIVIDEN_PER_UNIT": 3.05
+        }
+      },
+      {
+        "exDate": "2021-07-21",
+        "payDate": "2021-08-24",
+        "amountPerShareMinor": "35",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2021/07/21",
+          "PAY_DATE": "2021/08/24",
+          "DIVIDEN_PER_UNIT": 0.35
+        }
+      },
+      {
+        "exDate": "2022-01-21",
+        "payDate": "2022-03-04",
+        "amountPerShareMinor": "320",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2022/01/21",
+          "PAY_DATE": "2022/03/04",
+          "DIVIDEN_PER_UNIT": 3.2
+        }
+      },
+      {
+        "exDate": "2022-07-18",
+        "payDate": "2022-08-19",
+        "amountPerShareMinor": "180",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2022/07/18",
+          "PAY_DATE": "2022/08/19",
+          "DIVIDEN_PER_UNIT": 1.8
+        }
+      },
+      {
+        "exDate": "2023-01-30",
+        "payDate": "2023-03-07",
+        "amountPerShareMinor": "260",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2023/01/30",
+          "PAY_DATE": "2023/03/07",
+          "DIVIDEN_PER_UNIT": 2.6
+        }
+      },
+      {
+        "exDate": "2023-07-18",
+        "payDate": "2023-08-11",
+        "amountPerShareMinor": "190",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2023/07/18",
+          "PAY_DATE": "2023/08/11",
+          "DIVIDEN_PER_UNIT": 1.9
+        }
+      },
+      {
+        "exDate": "2024-01-17",
+        "payDate": "2024-02-21",
+        "amountPerShareMinor": "300",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2024/01/17",
+          "PAY_DATE": "2024/02/21",
+          "DIVIDEN_PER_UNIT": 3
+        }
+      },
+      {
+        "exDate": "2024-07-16",
+        "payDate": "2024-08-09",
+        "amountPerShareMinor": "100",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2024/07/16",
+          "PAY_DATE": "2024/08/09",
+          "DIVIDEN_PER_UNIT": 1
+        }
+      },
+      {
+        "exDate": "2025-01-17",
+        "payDate": "2025-02-20",
+        "amountPerShareMinor": "270",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2025/01/17",
+          "PAY_DATE": "2025/02/20",
+          "DIVIDEN_PER_UNIT": 2.7
+        }
+      },
+      {
+        "exDate": "2025-07-21",
+        "payDate": "2025-08-08",
+        "amountPerShareMinor": "36",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2025/07/21",
+          "PAY_DATE": "2025/08/08",
+          "DIVIDEN_PER_UNIT": 0.36
+        }
+      },
+      {
+        "exDate": "2026-01-22",
+        "payDate": "2026-02-11",
+        "amountPerShareMinor": "100",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2026/01/22",
+          "PAY_DATE": "2026/02/11",
+          "DIVIDEN_PER_UNIT": 1
+        }
+      },
+      {
+        "exDate": "2026-07-21",
+        "payDate": "2026-08-10",
+        "amountPerShareMinor": "60",
+        "sourceRecord": {
+          "FUND_ID": "1066",
+          "FUND_SH_NM": "元大台灣卓越50基金",
+          "SHARE_DATE": "2026/07/21",
+          "PAY_DATE": "2026/08/10",
+          "DIVIDEN_PER_UNIT": 0.6
+        }
+      }
+    ]
+  },
+  "economics": {
+    "initialCapitalMinor": "100000",
+    "feeBps": 30,
+    "slippageBps": 100,
+    "sellTransactionTaxBps": 10,
+    "taxRounding": "CONSERVATIVE_CEIL_TWD_PER_FILL_WITH_FLOOR_BOUND",
+    "cashYield": 0,
+    "dividendReinvestment": false,
+    "personalDividendTax": "UNKNOWN; COMMON_EVENT_HAIRCUT_0_TO_100_PERCENT_SENSITIVITY",
+    "brokerMinimumFee": "UNKNOWN; EXISTING_30_BPS_SIMULATED_COMMISSION_ONLY"
+  },
+  "split": {
+    "effectiveDate": "2025-06-18",
+    "ratio": 4,
+    "source": "https://www.twse.com.tw/zh/ETFortune/announcement?company=A00005&date=20250617&fund=0050&seq=1&type=other",
+    "treatment": "Indicator uses pre-split units. Independent raw-share portfolios reset at split boundary; no holding spans split. No compounded aggregate return."
+  },
+  "windowPolicy": "Calendar years; split year partitioned at verified boundary. First nine months warm up. Same initial cash and raw 3-share target in both arms. First event uses last completed signal if available, then month-end decisions only. Unfilled end orders and open holdings reported, no forced liquidation.",
+  "signalBasis": "Raw close, split-normalized; dividends credited separately; zero cash yield. Fixed adaptation, not replication of total-return/T-bill source paper.",
+  "results": [
+    {
+      "id": "2020-Q4",
+      "startDate": "2020-10-05",
+      "endDate": "2020-12-31",
+      "rowCount": 63,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "105249",
+        "netReturnBeforePersonalDividendTaxFraction": "0.05249000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00860511",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "94",
+        "simulatedSlippageCostMinor": "312",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "0",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [],
+        "decisions": {
+          "noTrade": 62,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 62,
+          "ORDER_ACCEPTED": 1
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2020-11-02",
+        "markedPositionValueAtCutoffMinor": "36675",
+        "investedSessionCount": 44,
+        "evaluatedSessionCount": 63,
+        "adjustedExecutionCashAtCutoffMinor": "68574",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "104990",
+        "netReturnBeforePersonalDividendTaxFraction": "0.04990000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01224551",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "95",
+        "simulatedSlippageCostMinor": "315",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "0",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [],
+        "decisions": {
+          "noTrade": 62,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 62
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2020-10-06",
+        "markedPositionValueAtCutoffMinor": "36675",
+        "investedSessionCount": 62,
+        "evaluatedSessionCount": 63,
+        "adjustedExecutionCashAtCutoffMinor": "68315",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 3,
+      "carriedSignalAtStart": null,
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "259",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "0.00259000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "259",
+          "upper": "259"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "0.00259000",
+          "upper": "0.00259000"
+        },
+        "directionAcrossModeledTaxBounds": "CANDIDATE_HIGHER",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2021",
+      "startDate": "2021-01-04",
+      "endDate": "2021-12-30",
+      "rowCount": 244,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "104477",
+        "netReturnBeforePersonalDividendTaxFraction": "0.04477000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+        "completedTradeCount": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": 1,
+        "completedTrades": [
+          {
+            "netPnlMinor": "3468",
+            "distributionIncomeMinor": "1020",
+            "closedDate": "2021-11-01"
+          }
+        ],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "DESCRIPTIVE_COMPLETED_TRADES",
+        "feesPaidMinor": "364",
+        "simulatedSlippageCostMinor": "1209",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "100",
+        "distributionCashMinor": "1020",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2021-01-22",
+            "payDate": "2021-03-09",
+            "amountPerShareMinor": "305",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2021/01/22",
+              "PAY_DATE": "2021/03/09",
+              "DIVIDEN_PER_UNIT": 3.05
+            },
+            "observedBookingDate": "2021-01-22",
+            "entitledQuantity": 3,
+            "entitlementMinor": "915"
+          },
+          {
+            "exDate": "2021-07-21",
+            "payDate": "2021-08-24",
+            "amountPerShareMinor": "35",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2021/07/21",
+              "PAY_DATE": "2021/08/24",
+              "DIVIDEN_PER_UNIT": 0.35
+            },
+            "observedBookingDate": "2021-07-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "105"
+          }
+        ],
+        "decisions": {
+          "noTrade": 241,
+          "submitted": 3,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 3,
+          "NO_POSITION_CHANGE": 241
+        },
+        "fillCount": 3,
+        "firstInvestedDate": "2021-01-05",
+        "markedPositionValueAtCutoffMinor": "43650",
+        "investedSessionCount": 221,
+        "evaluatedSessionCount": 244,
+        "adjustedExecutionCashAtCutoffMinor": "59807",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "106801",
+        "netReturnBeforePersonalDividendTaxFraction": "0.06801000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "114",
+        "simulatedSlippageCostMinor": "375",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "1020",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2021-01-22",
+            "payDate": "2021-03-09",
+            "amountPerShareMinor": "305",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2021/01/22",
+              "PAY_DATE": "2021/03/09",
+              "DIVIDEN_PER_UNIT": 3.05
+            },
+            "observedBookingDate": "2021-01-22",
+            "entitledQuantity": 3,
+            "entitlementMinor": "915"
+          },
+          {
+            "exDate": "2021-07-21",
+            "payDate": "2021-08-24",
+            "amountPerShareMinor": "35",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2021/07/21",
+              "PAY_DATE": "2021/08/24",
+              "DIVIDEN_PER_UNIT": 0.35
+            },
+            "observedBookingDate": "2021-07-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "105"
+          }
+        ],
+        "decisions": {
+          "noTrade": 243,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 243
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2021-01-05",
+        "markedPositionValueAtCutoffMinor": "43650",
+        "investedSessionCount": 243,
+        "evaluatedSessionCount": 244,
+        "adjustedExecutionCashAtCutoffMinor": "62131",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 12,
+      "carriedSignalAtStart": {
+        "month": "2020-12",
+        "signalDate": "2020-12-31",
+        "closeMinor": "12225",
+        "comparisonCloseMinor": "12225",
+        "movingAverageNumeratorMinor": "98315",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "-2324",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "-0.02324000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "-2324",
+          "upper": "-2224"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "-0.02324000",
+          "upper": "-0.02224000"
+        },
+        "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2022",
+      "startDate": "2022-01-03",
+      "endDate": "2022-12-30",
+      "rowCount": 246,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "96980",
+        "netReturnBeforePersonalDividendTaxFraction": "-0.03020000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.03149779",
+        "completedTradeCount": 1,
+        "wins": 0,
+        "losses": 1,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": 0,
+        "completedTrades": [
+          {
+            "netPnlMinor": "-3020",
+            "distributionIncomeMinor": "960",
+            "closedDate": "2022-03-01"
+          }
+        ],
+        "openPositionQuantity": 0,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "DESCRIPTIVE_COMPLETED_TRADES",
+        "feesPaidMinor": "262",
+        "simulatedSlippageCostMinor": "873",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "100",
+        "distributionCashMinor": "960",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2022-01-21",
+            "payDate": "2022-03-04",
+            "amountPerShareMinor": "320",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2022/01/21",
+              "PAY_DATE": "2022/03/04",
+              "DIVIDEN_PER_UNIT": 3.2
+            },
+            "observedBookingDate": "2022-01-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "960"
+          },
+          {
+            "exDate": "2022-07-18",
+            "payDate": "2022-08-19",
+            "amountPerShareMinor": "180",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2022/07/18",
+              "PAY_DATE": "2022/08/19",
+              "DIVIDEN_PER_UNIT": 1.8
+            },
+            "observedBookingDate": "2022-07-18",
+            "entitledQuantity": 0,
+            "entitlementMinor": "0"
+          }
+        ],
+        "decisions": {
+          "noTrade": 244,
+          "submitted": 2,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 2,
+          "NO_POSITION_CHANGE": 244
+        },
+        "fillCount": 2,
+        "firstInvestedDate": "2022-01-04",
+        "markedPositionValueAtCutoffMinor": "0",
+        "investedSessionCount": 32,
+        "evaluatedSessionCount": 246,
+        "adjustedExecutionCashAtCutoffMinor": "96020",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "89094",
+        "netReturnBeforePersonalDividendTaxFraction": "-0.10906000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.15069806",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "136",
+        "simulatedSlippageCostMinor": "450",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "1500",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2022-01-21",
+            "payDate": "2022-03-04",
+            "amountPerShareMinor": "320",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2022/01/21",
+              "PAY_DATE": "2022/03/04",
+              "DIVIDEN_PER_UNIT": 3.2
+            },
+            "observedBookingDate": "2022-01-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "960"
+          },
+          {
+            "exDate": "2022-07-18",
+            "payDate": "2022-08-19",
+            "amountPerShareMinor": "180",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2022/07/18",
+              "PAY_DATE": "2022/08/19",
+              "DIVIDEN_PER_UNIT": 1.8
+            },
+            "observedBookingDate": "2022-07-18",
+            "entitledQuantity": 3,
+            "entitlementMinor": "540"
+          }
+        ],
+        "decisions": {
+          "noTrade": 245,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 245
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2022-01-04",
+        "markedPositionValueAtCutoffMinor": "33060",
+        "investedSessionCount": 245,
+        "evaluatedSessionCount": 246,
+        "adjustedExecutionCashAtCutoffMinor": "54534",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 12,
+      "carriedSignalAtStart": {
+        "month": "2021-12",
+        "signalDate": "2021-12-30",
+        "closeMinor": "14550",
+        "comparisonCloseMinor": "14550",
+        "movingAverageNumeratorMinor": "138415",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "7886",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "0.07886000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "7886",
+          "upper": "8526"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "0.07886000",
+          "upper": "0.08526000"
+        },
+        "directionAcrossModeledTaxBounds": "CANDIDATE_HIGHER",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2023",
+      "startDate": "2023-01-03",
+      "endDate": "2023-12-29",
+      "rowCount": 239,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "100933",
+        "netReturnBeforePersonalDividendTaxFraction": "0.00933000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04068245",
+        "completedTradeCount": 1,
+        "wins": 1,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": 1,
+        "completedTrades": [
+          {
+            "netPnlMinor": "354",
+            "distributionIncomeMinor": "570",
+            "closedDate": "2023-11-01"
+          }
+        ],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "DESCRIPTIVE_COMPLETED_TRADES",
+        "feesPaidMinor": "338",
+        "simulatedSlippageCostMinor": "1119",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "100",
+        "distributionCashMinor": "570",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2023-01-30",
+            "payDate": "2023-03-07",
+            "amountPerShareMinor": "260",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2023/01/30",
+              "PAY_DATE": "2023/03/07",
+              "DIVIDEN_PER_UNIT": 2.6
+            },
+            "observedBookingDate": "2023-01-30",
+            "entitledQuantity": 0,
+            "entitlementMinor": "0"
+          },
+          {
+            "exDate": "2023-07-18",
+            "payDate": "2023-08-11",
+            "amountPerShareMinor": "190",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2023/07/18",
+              "PAY_DATE": "2023/08/11",
+              "DIVIDEN_PER_UNIT": 1.9
+            },
+            "observedBookingDate": "2023-07-18",
+            "entitledQuantity": 3,
+            "entitlementMinor": "570"
+          }
+        ],
+        "decisions": {
+          "noTrade": 236,
+          "submitted": 3,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 236,
+          "ORDER_ACCEPTED": 3
+        },
+        "fillCount": 3,
+        "firstInvestedDate": "2023-02-01",
+        "markedPositionValueAtCutoffMinor": "40635",
+        "investedSessionCount": 204,
+        "evaluatedSessionCount": 239,
+        "adjustedExecutionCashAtCutoffMinor": "59728",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "108401",
+        "netReturnBeforePersonalDividendTaxFraction": "0.08401000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02582553",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "101",
+        "simulatedSlippageCostMinor": "333",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "1350",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2023-01-30",
+            "payDate": "2023-03-07",
+            "amountPerShareMinor": "260",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2023/01/30",
+              "PAY_DATE": "2023/03/07",
+              "DIVIDEN_PER_UNIT": 2.6
+            },
+            "observedBookingDate": "2023-01-30",
+            "entitledQuantity": 3,
+            "entitlementMinor": "780"
+          },
+          {
+            "exDate": "2023-07-18",
+            "payDate": "2023-08-11",
+            "amountPerShareMinor": "190",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2023/07/18",
+              "PAY_DATE": "2023/08/11",
+              "DIVIDEN_PER_UNIT": 1.9
+            },
+            "observedBookingDate": "2023-07-18",
+            "entitledQuantity": 3,
+            "entitlementMinor": "570"
+          }
+        ],
+        "decisions": {
+          "noTrade": 238,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 238
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2023-01-04",
+        "markedPositionValueAtCutoffMinor": "40635",
+        "investedSessionCount": 238,
+        "evaluatedSessionCount": 239,
+        "adjustedExecutionCashAtCutoffMinor": "66416",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 12,
+      "carriedSignalAtStart": {
+        "month": "2022-12",
+        "signalDate": "2022-12-30",
+        "closeMinor": "11020",
+        "comparisonCloseMinor": "11020",
+        "movingAverageNumeratorMinor": "117710",
+        "movingAverageDenominator": 10,
+        "relation": "BELOW",
+        "targetPositionQuantity": 0
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "-7468",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "-0.07468000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "-7468",
+          "upper": "-6588"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "-0.07468000",
+          "upper": "-0.06588000"
+        },
+        "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2024",
+      "startDate": "2024-01-02",
+      "endDate": "2024-12-31",
+      "rowCount": 242,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "119640",
+        "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "121",
+        "simulatedSlippageCostMinor": "399",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "1200",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2024-01-17",
+            "payDate": "2024-02-21",
+            "amountPerShareMinor": "300",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2024/01/17",
+              "PAY_DATE": "2024/02/21",
+              "DIVIDEN_PER_UNIT": 3
+            },
+            "observedBookingDate": "2024-01-17",
+            "entitledQuantity": 3,
+            "entitlementMinor": "900"
+          },
+          {
+            "exDate": "2024-07-16",
+            "payDate": "2024-08-09",
+            "amountPerShareMinor": "100",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2024/07/16",
+              "PAY_DATE": "2024/08/09",
+              "DIVIDEN_PER_UNIT": 1
+            },
+            "observedBookingDate": "2024-07-16",
+            "entitledQuantity": 3,
+            "entitlementMinor": "300"
+          }
+        ],
+        "decisions": {
+          "noTrade": 241,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 241
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2024-01-03",
+        "markedPositionValueAtCutoffMinor": "58725",
+        "investedSessionCount": 241,
+        "evaluatedSessionCount": 242,
+        "adjustedExecutionCashAtCutoffMinor": "59715",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "119640",
+        "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "121",
+        "simulatedSlippageCostMinor": "399",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "1200",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2024-01-17",
+            "payDate": "2024-02-21",
+            "amountPerShareMinor": "300",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2024/01/17",
+              "PAY_DATE": "2024/02/21",
+              "DIVIDEN_PER_UNIT": 3
+            },
+            "observedBookingDate": "2024-01-17",
+            "entitledQuantity": 3,
+            "entitlementMinor": "900"
+          },
+          {
+            "exDate": "2024-07-16",
+            "payDate": "2024-08-09",
+            "amountPerShareMinor": "100",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2024/07/16",
+              "PAY_DATE": "2024/08/09",
+              "DIVIDEN_PER_UNIT": 1
+            },
+            "observedBookingDate": "2024-07-16",
+            "entitledQuantity": 3,
+            "entitlementMinor": "300"
+          }
+        ],
+        "decisions": {
+          "noTrade": 241,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 241
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2024-01-03",
+        "markedPositionValueAtCutoffMinor": "58725",
+        "investedSessionCount": 241,
+        "evaluatedSessionCount": 242,
+        "adjustedExecutionCashAtCutoffMinor": "59715",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 12,
+      "carriedSignalAtStart": {
+        "month": "2023-12",
+        "signalDate": "2023-12-29",
+        "closeMinor": "13545",
+        "comparisonCloseMinor": "13545",
+        "movingAverageNumeratorMinor": "125935",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "0",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "0",
+          "upper": "0"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "0.00000000",
+          "upper": "0.00000000"
+        },
+        "directionAcrossModeledTaxBounds": "INDETERMINATE",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2025-pre-split",
+      "startDate": "2025-01-02",
+      "endDate": "2025-06-10",
+      "rowCount": 102,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "100000",
+        "netReturnBeforePersonalDividendTaxFraction": "0.00000000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00000000",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 0,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "RISK_REJECTED_WITHOUT_COMPLETED_TRADE",
+        "feesPaidMinor": "0",
+        "simulatedSlippageCostMinor": "0",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "0",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2025-01-17",
+            "payDate": "2025-02-20",
+            "amountPerShareMinor": "270",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2025/01/17",
+              "PAY_DATE": "2025/02/20",
+              "DIVIDEN_PER_UNIT": 2.7
+            },
+            "observedBookingDate": "2025-01-17",
+            "entitledQuantity": 0,
+            "entitlementMinor": "0"
+          }
+        ],
+        "decisions": {
+          "noTrade": 99,
+          "submitted": 0,
+          "riskRejected": 3
+        },
+        "reasonCodeCounts": {
+          "MAX_EXPOSURE_EXCEEDED": 3,
+          "NO_POSITION_CHANGE": 99
+        },
+        "fillCount": 0,
+        "firstInvestedDate": null,
+        "markedPositionValueAtCutoffMinor": "0",
+        "investedSessionCount": 0,
+        "evaluatedSessionCount": 102,
+        "adjustedExecutionCashAtCutoffMinor": "100000",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "110018",
+        "netReturnBeforePersonalDividendTaxFraction": "0.10018000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02737120",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "140",
+        "simulatedSlippageCostMinor": "462",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "0",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2025-01-17",
+            "payDate": "2025-02-20",
+            "amountPerShareMinor": "270",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2025/01/17",
+              "PAY_DATE": "2025/02/20",
+              "DIVIDEN_PER_UNIT": 2.7
+            },
+            "observedBookingDate": "2025-01-17",
+            "entitledQuantity": 0,
+            "entitlementMinor": "0"
+          }
+        ],
+        "decisions": {
+          "noTrade": 44,
+          "submitted": 1,
+          "riskRejected": 57
+        },
+        "reasonCodeCounts": {
+          "MAX_EXPOSURE_EXCEEDED": 57,
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 44
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2025-04-08",
+        "markedPositionValueAtCutoffMinor": "56595",
+        "investedSessionCount": 44,
+        "evaluatedSessionCount": 102,
+        "adjustedExecutionCashAtCutoffMinor": "53423",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 5,
+      "carriedSignalAtStart": {
+        "month": "2024-12",
+        "signalDate": "2024-12-31",
+        "closeMinor": "19575",
+        "comparisonCloseMinor": "19575",
+        "movingAverageNumeratorMinor": "178955",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "-10018",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "-0.10018000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "-10018",
+          "upper": "-10018"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "-0.10018000",
+          "upper": "-0.10018000"
+        },
+        "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2025-post-split",
+      "startDate": "2025-06-18",
+      "endDate": "2025-12-31",
+      "rowCount": 136,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "105004",
+        "netReturnBeforePersonalDividendTaxFraction": "0.05004000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01489274",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "45",
+        "simulatedSlippageCostMinor": "147",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "108",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2025-07-21",
+            "payDate": "2025-08-08",
+            "amountPerShareMinor": "36",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2025/07/21",
+              "PAY_DATE": "2025/08/08",
+              "DIVIDEN_PER_UNIT": 0.36
+            },
+            "observedBookingDate": "2025-07-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "108"
+          }
+        ],
+        "decisions": {
+          "noTrade": 135,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 135,
+          "ORDER_ACCEPTED": 1
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2025-07-01",
+        "markedPositionValueAtCutoffMinor": "19680",
+        "investedSessionCount": 127,
+        "evaluatedSessionCount": 136,
+        "adjustedExecutionCashAtCutoffMinor": "85216",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "105471",
+        "netReturnBeforePersonalDividendTaxFraction": "0.05471000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01482664",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "43",
+        "simulatedSlippageCostMinor": "144",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "108",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2025-07-21",
+            "payDate": "2025-08-08",
+            "amountPerShareMinor": "36",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2025/07/21",
+              "PAY_DATE": "2025/08/08",
+              "DIVIDEN_PER_UNIT": 0.36
+            },
+            "observedBookingDate": "2025-07-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "108"
+          }
+        ],
+        "decisions": {
+          "noTrade": 135,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 135
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2025-06-19",
+        "markedPositionValueAtCutoffMinor": "19680",
+        "investedSessionCount": 135,
+        "evaluatedSessionCount": 136,
+        "adjustedExecutionCashAtCutoffMinor": "85683",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 7,
+      "carriedSignalAtStart": {
+        "month": "2025-05",
+        "signalDate": "2025-05-29",
+        "closeMinor": "17975",
+        "comparisonCloseMinor": "17975",
+        "movingAverageNumeratorMinor": "185500",
+        "movingAverageDenominator": 10,
+        "relation": "BELOW",
+        "targetPositionQuantity": 0
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "-467",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "-0.00467000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "-467",
+          "upper": "-467"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "-0.00467000",
+          "upper": "-0.00467000"
+        },
+        "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    },
+    {
+      "id": "2026-YTD",
+      "startDate": "2026-01-02",
+      "endDate": "2026-08-11",
+      "rowCount": 145,
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "110736",
+        "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "64",
+        "simulatedSlippageCostMinor": "210",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "480",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2026-01-22",
+            "payDate": "2026-02-11",
+            "amountPerShareMinor": "100",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2026/01/22",
+              "PAY_DATE": "2026/02/11",
+              "DIVIDEN_PER_UNIT": 1
+            },
+            "observedBookingDate": "2026-01-22",
+            "entitledQuantity": 3,
+            "entitlementMinor": "300"
+          },
+          {
+            "exDate": "2026-07-21",
+            "payDate": "2026-08-10",
+            "amountPerShareMinor": "60",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2026/07/21",
+              "PAY_DATE": "2026/08/10",
+              "DIVIDEN_PER_UNIT": 0.6
+            },
+            "observedBookingDate": "2026-07-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "180"
+          }
+        ],
+        "decisions": {
+          "noTrade": 144,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 144
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2026-01-05",
+        "markedPositionValueAtCutoffMinor": "31380",
+        "investedSessionCount": 144,
+        "evaluatedSessionCount": 145,
+        "adjustedExecutionCashAtCutoffMinor": "78876",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "110736",
+        "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+        "completedTradeCount": 0,
+        "wins": 0,
+        "losses": 0,
+        "breakevens": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "completedTrades": [],
+        "openPositionQuantity": 3,
+        "pendingOrderCount": 0,
+        "cancelPendingOrderCount": 0,
+        "outcome": "OPEN_POSITION_AT_CUTOFF",
+        "feesPaidMinor": "64",
+        "simulatedSlippageCostMinor": "210",
+        "sellTransactionTaxFloorMinor": "0",
+        "sellTransactionTaxCeilMinor": "0",
+        "distributionCashMinor": "480",
+        "distributionReceivableMinor": "0",
+        "dividendEntitlements": [
+          {
+            "exDate": "2026-01-22",
+            "payDate": "2026-02-11",
+            "amountPerShareMinor": "100",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2026/01/22",
+              "PAY_DATE": "2026/02/11",
+              "DIVIDEN_PER_UNIT": 1
+            },
+            "observedBookingDate": "2026-01-22",
+            "entitledQuantity": 3,
+            "entitlementMinor": "300"
+          },
+          {
+            "exDate": "2026-07-21",
+            "payDate": "2026-08-10",
+            "amountPerShareMinor": "60",
+            "sourceRecord": {
+              "FUND_ID": "1066",
+              "FUND_SH_NM": "元大台灣卓越50基金",
+              "SHARE_DATE": "2026/07/21",
+              "PAY_DATE": "2026/08/10",
+              "DIVIDEN_PER_UNIT": 0.6
+            },
+            "observedBookingDate": "2026-07-21",
+            "entitledQuantity": 3,
+            "entitlementMinor": "180"
+          }
+        ],
+        "decisions": {
+          "noTrade": 144,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 144
+        },
+        "fillCount": 1,
+        "firstInvestedDate": "2026-01-05",
+        "markedPositionValueAtCutoffMinor": "31380",
+        "investedSessionCount": 144,
+        "evaluatedSessionCount": 145,
+        "adjustedExecutionCashAtCutoffMinor": "78876",
+        "interpretation": "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated."
+      },
+      "eligibleSignalCount": 7,
+      "carriedSignalAtStart": {
+        "month": "2025-12",
+        "signalDate": "2025-12-31",
+        "closeMinor": "6560",
+        "comparisonCloseMinor": "26240",
+        "movingAverageNumeratorMinor": "213274",
+        "movingAverageDenominator": 10,
+        "relation": "ABOVE",
+        "targetPositionQuantity": 3
+      },
+      "relativeOutcome": {
+        "endingEquityDeltaMinor": "0",
+        "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+        "taxSensitivityEndingEquityDeltaMinor": {
+          "lower": "0",
+          "upper": "0"
+        },
+        "taxSensitivityExcessReturnFraction": {
+          "lower": "0.00000000",
+          "upper": "0.00000000"
+        },
+        "directionAcrossModeledTaxBounds": "INDETERMINATE",
+        "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+      }
+    }
+  ],
+  "descriptiveWindowCounts": {
+    "denominator": 8,
+    "candidateHigher": 2,
+    "benchmarkHigher": 4,
+    "tiedOrTaxIndeterminate": 2,
+    "interpretation": "Independent descriptive segments; not a statistical success rate or promotion gate."
+  },
+  "interpretationLimits": [
+    "All source prices were already observed; no new holdout or live profit evidence.",
+    "Independent portfolios reset at calendar/split boundaries. Terminal positions are marked and discarded for the next independent experiment, without a synthetic sale. No compounded aggregate return or continuous split-crossing portfolio is claimed.",
+    "Raw 3-share economic exposure differs before and after the split; comparisons are valid within each identical-cost window only.",
+    "The existing maxPositionQuantity=4 and maxExposureMinor=50000 risk limits remain active. Rejected entries are not replaced with synthetic fills.",
+    "Fees/slippage are simulated existing terms. Broker minimum fees and taxpayer distribution composition/rates are unknown. Net performance before personal distribution taxes is not fully after-tax investor performance.",
+    "Source session completeness lacks an exchange-calendar attestation. Monthly closes use the last available row, confirmed by the next calendar month's presence."
+  ]
+}

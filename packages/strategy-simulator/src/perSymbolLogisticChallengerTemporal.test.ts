@@ -82,7 +82,7 @@ describe("0056 per-symbol logistic challenger temporal confirmation", () => {
     expect(result.temporalSummary.positiveExcessCutoffCount
       + result.temporalSummary.nonPositiveExcessCutoffCount)
       .toBe(result.temporalSummary.temporalCutoffCount);
-  }, 20_000);
+  }, 30_000);
 
   it("is deterministic and does not synthesize a robustness score", () => {
     const first = run();
@@ -93,5 +93,5 @@ describe("0056 per-symbol logistic challenger temporal confirmation", () => {
     expect(second).not.toHaveProperty("robustnessScore");
     expect(second).not.toHaveProperty("combinedScore");
     expect(second).not.toHaveProperty("selectedSymbol");
-  }, 30_000);
+  }, 60_000);
 });

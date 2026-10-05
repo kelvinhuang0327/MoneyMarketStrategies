@@ -46,7 +46,8 @@ export type OrderStatus =
   | "partiallyFilled"
   | "filled"
   | "cancelled"
-  | "rejected";
+  | "rejected"
+  | "reconciliationRequired";
 
 export type Fill = Readonly<{
   fillId: string;
@@ -64,7 +65,7 @@ export type OrderStatusSnapshot = Readonly<{
   fills: readonly Fill[];
 }>;
 
-export type OrderReconciliationResult =
+export type ReconciliationResult =
   | Readonly<{
       outcome: "orderFound";
       clientOrderId: string;
@@ -79,6 +80,9 @@ export type OrderReconciliationResult =
       clientOrderId: string;
       reason: string;
     }>;
+
+/** Kept as a descriptive alias for callers that already use this name. */
+export type OrderReconciliationResult = ReconciliationResult;
 
 export type CancelResult =
   | Readonly<{
@@ -155,6 +159,9 @@ export function assertValidOrderIntent(intent: OrderIntent): void {
   }
   if (intent.symbol.trim().length === 0) {
     throw new TypeError("symbol must not be empty");
+  }
+  if (intent.side !== "buy" && intent.side !== "sell") {
+    throw new TypeError("side must be buy or sell");
   }
   if (!Number.isFinite(intent.quantity) || intent.quantity <= 0) {
     throw new TypeError("quantity must be a finite number greater than zero");
