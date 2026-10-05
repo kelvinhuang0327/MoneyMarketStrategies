@@ -310,6 +310,40 @@ function fill(
 }
 
 describe("execution gateway contract", () => {
+
+  it("keeps an unresolved found-order status unknown rather than releasing exposure", async () => {
+    const gateway: ExecutionGateway = new InMemoryFakeGateway();
+    const intent = marketIntent("client-unresolved-found");
+    const acknowledgement = await gateway.submit(intent);
+    if (acknowledgement.status !== "accepted") throw new Error("expected accepted acknowledgement");
+    gateway.reconcile = async (clientOrderId) => ({
+      outcome: "orderFound" as const,
+      clientOrderId,
+      order: {
+        clientOrderId,
+        brokerOrderId: acknowledgement.brokerOrderId,
+        status: "reconciliationRequired" as const,
+        fills: [],
+      },
+    });
+    const outcomes: string[] = [];
+    const session: DurableGatewayOrderSession = {
+      requestExternalCancel: async () => ({ status: "accepted" }),
+      acceptExecutionReport: async () => { throw new Error("there is no fill evidence"); },
+      recordExternalReconciliation: async (value) => {
+        outcomes.push(value.outcome);
+        return { status: "accepted" };
+      },
+    };
+    const receipt = await reconcileGatewayOrder({
+      gateway, session, clientOrderId: intent.clientOrderId,
+      reconciliationEventId: "unresolved-order-query", reconciliationTimestamp: 1234,
+    });
+    expect(receipt.appliedOutcome).toBe("unknown");
+    expect(receipt.fillResults).toEqual([]);
+    expect(outcomes).toEqual(["unknown"]);
+  });
+
   it("accepts and reports a full fill only with explicit fill evidence", async () => {
     const gateway = new InMemoryFakeGateway();
     const intent = marketIntent();

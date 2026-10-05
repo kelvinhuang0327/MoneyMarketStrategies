@@ -765,7 +765,7 @@ export class PaperTradingEngine {
 
   private cancelActive(timestamp: number, sourceEventId: string, reasonCode: string): void {
     const order = this.activeOrder;
-    if (!order || order.status === "cancel-pending" || order.cancelPending) return;
+    if (!order || order.status === "cancel-pending") return;
     order.status = "cancelled";
     order.cancelPending = false;
     order.rejectionReason = reasonCode;
@@ -818,6 +818,7 @@ export class PaperTradingEngine {
   }
 
   private releaseActiveOrder(order: MutableOrder): void {
+    order.cancelPending = false;
     if (this.activeOrder === order) this.activeOrder = null;
   }
 

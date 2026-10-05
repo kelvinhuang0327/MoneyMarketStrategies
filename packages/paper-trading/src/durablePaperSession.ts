@@ -446,13 +446,6 @@ function encodeCommand(command: JournalCommand): Record<string, unknown> {
       clientOrderId: command.payload.clientOrderId,
     };
   }
-  if (command.kind === "cancel-request") {
-    return {
-      eventId: command.payload.eventId,
-      timestamp: command.payload.timestamp,
-      clientOrderId: command.payload.clientOrderId,
-    };
-  }
   if (command.kind === "external-reconciliation") {
     return {
       eventId: command.payload.eventId,
@@ -505,18 +498,6 @@ function decodeCommand(kind: JournalCommand["kind"], value: unknown, schemaVersi
         eventId: nonEmptyString(value["eventId"], "cancel journal payload eventId"),
         timestamp: safeInteger(value["timestamp"], "cancel journal payload timestamp"),
         clientOrderId: nonEmptyString(value["clientOrderId"], "cancel journal payload clientOrderId"),
-      }),
-    });
-  }
-  if (kind === "cancel-request") {
-    if (schemaVersion < JOURNAL_SCHEMA_VERSION) failCorrupt("cancel-request is unsupported in paper journal schema v1");
-    exactKeys(value, "cancel-request journal payload", ["eventId", "timestamp", "clientOrderId"]);
-    return Object.freeze({
-      kind,
-      payload: Object.freeze({
-        eventId: nonEmptyString(value["eventId"], "cancel-request journal payload eventId"),
-        timestamp: safeInteger(value["timestamp"], "cancel-request journal payload timestamp"),
-        clientOrderId: nonEmptyString(value["clientOrderId"], "cancel-request journal payload clientOrderId"),
       }),
     });
   }

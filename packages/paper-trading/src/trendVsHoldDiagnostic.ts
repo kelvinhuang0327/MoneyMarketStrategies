@@ -406,6 +406,9 @@ function fillsByDate(run: JsonRecord): ReadonlyMap<string, readonly Extract<Simu
   const fills = new Map<string, Extract<SimulationEvent, { kind: "fill" }>[] >();
   for (const event of journal as readonly SimulationEvent[]) {
     if (event.kind !== "fill") continue;
+    if (typeof event.sourceMarketEventId !== "string") {
+      throw new TypeError("fill " + event.fillId + " is not associated with a historical market event");
+    }
     const date = dateFromEventId(event.sourceMarketEventId);
     const daily = fills.get(date) ?? [];
     daily.push(event);

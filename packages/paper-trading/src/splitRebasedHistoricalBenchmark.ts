@@ -239,7 +239,9 @@ function fillRowsByDate(run: JsonRecord): ReadonlyMap<string, readonly Simulatio
   const fills = new Map<string, SimulationEvent[]>();
   for (const raw of journal as readonly SimulationEvent[]) {
     if (raw.kind !== "fill") continue;
-    const match = /^historical-0050-(\d{4}-\d{2}-\d{2})$/.exec(raw.sourceMarketEventId);
+    const match = typeof raw.sourceMarketEventId === "string"
+      ? /^historical-0050-(\d{4}-\d{2}-\d{2})$/.exec(raw.sourceMarketEventId)
+      : null;
     if (!match) throw new TypeError(`fill ${raw.fillId} is not associated with a dated 0050 close event`);
     const date = match[1]!;
     const items = fills.get(date) ?? [];

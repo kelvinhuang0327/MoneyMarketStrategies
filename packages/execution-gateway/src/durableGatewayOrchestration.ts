@@ -125,6 +125,17 @@ export async function reconcileGatewayOrder(input: {
     fillResults.push(applied);
   }
 
+  if (result.order.status === "reconciliationRequired") {
+    const lifecycleResult = await input.session.recordExternalReconciliation({
+      eventId: input.reconciliationEventId,
+      timestamp: input.reconciliationTimestamp,
+      clientOrderId: input.clientOrderId,
+      outcome: "unknown",
+    });
+    assertApplied(lifecycleResult, "gateway unresolved order status");
+    return { gatewayResult: result, appliedOutcome: "unknown", fillResults, lifecycleResult };
+  }
+
   const lifecycleResult = await input.session.recordExternalReconciliation({
     eventId: input.reconciliationEventId,
     timestamp: input.reconciliationTimestamp,
