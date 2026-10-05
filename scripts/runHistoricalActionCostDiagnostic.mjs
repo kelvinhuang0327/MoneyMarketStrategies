@@ -10,7 +10,8 @@ const root = fileURLToPath(new URL("../", import.meta.url));
 let cache;
 let server;
 try {
-  if (process.argv.length !== 2) throw new TypeError("CLI overrides are not allowed for the locked diagnostic");
+  const audit = process.argv.length === 3 && process.argv[2] === "--exposure-audit";
+  if (process.argv.length !== 2 && !audit) throw new TypeError("CLI overrides are not allowed for the locked diagnostic");
   cache = await mkdtemp(join(tmpdir(), "mms-actions-v2-vite-"));
   server = await createServer({
     root,
@@ -23,8 +24,17 @@ try {
       "research-runner", "strategy-simulator", "paper-trading",
     ].map((name) => [`@mms/${name}`, resolve(root, `packages/${name}/src/index.ts`)])) },
   });
-  const module = await server.ssrLoadModule("/packages/paper-trading/src/historicalActionCostDiagnostic.ts");
-  const result = await module.runHistoricalActionCostDiagnosticFiles(root);
+  const module = await server.ssrLoadModule(audit ? "/packages/paper-trading/src/historicalExposureAudit.ts" : "/packages/paper-trading/src/historicalActionCostDiagnostic.ts");
+  const result = audit ? await module.runHistoricalExposureAuditFiles(root) : await module.runHistoricalActionCostDiagnosticFiles(root);
+  if (audit) {
+    process.stdout.write(`${JSON.stringify({
+      status: result.classification, outputPath: resolve(root, module.HISTORICAL_EXPOSURE_AUDIT_OUTPUT),
+      originalWindowCounts: result.originalWindowCounts, commonEligibilityWindowCounts: result.commonEligibilityWindowCounts,
+      sameMonthlyOpportunityCounts: result.sameMonthlyOpportunityCounts,
+      positiveAbsoluteAndBenchmarkExcessWindowCount: result.positiveAbsoluteAndBenchmarkExcessWindowCount,
+      researchDisposition: result.researchDisposition,
+    })}\n`);
+  } else {
   process.stdout.write(`${JSON.stringify({
     status: "RETROSPECTIVE_DIAGNOSTIC_ONLY", outputPath: resolve(root, module.HISTORICAL_ACTION_COST_OUTPUT),
     sourceRowCount: result.sourceRowCount, evaluationRowCount: result.evaluationRowCount, warmupRowCount: result.warmupRowCount,
@@ -37,6 +47,7 @@ try {
       relativeOutcome: window.relativeOutcome,
     })),
   })}\n`);
+  }
 } catch (error) {
   process.stdout.write(`${JSON.stringify({ status: "ERROR", code: "HISTORICAL_DIAGNOSTIC_FAILED", reason: error instanceof Error ? error.message : String(error) })}\n`);
   process.exitCode = 1;

@@ -95,6 +95,7 @@ describe("historical actions and matched cost accounting", () => {
       expect((post["candidate"] as Record<string, unknown>)["netReturnBeforePersonalDividendTaxFraction"]).toBe(legacy.results.candidate.chronologicalWindows[0].netReturnFraction);
       expect((post["costMatchedBenchmark"] as Record<string, unknown>)["netReturnBeforePersonalDividendTaxFraction"]).toBe(legacy.results.costMatchedBenchmark.chronologicalWindows[0].netReturnFraction);
       const before = await readFile(join(root, HISTORICAL_ACTION_COST_OUTPUT));
+      expect(before).toEqual(await readFile(HISTORICAL_ACTION_COST_OUTPUT));
       await writeFile(join(root, paths[0]!), "bad input");
       await expect(runHistoricalActionCostDiagnosticFiles(root)).rejects.toThrow("hash");
       expect(await readFile(join(root, HISTORICAL_ACTION_COST_OUTPUT))).toEqual(before);

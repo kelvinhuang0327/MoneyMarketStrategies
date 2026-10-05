@@ -1,0 +1,3740 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "0050-historical-exposure-audit-v1",
+  "classification": "RETROSPECTIVE_DIAGNOSTIC_ONLY",
+  "frozenConfigSha256": "311344de3ef252035fcd9d91a49d2af1ad098e0c6b0a11621d9aa4d3a4b8bd6e",
+  "sourceReportSha256": "9a405894cd7b5df1a399106e035d193f703a39472e8b04e564933b933a9bb45c",
+  "sourceSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "corporateActionsSha256": "f82f4aa3fcc9a19f1dda7cae5d31039e06685f0b450e4a087322e01f518c3e6b",
+  "parameterSearch": false,
+  "frozenStrategyAndRiskUnchanged": true,
+  "sourceReportReconciledWithoutOverwrite": true,
+  "originalEvaluationRowCount": 1417,
+  "commonEligibilityEvaluationRowCount": 1399,
+  "extraInitialWarmupRowCount": 18,
+  "originalWindowCounts": {
+    "denominator": 8,
+    "candidateHigher": 2,
+    "benchmarkHigher": 4,
+    "tiedOrTaxIndeterminate": 2,
+    "interpretation": "Independent descriptive segments; not a statistical success rate or promotion gate."
+  },
+  "commonEligibilityWindowCounts": {
+    "denominator": 8,
+    "candidateHigher": 1,
+    "benchmarkHigher": 4,
+    "tiedOrTaxIndeterminate": 3
+  },
+  "sameMonthlyOpportunityCounts": {
+    "denominator": 7,
+    "candidateHigher": 1,
+    "benchmarkHigher": 3,
+    "tiedOrTaxIndeterminate": 3,
+    "configuredWindowCount": 8,
+    "inconclusiveBenchmarkWindowCount": 1
+  },
+  "positiveAbsoluteAndBenchmarkExcessWindowCount": 0,
+  "researchDisposition": "REJECT_AS_PROFIT_IMPROVEMENT_CANDIDATE; RETAIN_FIXED_DIAGNOSTIC_CODE; NO_PARAMETER_SEARCH",
+  "conclusion": "The original two relative advantages are startup eligibility/entry timing in 2020 and much lower market exposure in 2022. The common-start 2020 advantage vanishes; 2022 still loses to zero-yield cash. No evaluable segment has both positive return and excess over the opportunity-matched holding control.",
+  "audits": [
+    {
+      "id": "2020-Q4",
+      "startDate": "2020-10-05",
+      "endDate": "2020-12-31",
+      "rowCount": 63,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "10305",
+      "startingRawTargetNotionalMinor": "30915",
+      "projectedInitialBuyExposureMinor": "31227",
+      "projectedInitialBuyReservationMinor": "31323",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "105249",
+        "netReturnBeforePersonalDividendTaxFraction": "0.05249000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00860511",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2020-11-02",
+        "investedSessionCount": 44,
+        "evaluatedSessionCount": 63,
+        "decisions": {
+          "noTrade": 62,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 62,
+          "ORDER_ACCEPTED": 1
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "5655",
+          "grossDistributionMinor": "0",
+          "feesMinor": "94",
+          "slippageMinor": "312",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "5249",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2020-11-02",
+            "quantity": 3,
+            "rawPriceMinor": "10340",
+            "executionPriceMinor": "10444",
+            "totalCashCostMinor": "31426"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "31020",
+          "maximumMarkedExposureMinor": "36675",
+          "sumMarkedExposureMinorSessions": "1515450",
+          "meanMarkedExposureMinor": {
+            "numerator": "1515450",
+            "denominator": 63
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.24054762",
+          "heldShareSessions": 132,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "104990",
+        "netReturnBeforePersonalDividendTaxFraction": "0.04990000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01224551",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2020-10-06",
+        "investedSessionCount": 62,
+        "evaluatedSessionCount": 63,
+        "decisions": {
+          "noTrade": 62,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 62
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "5400",
+          "grossDistributionMinor": "0",
+          "feesMinor": "95",
+          "slippageMinor": "315",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "4990",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2020-10-06",
+            "quantity": 3,
+            "rawPriceMinor": "10425",
+            "executionPriceMinor": "10530",
+            "totalCashCostMinor": "31685"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "31275",
+          "maximumMarkedExposureMinor": "36675",
+          "sumMarkedExposureMinorSessions": "2085825",
+          "meanMarkedExposureMinor": {
+            "numerator": "2085825",
+            "denominator": 63
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.33108333",
+          "heldShareSessions": 186,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "255",
+        "dividendEffectMinor": "0",
+        "commissionEffectMinor": "1",
+        "slippageEffectMinor": "3",
+        "sellTaxEffectMinor": "0",
+        "endingEquityDeltaMinor": "259",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2020-Q4",
+        "startDate": "2020-10-30",
+        "endDate": "2020-12-31",
+        "rowCount": 45,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105249",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05249000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00860511",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2020-11-02",
+          "investedSessionCount": 44,
+          "evaluatedSessionCount": 45,
+          "decisions": {
+            "noTrade": 44,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 44
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5655",
+            "grossDistributionMinor": "0",
+            "feesMinor": "94",
+            "slippageMinor": "312",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5249",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2020-11-02",
+              "quantity": 3,
+              "rawPriceMinor": "10340",
+              "executionPriceMinor": "10444",
+              "totalCashCostMinor": "31426"
+            },
+            "firstMarkedExposureMinor": "31020",
+            "maximumMarkedExposureMinor": "36675",
+            "sumMarkedExposureMinorSessions": "1515450",
+            "meanMarkedExposureMinor": {
+              "numerator": "1515450",
+              "denominator": 45
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.33676667",
+            "heldShareSessions": 132,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105249",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05249000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00860511",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2020-11-02",
+          "investedSessionCount": 44,
+          "evaluatedSessionCount": 45,
+          "decisions": {
+            "noTrade": 44,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 44
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5655",
+            "grossDistributionMinor": "0",
+            "feesMinor": "94",
+            "slippageMinor": "312",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5249",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2020-11-02",
+              "quantity": 3,
+              "rawPriceMinor": "10340",
+              "executionPriceMinor": "10444",
+              "totalCashCostMinor": "31426"
+            },
+            "firstMarkedExposureMinor": "31020",
+            "maximumMarkedExposureMinor": "36675",
+            "sumMarkedExposureMinorSessions": "1515450",
+            "meanMarkedExposureMinor": {
+              "numerator": "1515450",
+              "denominator": 45
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.33676667",
+            "heldShareSessions": 132,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2020-Q4",
+        "startDate": "2020-10-30",
+        "endDate": "2020-12-31",
+        "rowCount": 45,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105249",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05249000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00860511",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2020-11-02",
+          "investedSessionCount": 44,
+          "evaluatedSessionCount": 45,
+          "decisions": {
+            "noTrade": 44,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 44
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5655",
+            "grossDistributionMinor": "0",
+            "feesMinor": "94",
+            "slippageMinor": "312",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5249",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2020-11-02",
+              "quantity": 3,
+              "rawPriceMinor": "10340",
+              "executionPriceMinor": "10444",
+              "totalCashCostMinor": "31426"
+            },
+            "firstMarkedExposureMinor": "31020",
+            "maximumMarkedExposureMinor": "36675",
+            "sumMarkedExposureMinorSessions": "1515450",
+            "meanMarkedExposureMinor": {
+              "numerator": "1515450",
+              "denominator": 45
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.33676667",
+            "heldShareSessions": 132,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105249",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05249000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00860511",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2020-11-02",
+          "investedSessionCount": 44,
+          "evaluatedSessionCount": 45,
+          "decisions": {
+            "noTrade": 44,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 44
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5655",
+            "grossDistributionMinor": "0",
+            "feesMinor": "94",
+            "slippageMinor": "312",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5249",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2020-11-02",
+              "quantity": 3,
+              "rawPriceMinor": "10340",
+              "executionPriceMinor": "10444",
+              "totalCashCostMinor": "31426"
+            },
+            "firstMarkedExposureMinor": "31020",
+            "maximumMarkedExposureMinor": "36675",
+            "sumMarkedExposureMinorSessions": "1515450",
+            "meanMarkedExposureMinor": {
+              "numerator": "1515450",
+              "denominator": 45
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.33676667",
+            "heldShareSessions": 132,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2021",
+      "startDate": "2021-01-04",
+      "endDate": "2021-12-30",
+      "rowCount": 244,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "12435",
+      "startingRawTargetNotionalMinor": "37305",
+      "projectedInitialBuyExposureMinor": "37680",
+      "projectedInitialBuyReservationMinor": "37794",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "104477",
+        "netReturnBeforePersonalDividendTaxFraction": "0.04477000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+        "completedTradeCount": 1,
+        "completedTradeWinRateBeforePersonalDividendTax": 1,
+        "openPositionQuantity": 3,
+        "fillCount": 3,
+        "firstInvestedDate": "2021-01-05",
+        "investedSessionCount": 221,
+        "evaluatedSessionCount": 244,
+        "decisions": {
+          "noTrade": 241,
+          "submitted": 3,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 3,
+          "NO_POSITION_CHANGE": 241
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "5130",
+          "grossDistributionMinor": "1020",
+          "feesMinor": "364",
+          "slippageMinor": "1209",
+          "sellTaxMinor": "100",
+          "netPnlMinor": "4477",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2021-01-05",
+            "quantity": 3,
+            "rawPriceMinor": "12460",
+            "executionPriceMinor": "12585",
+            "totalCashCostMinor": "37869"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "37380",
+          "maximumMarkedExposureMinor": "43785",
+          "sumMarkedExposureMinorSessions": "9074655",
+          "meanMarkedExposureMinor": {
+            "numerator": "9074655",
+            "denominator": 244
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.37191209",
+          "heldShareSessions": 663,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "106801",
+        "netReturnBeforePersonalDividendTaxFraction": "0.06801000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2021-01-05",
+        "investedSessionCount": 243,
+        "evaluatedSessionCount": 244,
+        "decisions": {
+          "noTrade": 243,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 243
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "6270",
+          "grossDistributionMinor": "1020",
+          "feesMinor": "114",
+          "slippageMinor": "375",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "6801",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2021-01-05",
+            "quantity": 3,
+            "rawPriceMinor": "12460",
+            "executionPriceMinor": "12585",
+            "totalCashCostMinor": "37869"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "37380",
+          "maximumMarkedExposureMinor": "43785",
+          "sumMarkedExposureMinorSessions": "9995895",
+          "meanMarkedExposureMinor": {
+            "numerator": "9995895",
+            "denominator": 244
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.40966783",
+          "heldShareSessions": 729,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "-1140",
+        "dividendEffectMinor": "0",
+        "commissionEffectMinor": "-250",
+        "slippageEffectMinor": "-834",
+        "sellTaxEffectMinor": "-100",
+        "endingEquityDeltaMinor": "-2324",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2021",
+        "startDate": "2021-01-04",
+        "endDate": "2021-12-30",
+        "rowCount": 244,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "104477",
+          "netReturnBeforePersonalDividendTaxFraction": "0.04477000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+          "completedTradeCount": 1,
+          "completedTradeWinRateBeforePersonalDividendTax": 1,
+          "openPositionQuantity": 3,
+          "fillCount": 3,
+          "firstInvestedDate": "2021-01-05",
+          "investedSessionCount": 221,
+          "evaluatedSessionCount": 244,
+          "decisions": {
+            "noTrade": 241,
+            "submitted": 3,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 3,
+            "NO_POSITION_CHANGE": 241
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5130",
+            "grossDistributionMinor": "1020",
+            "feesMinor": "364",
+            "slippageMinor": "1209",
+            "sellTaxMinor": "100",
+            "netPnlMinor": "4477",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2021-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "12460",
+              "executionPriceMinor": "12585",
+              "totalCashCostMinor": "37869"
+            },
+            "firstMarkedExposureMinor": "37380",
+            "maximumMarkedExposureMinor": "43785",
+            "sumMarkedExposureMinorSessions": "9074655",
+            "meanMarkedExposureMinor": {
+              "numerator": "9074655",
+              "denominator": 244
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.37191209",
+            "heldShareSessions": 663,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "106801",
+          "netReturnBeforePersonalDividendTaxFraction": "0.06801000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2021-01-05",
+          "investedSessionCount": 243,
+          "evaluatedSessionCount": 244,
+          "decisions": {
+            "noTrade": 243,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 243
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "6270",
+            "grossDistributionMinor": "1020",
+            "feesMinor": "114",
+            "slippageMinor": "375",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "6801",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2021-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "12460",
+              "executionPriceMinor": "12585",
+              "totalCashCostMinor": "37869"
+            },
+            "firstMarkedExposureMinor": "37380",
+            "maximumMarkedExposureMinor": "43785",
+            "sumMarkedExposureMinorSessions": "9995895",
+            "meanMarkedExposureMinor": {
+              "numerator": "9995895",
+              "denominator": 244
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.40966783",
+            "heldShareSessions": 729,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-2324",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.02324000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-2324",
+            "upper": "-2224"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.02324000",
+            "upper": "-0.02224000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2021",
+        "startDate": "2021-01-04",
+        "endDate": "2021-12-30",
+        "rowCount": 244,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "104477",
+          "netReturnBeforePersonalDividendTaxFraction": "0.04477000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+          "completedTradeCount": 1,
+          "completedTradeWinRateBeforePersonalDividendTax": 1,
+          "openPositionQuantity": 3,
+          "fillCount": 3,
+          "firstInvestedDate": "2021-01-05",
+          "investedSessionCount": 221,
+          "evaluatedSessionCount": 244,
+          "decisions": {
+            "noTrade": 241,
+            "submitted": 3,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 3,
+            "NO_POSITION_CHANGE": 241
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5130",
+            "grossDistributionMinor": "1020",
+            "feesMinor": "364",
+            "slippageMinor": "1209",
+            "sellTaxMinor": "100",
+            "netPnlMinor": "4477",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2021-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "12460",
+              "executionPriceMinor": "12585",
+              "totalCashCostMinor": "37869"
+            },
+            "firstMarkedExposureMinor": "37380",
+            "maximumMarkedExposureMinor": "43785",
+            "sumMarkedExposureMinorSessions": "9074655",
+            "meanMarkedExposureMinor": {
+              "numerator": "9074655",
+              "denominator": 244
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.37191209",
+            "heldShareSessions": 663,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "106801",
+          "netReturnBeforePersonalDividendTaxFraction": "0.06801000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04197456",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2021-01-05",
+          "investedSessionCount": 243,
+          "evaluatedSessionCount": 244,
+          "decisions": {
+            "noTrade": 243,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 243
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "6270",
+            "grossDistributionMinor": "1020",
+            "feesMinor": "114",
+            "slippageMinor": "375",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "6801",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2021-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "12460",
+              "executionPriceMinor": "12585",
+              "totalCashCostMinor": "37869"
+            },
+            "firstMarkedExposureMinor": "37380",
+            "maximumMarkedExposureMinor": "43785",
+            "sumMarkedExposureMinorSessions": "9995895",
+            "meanMarkedExposureMinor": {
+              "numerator": "9995895",
+              "denominator": 244
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.40966783",
+            "heldShareSessions": 729,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-2324",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.02324000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-2324",
+            "upper": "-2224"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.02324000",
+            "upper": "-0.02224000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2022",
+      "startDate": "2022-01-03",
+      "endDate": "2022-12-30",
+      "rowCount": 246,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "14640",
+      "startingRawTargetNotionalMinor": "43920",
+      "projectedInitialBuyExposureMinor": "44361",
+      "projectedInitialBuyReservationMinor": "44496",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "96980",
+        "netReturnBeforePersonalDividendTaxFraction": "-0.03020000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.03149779",
+        "completedTradeCount": 1,
+        "completedTradeWinRateBeforePersonalDividendTax": 0,
+        "openPositionQuantity": 0,
+        "fillCount": 2,
+        "firstInvestedDate": "2022-01-04",
+        "investedSessionCount": 32,
+        "evaluatedSessionCount": 246,
+        "decisions": {
+          "noTrade": 244,
+          "submitted": 2,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 2,
+          "NO_POSITION_CHANGE": 244
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "-2745",
+          "grossDistributionMinor": "960",
+          "feesMinor": "262",
+          "slippageMinor": "873",
+          "sellTaxMinor": "100",
+          "netPnlMinor": "-3020",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2022-01-04",
+            "quantity": 3,
+            "rawPriceMinor": "14960",
+            "executionPriceMinor": "15110",
+            "totalCashCostMinor": "45466"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "44880",
+          "maximumMarkedExposureMinor": "45600",
+          "sumMarkedExposureMinorSessions": "1395210",
+          "meanMarkedExposureMinor": {
+            "numerator": "1395210",
+            "denominator": 246
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.05671585",
+          "heldShareSessions": 96,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "89094",
+        "netReturnBeforePersonalDividendTaxFraction": "-0.10906000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.15069806",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2022-01-04",
+        "investedSessionCount": 245,
+        "evaluatedSessionCount": 246,
+        "decisions": {
+          "noTrade": 245,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 245
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "-11820",
+          "grossDistributionMinor": "1500",
+          "feesMinor": "136",
+          "slippageMinor": "450",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "-10906",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2022-01-04",
+            "quantity": 3,
+            "rawPriceMinor": "14960",
+            "executionPriceMinor": "15110",
+            "totalCashCostMinor": "45466"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "44880",
+          "maximumMarkedExposureMinor": "45600",
+          "sumMarkedExposureMinorSessions": "8968560",
+          "meanMarkedExposureMinor": {
+            "numerator": "8968560",
+            "denominator": 246
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.36457561",
+          "heldShareSessions": 735,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "9075",
+        "dividendEffectMinor": "-540",
+        "commissionEffectMinor": "-126",
+        "slippageEffectMinor": "-423",
+        "sellTaxEffectMinor": "-100",
+        "endingEquityDeltaMinor": "7886",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2022",
+        "startDate": "2022-01-03",
+        "endDate": "2022-12-30",
+        "rowCount": 246,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "96980",
+          "netReturnBeforePersonalDividendTaxFraction": "-0.03020000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.03149779",
+          "completedTradeCount": 1,
+          "completedTradeWinRateBeforePersonalDividendTax": 0,
+          "openPositionQuantity": 0,
+          "fillCount": 2,
+          "firstInvestedDate": "2022-01-04",
+          "investedSessionCount": 32,
+          "evaluatedSessionCount": 246,
+          "decisions": {
+            "noTrade": 244,
+            "submitted": 2,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 2,
+            "NO_POSITION_CHANGE": 244
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "-2745",
+            "grossDistributionMinor": "960",
+            "feesMinor": "262",
+            "slippageMinor": "873",
+            "sellTaxMinor": "100",
+            "netPnlMinor": "-3020",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2022-01-04",
+              "quantity": 3,
+              "rawPriceMinor": "14960",
+              "executionPriceMinor": "15110",
+              "totalCashCostMinor": "45466"
+            },
+            "firstMarkedExposureMinor": "44880",
+            "maximumMarkedExposureMinor": "45600",
+            "sumMarkedExposureMinorSessions": "1395210",
+            "meanMarkedExposureMinor": {
+              "numerator": "1395210",
+              "denominator": 246
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.05671585",
+            "heldShareSessions": 96,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "89094",
+          "netReturnBeforePersonalDividendTaxFraction": "-0.10906000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.15069806",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2022-01-04",
+          "investedSessionCount": 245,
+          "evaluatedSessionCount": 246,
+          "decisions": {
+            "noTrade": 245,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 245
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "-11820",
+            "grossDistributionMinor": "1500",
+            "feesMinor": "136",
+            "slippageMinor": "450",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "-10906",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2022-01-04",
+              "quantity": 3,
+              "rawPriceMinor": "14960",
+              "executionPriceMinor": "15110",
+              "totalCashCostMinor": "45466"
+            },
+            "firstMarkedExposureMinor": "44880",
+            "maximumMarkedExposureMinor": "45600",
+            "sumMarkedExposureMinorSessions": "8968560",
+            "meanMarkedExposureMinor": {
+              "numerator": "8968560",
+              "denominator": 246
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.36457561",
+            "heldShareSessions": 735,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "7886",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.07886000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "7886",
+            "upper": "8526"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.07886000",
+            "upper": "0.08526000"
+          },
+          "directionAcrossModeledTaxBounds": "CANDIDATE_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2022",
+        "startDate": "2022-01-03",
+        "endDate": "2022-12-30",
+        "rowCount": 246,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "96980",
+          "netReturnBeforePersonalDividendTaxFraction": "-0.03020000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.03149779",
+          "completedTradeCount": 1,
+          "completedTradeWinRateBeforePersonalDividendTax": 0,
+          "openPositionQuantity": 0,
+          "fillCount": 2,
+          "firstInvestedDate": "2022-01-04",
+          "investedSessionCount": 32,
+          "evaluatedSessionCount": 246,
+          "decisions": {
+            "noTrade": 244,
+            "submitted": 2,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 2,
+            "NO_POSITION_CHANGE": 244
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "-2745",
+            "grossDistributionMinor": "960",
+            "feesMinor": "262",
+            "slippageMinor": "873",
+            "sellTaxMinor": "100",
+            "netPnlMinor": "-3020",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2022-01-04",
+              "quantity": 3,
+              "rawPriceMinor": "14960",
+              "executionPriceMinor": "15110",
+              "totalCashCostMinor": "45466"
+            },
+            "firstMarkedExposureMinor": "44880",
+            "maximumMarkedExposureMinor": "45600",
+            "sumMarkedExposureMinorSessions": "1395210",
+            "meanMarkedExposureMinor": {
+              "numerator": "1395210",
+              "denominator": 246
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.05671585",
+            "heldShareSessions": 96,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "89094",
+          "netReturnBeforePersonalDividendTaxFraction": "-0.10906000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.15069806",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2022-01-04",
+          "investedSessionCount": 245,
+          "evaluatedSessionCount": 246,
+          "decisions": {
+            "noTrade": 245,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 245
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "-11820",
+            "grossDistributionMinor": "1500",
+            "feesMinor": "136",
+            "slippageMinor": "450",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "-10906",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2022-01-04",
+              "quantity": 3,
+              "rawPriceMinor": "14960",
+              "executionPriceMinor": "15110",
+              "totalCashCostMinor": "45466"
+            },
+            "firstMarkedExposureMinor": "44880",
+            "maximumMarkedExposureMinor": "45600",
+            "sumMarkedExposureMinorSessions": "8968560",
+            "meanMarkedExposureMinor": {
+              "numerator": "8968560",
+              "denominator": 246
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.36457561",
+            "heldShareSessions": 735,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "7886",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.07886000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "7886",
+            "upper": "8526"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.07886000",
+            "upper": "0.08526000"
+          },
+          "directionAcrossModeledTaxBounds": "CANDIDATE_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2023",
+      "startDate": "2023-01-03",
+      "endDate": "2023-12-29",
+      "rowCount": 239,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "11075",
+      "startingRawTargetNotionalMinor": "33225",
+      "projectedInitialBuyExposureMinor": "33558",
+      "projectedInitialBuyReservationMinor": "33660",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "100933",
+        "netReturnBeforePersonalDividendTaxFraction": "0.00933000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04068245",
+        "completedTradeCount": 1,
+        "completedTradeWinRateBeforePersonalDividendTax": 1,
+        "openPositionQuantity": 3,
+        "fillCount": 3,
+        "firstInvestedDate": "2023-02-01",
+        "investedSessionCount": 204,
+        "evaluatedSessionCount": 239,
+        "decisions": {
+          "noTrade": 236,
+          "submitted": 3,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 236,
+          "ORDER_ACCEPTED": 3
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "1920",
+          "grossDistributionMinor": "570",
+          "feesMinor": "338",
+          "slippageMinor": "1119",
+          "sellTaxMinor": "100",
+          "netPnlMinor": "933",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2023-02-01",
+            "quantity": 3,
+            "rawPriceMinor": "11900",
+            "executionPriceMinor": "12019",
+            "totalCashCostMinor": "36166"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "35700",
+          "maximumMarkedExposureMinor": "40725",
+          "sumMarkedExposureMinorSessions": "7628250",
+          "meanMarkedExposureMinor": {
+            "numerator": "7628250",
+            "denominator": 239
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.31917364",
+          "heldShareSessions": 612,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "108401",
+        "netReturnBeforePersonalDividendTaxFraction": "0.08401000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02582553",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2023-01-04",
+        "investedSessionCount": 238,
+        "evaluatedSessionCount": 239,
+        "decisions": {
+          "noTrade": 238,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 238
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "7485",
+          "grossDistributionMinor": "1350",
+          "feesMinor": "101",
+          "slippageMinor": "333",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "8401",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2023-01-04",
+            "quantity": 3,
+            "rawPriceMinor": "11050",
+            "executionPriceMinor": "11161",
+            "totalCashCostMinor": "33584"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "33150",
+          "maximumMarkedExposureMinor": "40725",
+          "sumMarkedExposureMinorSessions": "8896500",
+          "meanMarkedExposureMinor": {
+            "numerator": "8896500",
+            "denominator": 239
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.37223849",
+          "heldShareSessions": 714,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "-5565",
+        "dividendEffectMinor": "-780",
+        "commissionEffectMinor": "-237",
+        "slippageEffectMinor": "-786",
+        "sellTaxEffectMinor": "-100",
+        "endingEquityDeltaMinor": "-7468",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2023",
+        "startDate": "2023-01-03",
+        "endDate": "2023-12-29",
+        "rowCount": 239,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "100933",
+          "netReturnBeforePersonalDividendTaxFraction": "0.00933000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04068245",
+          "completedTradeCount": 1,
+          "completedTradeWinRateBeforePersonalDividendTax": 1,
+          "openPositionQuantity": 3,
+          "fillCount": 3,
+          "firstInvestedDate": "2023-02-01",
+          "investedSessionCount": 204,
+          "evaluatedSessionCount": 239,
+          "decisions": {
+            "noTrade": 236,
+            "submitted": 3,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "NO_POSITION_CHANGE": 236,
+            "ORDER_ACCEPTED": 3
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "1920",
+            "grossDistributionMinor": "570",
+            "feesMinor": "338",
+            "slippageMinor": "1119",
+            "sellTaxMinor": "100",
+            "netPnlMinor": "933",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2023-02-01",
+              "quantity": 3,
+              "rawPriceMinor": "11900",
+              "executionPriceMinor": "12019",
+              "totalCashCostMinor": "36166"
+            },
+            "firstMarkedExposureMinor": "35700",
+            "maximumMarkedExposureMinor": "40725",
+            "sumMarkedExposureMinorSessions": "7628250",
+            "meanMarkedExposureMinor": {
+              "numerator": "7628250",
+              "denominator": 239
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.31917364",
+            "heldShareSessions": 612,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "108401",
+          "netReturnBeforePersonalDividendTaxFraction": "0.08401000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02582553",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2023-01-04",
+          "investedSessionCount": 238,
+          "evaluatedSessionCount": 239,
+          "decisions": {
+            "noTrade": 238,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 238
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "7485",
+            "grossDistributionMinor": "1350",
+            "feesMinor": "101",
+            "slippageMinor": "333",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "8401",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2023-01-04",
+              "quantity": 3,
+              "rawPriceMinor": "11050",
+              "executionPriceMinor": "11161",
+              "totalCashCostMinor": "33584"
+            },
+            "firstMarkedExposureMinor": "33150",
+            "maximumMarkedExposureMinor": "40725",
+            "sumMarkedExposureMinorSessions": "8896500",
+            "meanMarkedExposureMinor": {
+              "numerator": "8896500",
+              "denominator": 239
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.37223849",
+            "heldShareSessions": 714,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-7468",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.07468000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-7468",
+            "upper": "-6588"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.07468000",
+            "upper": "-0.06588000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2023",
+        "startDate": "2023-01-03",
+        "endDate": "2023-12-29",
+        "rowCount": 239,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "100933",
+          "netReturnBeforePersonalDividendTaxFraction": "0.00933000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04068245",
+          "completedTradeCount": 1,
+          "completedTradeWinRateBeforePersonalDividendTax": 1,
+          "openPositionQuantity": 3,
+          "fillCount": 3,
+          "firstInvestedDate": "2023-02-01",
+          "investedSessionCount": 204,
+          "evaluatedSessionCount": 239,
+          "decisions": {
+            "noTrade": 236,
+            "submitted": 3,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "NO_POSITION_CHANGE": 236,
+            "ORDER_ACCEPTED": 3
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "1920",
+            "grossDistributionMinor": "570",
+            "feesMinor": "338",
+            "slippageMinor": "1119",
+            "sellTaxMinor": "100",
+            "netPnlMinor": "933",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2023-02-01",
+              "quantity": 3,
+              "rawPriceMinor": "11900",
+              "executionPriceMinor": "12019",
+              "totalCashCostMinor": "36166"
+            },
+            "firstMarkedExposureMinor": "35700",
+            "maximumMarkedExposureMinor": "40725",
+            "sumMarkedExposureMinorSessions": "7628250",
+            "meanMarkedExposureMinor": {
+              "numerator": "7628250",
+              "denominator": 239
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.31917364",
+            "heldShareSessions": 612,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "108401",
+          "netReturnBeforePersonalDividendTaxFraction": "0.08401000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02582553",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2023-01-04",
+          "investedSessionCount": 238,
+          "evaluatedSessionCount": 239,
+          "decisions": {
+            "noTrade": 238,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 238
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "7485",
+            "grossDistributionMinor": "1350",
+            "feesMinor": "101",
+            "slippageMinor": "333",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "8401",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2023-01-04",
+              "quantity": 3,
+              "rawPriceMinor": "11050",
+              "executionPriceMinor": "11161",
+              "totalCashCostMinor": "33584"
+            },
+            "firstMarkedExposureMinor": "33150",
+            "maximumMarkedExposureMinor": "40725",
+            "sumMarkedExposureMinorSessions": "8896500",
+            "meanMarkedExposureMinor": {
+              "numerator": "8896500",
+              "denominator": 239
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.37223849",
+            "heldShareSessions": 714,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-7468",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.07468000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-7468",
+            "upper": "-6588"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.07468000",
+            "upper": "-0.06588000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2024",
+      "startDate": "2024-01-02",
+      "endDate": "2024-12-31",
+      "rowCount": 242,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "13490",
+      "startingRawTargetNotionalMinor": "40470",
+      "projectedInitialBuyExposureMinor": "40875",
+      "projectedInitialBuyReservationMinor": "40998",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "119640",
+        "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2024-01-03",
+        "investedSessionCount": 241,
+        "evaluatedSessionCount": 242,
+        "decisions": {
+          "noTrade": 241,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 241
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "18960",
+          "grossDistributionMinor": "1200",
+          "feesMinor": "121",
+          "slippageMinor": "399",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "19640",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2024-01-03",
+            "quantity": 3,
+            "rawPriceMinor": "13255",
+            "executionPriceMinor": "13388",
+            "totalCashCostMinor": "40285"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "39765",
+          "maximumMarkedExposureMinor": "60825",
+          "sumMarkedExposureMinorSessions": "12470835",
+          "meanMarkedExposureMinor": {
+            "numerator": "12470835",
+            "denominator": 242
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.51532376",
+          "heldShareSessions": 723,
+          "markedExposureAboveOrderCapSessionCount": 154,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "119640",
+        "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2024-01-03",
+        "investedSessionCount": 241,
+        "evaluatedSessionCount": 242,
+        "decisions": {
+          "noTrade": 241,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 241
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "18960",
+          "grossDistributionMinor": "1200",
+          "feesMinor": "121",
+          "slippageMinor": "399",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "19640",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2024-01-03",
+            "quantity": 3,
+            "rawPriceMinor": "13255",
+            "executionPriceMinor": "13388",
+            "totalCashCostMinor": "40285"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "39765",
+          "maximumMarkedExposureMinor": "60825",
+          "sumMarkedExposureMinorSessions": "12470835",
+          "meanMarkedExposureMinor": {
+            "numerator": "12470835",
+            "denominator": 242
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.51532376",
+          "heldShareSessions": 723,
+          "markedExposureAboveOrderCapSessionCount": 154,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "0",
+        "dividendEffectMinor": "0",
+        "commissionEffectMinor": "0",
+        "slippageEffectMinor": "0",
+        "sellTaxEffectMinor": "0",
+        "endingEquityDeltaMinor": "0",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2024",
+        "startDate": "2024-01-02",
+        "endDate": "2024-12-31",
+        "rowCount": 242,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "119640",
+          "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2024-01-03",
+          "investedSessionCount": 241,
+          "evaluatedSessionCount": 242,
+          "decisions": {
+            "noTrade": 241,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 241
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "18960",
+            "grossDistributionMinor": "1200",
+            "feesMinor": "121",
+            "slippageMinor": "399",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "19640",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2024-01-03",
+              "quantity": 3,
+              "rawPriceMinor": "13255",
+              "executionPriceMinor": "13388",
+              "totalCashCostMinor": "40285"
+            },
+            "firstMarkedExposureMinor": "39765",
+            "maximumMarkedExposureMinor": "60825",
+            "sumMarkedExposureMinorSessions": "12470835",
+            "meanMarkedExposureMinor": {
+              "numerator": "12470835",
+              "denominator": 242
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.51532376",
+            "heldShareSessions": 723,
+            "markedExposureAboveOrderCapSessionCount": 154,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "119640",
+          "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2024-01-03",
+          "investedSessionCount": 241,
+          "evaluatedSessionCount": 242,
+          "decisions": {
+            "noTrade": 241,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 241
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "18960",
+            "grossDistributionMinor": "1200",
+            "feesMinor": "121",
+            "slippageMinor": "399",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "19640",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2024-01-03",
+              "quantity": 3,
+              "rawPriceMinor": "13255",
+              "executionPriceMinor": "13388",
+              "totalCashCostMinor": "40285"
+            },
+            "firstMarkedExposureMinor": "39765",
+            "maximumMarkedExposureMinor": "60825",
+            "sumMarkedExposureMinorSessions": "12470835",
+            "meanMarkedExposureMinor": {
+              "numerator": "12470835",
+              "denominator": 242
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.51532376",
+            "heldShareSessions": 723,
+            "markedExposureAboveOrderCapSessionCount": 154,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2024",
+        "startDate": "2024-01-02",
+        "endDate": "2024-12-31",
+        "rowCount": 242,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "119640",
+          "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2024-01-03",
+          "investedSessionCount": 241,
+          "evaluatedSessionCount": 242,
+          "decisions": {
+            "noTrade": 241,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 241
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "18960",
+            "grossDistributionMinor": "1200",
+            "feesMinor": "121",
+            "slippageMinor": "399",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "19640",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2024-01-03",
+              "quantity": 3,
+              "rawPriceMinor": "13255",
+              "executionPriceMinor": "13388",
+              "totalCashCostMinor": "40285"
+            },
+            "firstMarkedExposureMinor": "39765",
+            "maximumMarkedExposureMinor": "60825",
+            "sumMarkedExposureMinorSessions": "12470835",
+            "meanMarkedExposureMinor": {
+              "numerator": "12470835",
+              "denominator": 242
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.51532376",
+            "heldShareSessions": 723,
+            "markedExposureAboveOrderCapSessionCount": 154,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "119640",
+          "netReturnBeforePersonalDividendTaxFraction": "0.19640000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.10622530",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2024-01-03",
+          "investedSessionCount": 241,
+          "evaluatedSessionCount": 242,
+          "decisions": {
+            "noTrade": 241,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 241
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "18960",
+            "grossDistributionMinor": "1200",
+            "feesMinor": "121",
+            "slippageMinor": "399",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "19640",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2024-01-03",
+              "quantity": 3,
+              "rawPriceMinor": "13255",
+              "executionPriceMinor": "13388",
+              "totalCashCostMinor": "40285"
+            },
+            "firstMarkedExposureMinor": "39765",
+            "maximumMarkedExposureMinor": "60825",
+            "sumMarkedExposureMinorSessions": "12470835",
+            "meanMarkedExposureMinor": {
+              "numerator": "12470835",
+              "denominator": 242
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.51532376",
+            "heldShareSessions": 723,
+            "markedExposureAboveOrderCapSessionCount": 154,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2025-pre-split",
+      "startDate": "2025-01-02",
+      "endDate": "2025-06-10",
+      "rowCount": 102,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "19405",
+      "startingRawTargetNotionalMinor": "58215",
+      "projectedInitialBuyExposureMinor": "58800",
+      "projectedInitialBuyReservationMinor": "58977",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": false,
+      "startDateRiskReason": "MAX_EXPOSURE_EXCEEDED",
+      "benchmarkInterpretation": "RISK_TIMED_DELAYED_ENTRY; NOT_START_DATE_BUY_AND_HOLD",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "100000",
+        "netReturnBeforePersonalDividendTaxFraction": "0.00000000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00000000",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 0,
+        "fillCount": 0,
+        "firstInvestedDate": null,
+        "investedSessionCount": 0,
+        "evaluatedSessionCount": 102,
+        "decisions": {
+          "noTrade": 99,
+          "submitted": 0,
+          "riskRejected": 3
+        },
+        "reasonCodeCounts": {
+          "MAX_EXPOSURE_EXCEEDED": 3,
+          "NO_POSITION_CHANGE": 99
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "0",
+          "grossDistributionMinor": "0",
+          "feesMinor": "0",
+          "slippageMinor": "0",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "0",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": null,
+          "rejectedDecisions": [
+            {
+              "date": "2025-01-02",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19405",
+              "projectedExposureMinor": "58800",
+              "requiredBuyReservationMinor": "58977",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-22",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "20130",
+              "projectedExposureMinor": "60996",
+              "requiredBuyReservationMinor": "61179",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-27",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19250",
+              "projectedExposureMinor": "58329",
+              "requiredBuyReservationMinor": "58506",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            }
+          ],
+          "firstMarkedExposureMinor": "0",
+          "maximumMarkedExposureMinor": "0",
+          "sumMarkedExposureMinorSessions": "0",
+          "meanMarkedExposureMinor": {
+            "numerator": "0",
+            "denominator": 102
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.00000000",
+          "heldShareSessions": 0,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "110018",
+        "netReturnBeforePersonalDividendTaxFraction": "0.10018000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02737120",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2025-04-08",
+        "investedSessionCount": 44,
+        "evaluatedSessionCount": 102,
+        "decisions": {
+          "noTrade": 44,
+          "submitted": 1,
+          "riskRejected": 57
+        },
+        "reasonCodeCounts": {
+          "MAX_EXPOSURE_EXCEEDED": 57,
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 44
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "10620",
+          "grossDistributionMinor": "0",
+          "feesMinor": "140",
+          "slippageMinor": "462",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "10018",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2025-04-08",
+            "quantity": 3,
+            "rawPriceMinor": "15325",
+            "executionPriceMinor": "15479",
+            "totalCashCostMinor": "46577"
+          },
+          "rejectedDecisions": [
+            {
+              "date": "2025-01-02",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19405",
+              "projectedExposureMinor": "58800",
+              "requiredBuyReservationMinor": "58977",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-03",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19600",
+              "projectedExposureMinor": "59388",
+              "requiredBuyReservationMinor": "59568",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-06",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "20215",
+              "projectedExposureMinor": "61254",
+              "requiredBuyReservationMinor": "61440",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-07",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "20440",
+              "projectedExposureMinor": "61935",
+              "requiredBuyReservationMinor": "62121",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-08",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "20135",
+              "projectedExposureMinor": "61011",
+              "requiredBuyReservationMinor": "61197",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-09",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19905",
+              "projectedExposureMinor": "60315",
+              "requiredBuyReservationMinor": "60498",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-10",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19900",
+              "projectedExposureMinor": "60297",
+              "requiredBuyReservationMinor": "60480",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-13",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19440",
+              "projectedExposureMinor": "58905",
+              "requiredBuyReservationMinor": "59082",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-14",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19560",
+              "projectedExposureMinor": "59268",
+              "requiredBuyReservationMinor": "59448",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-15",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19410",
+              "projectedExposureMinor": "58815",
+              "requiredBuyReservationMinor": "58992",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-16",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19805",
+              "projectedExposureMinor": "60012",
+              "requiredBuyReservationMinor": "60195",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-17",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19630",
+              "projectedExposureMinor": "59481",
+              "requiredBuyReservationMinor": "59661",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-20",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19830",
+              "projectedExposureMinor": "60087",
+              "requiredBuyReservationMinor": "60270",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-21",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19870",
+              "projectedExposureMinor": "60207",
+              "requiredBuyReservationMinor": "60390",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-01-22",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "20130",
+              "projectedExposureMinor": "60996",
+              "requiredBuyReservationMinor": "61179",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-03",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19270",
+              "projectedExposureMinor": "58389",
+              "requiredBuyReservationMinor": "58566",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-04",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19385",
+              "projectedExposureMinor": "58737",
+              "requiredBuyReservationMinor": "58914",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-05",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19680",
+              "projectedExposureMinor": "59631",
+              "requiredBuyReservationMinor": "59811",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-06",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19765",
+              "projectedExposureMinor": "59889",
+              "requiredBuyReservationMinor": "60069",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-07",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19855",
+              "projectedExposureMinor": "60162",
+              "requiredBuyReservationMinor": "60345",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-10",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19630",
+              "projectedExposureMinor": "59481",
+              "requiredBuyReservationMinor": "59661",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-11",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19750",
+              "projectedExposureMinor": "59844",
+              "requiredBuyReservationMinor": "60024",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-12",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19720",
+              "projectedExposureMinor": "59754",
+              "requiredBuyReservationMinor": "59934",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-13",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19635",
+              "projectedExposureMinor": "59496",
+              "requiredBuyReservationMinor": "59676",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-14",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19400",
+              "projectedExposureMinor": "58782",
+              "requiredBuyReservationMinor": "58959",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-17",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19695",
+              "projectedExposureMinor": "59676",
+              "requiredBuyReservationMinor": "59856",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-18",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19765",
+              "projectedExposureMinor": "59889",
+              "requiredBuyReservationMinor": "60069",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-19",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19730",
+              "projectedExposureMinor": "59784",
+              "requiredBuyReservationMinor": "59964",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-20",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19655",
+              "projectedExposureMinor": "59556",
+              "requiredBuyReservationMinor": "59736",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-21",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19795",
+              "projectedExposureMinor": "59979",
+              "requiredBuyReservationMinor": "60159",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-24",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19620",
+              "projectedExposureMinor": "59451",
+              "requiredBuyReservationMinor": "59631",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-25",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19365",
+              "projectedExposureMinor": "58677",
+              "requiredBuyReservationMinor": "58854",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-26",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19470",
+              "projectedExposureMinor": "58995",
+              "requiredBuyReservationMinor": "59172",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-02-27",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "19250",
+              "projectedExposureMinor": "58329",
+              "requiredBuyReservationMinor": "58506",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-03",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18805",
+              "projectedExposureMinor": "56982",
+              "requiredBuyReservationMinor": "57153",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-04",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18680",
+              "projectedExposureMinor": "56601",
+              "requiredBuyReservationMinor": "56772",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-05",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18925",
+              "projectedExposureMinor": "57345",
+              "requiredBuyReservationMinor": "57519",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-06",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18810",
+              "projectedExposureMinor": "56997",
+              "requiredBuyReservationMinor": "57168",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-07",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18635",
+              "projectedExposureMinor": "56466",
+              "requiredBuyReservationMinor": "56637",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-10",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18525",
+              "projectedExposureMinor": "56133",
+              "requiredBuyReservationMinor": "56304",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-11",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18200",
+              "projectedExposureMinor": "55146",
+              "requiredBuyReservationMinor": "55314",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-12",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18280",
+              "projectedExposureMinor": "55389",
+              "requiredBuyReservationMinor": "55557",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-13",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18110",
+              "projectedExposureMinor": "54876",
+              "requiredBuyReservationMinor": "55041",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-14",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18050",
+              "projectedExposureMinor": "54693",
+              "requiredBuyReservationMinor": "54858",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-17",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18205",
+              "projectedExposureMinor": "55164",
+              "requiredBuyReservationMinor": "55332",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-18",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18280",
+              "projectedExposureMinor": "55389",
+              "requiredBuyReservationMinor": "55557",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-19",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18055",
+              "projectedExposureMinor": "54708",
+              "requiredBuyReservationMinor": "54873",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-20",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18445",
+              "projectedExposureMinor": "55890",
+              "requiredBuyReservationMinor": "56058",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-21",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18295",
+              "projectedExposureMinor": "55434",
+              "requiredBuyReservationMinor": "55602",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-24",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18275",
+              "projectedExposureMinor": "55374",
+              "requiredBuyReservationMinor": "55542",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-25",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18465",
+              "projectedExposureMinor": "55950",
+              "requiredBuyReservationMinor": "56118",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-26",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18450",
+              "projectedExposureMinor": "55905",
+              "requiredBuyReservationMinor": "56073",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-27",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "18100",
+              "projectedExposureMinor": "54843",
+              "requiredBuyReservationMinor": "55008",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-28",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "17920",
+              "projectedExposureMinor": "54300",
+              "requiredBuyReservationMinor": "54465",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-03-31",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "17275",
+              "projectedExposureMinor": "52344",
+              "requiredBuyReservationMinor": "52503",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-04-01",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "17630",
+              "projectedExposureMinor": "53421",
+              "requiredBuyReservationMinor": "53583",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            },
+            {
+              "date": "2025-04-02",
+              "reasonCode": "MAX_EXPOSURE_EXCEEDED",
+              "targetQuantity": 3,
+              "rawCloseMinor": "17600",
+              "projectedExposureMinor": "53328",
+              "requiredBuyReservationMinor": "53490",
+              "executionCashMinor": "100000",
+              "conservativeTaxAdjustedCashMinor": "100000"
+            }
+          ],
+          "firstMarkedExposureMinor": "45975",
+          "maximumMarkedExposureMinor": "56595",
+          "sumMarkedExposureMinorSessions": "2274225",
+          "meanMarkedExposureMinor": {
+            "numerator": "2274225",
+            "denominator": 102
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.22296324",
+          "heldShareSessions": 132,
+          "markedExposureAboveOrderCapSessionCount": 30,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "-10620",
+        "dividendEffectMinor": "0",
+        "commissionEffectMinor": "140",
+        "slippageEffectMinor": "462",
+        "sellTaxEffectMinor": "0",
+        "endingEquityDeltaMinor": "-10018",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2025-pre-split",
+        "startDate": "2025-01-02",
+        "endDate": "2025-06-10",
+        "rowCount": 102,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "100000",
+          "netReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00000000",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 0,
+          "fillCount": 0,
+          "firstInvestedDate": null,
+          "investedSessionCount": 0,
+          "evaluatedSessionCount": 102,
+          "decisions": {
+            "noTrade": 99,
+            "submitted": 0,
+            "riskRejected": 3
+          },
+          "reasonCodeCounts": {
+            "MAX_EXPOSURE_EXCEEDED": 3,
+            "NO_POSITION_CHANGE": 99
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "0",
+            "grossDistributionMinor": "0",
+            "feesMinor": "0",
+            "slippageMinor": "0",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "0",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": null,
+            "firstMarkedExposureMinor": "0",
+            "maximumMarkedExposureMinor": "0",
+            "sumMarkedExposureMinorSessions": "0",
+            "meanMarkedExposureMinor": {
+              "numerator": "0",
+              "denominator": 102
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.00000000",
+            "heldShareSessions": 0,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "110018",
+          "netReturnBeforePersonalDividendTaxFraction": "0.10018000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.02737120",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2025-04-08",
+          "investedSessionCount": 44,
+          "evaluatedSessionCount": 102,
+          "decisions": {
+            "noTrade": 44,
+            "submitted": 1,
+            "riskRejected": 57
+          },
+          "reasonCodeCounts": {
+            "MAX_EXPOSURE_EXCEEDED": 57,
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 44
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "10620",
+            "grossDistributionMinor": "0",
+            "feesMinor": "140",
+            "slippageMinor": "462",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "10018",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2025-04-08",
+              "quantity": 3,
+              "rawPriceMinor": "15325",
+              "executionPriceMinor": "15479",
+              "totalCashCostMinor": "46577"
+            },
+            "firstMarkedExposureMinor": "45975",
+            "maximumMarkedExposureMinor": "56595",
+            "sumMarkedExposureMinorSessions": "2274225",
+            "meanMarkedExposureMinor": {
+              "numerator": "2274225",
+              "denominator": 102
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.22296324",
+            "heldShareSessions": 132,
+            "markedExposureAboveOrderCapSessionCount": 30,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-10018",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.10018000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-10018",
+            "upper": "-10018"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.10018000",
+            "upper": "-0.10018000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2025-pre-split",
+        "startDate": "2025-01-02",
+        "endDate": "2025-06-10",
+        "rowCount": 102,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "100000",
+          "netReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00000000",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 0,
+          "fillCount": 0,
+          "firstInvestedDate": null,
+          "investedSessionCount": 0,
+          "evaluatedSessionCount": 102,
+          "decisions": {
+            "noTrade": 99,
+            "submitted": 0,
+            "riskRejected": 3
+          },
+          "reasonCodeCounts": {
+            "MAX_EXPOSURE_EXCEEDED": 3,
+            "NO_POSITION_CHANGE": 99
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "0",
+            "grossDistributionMinor": "0",
+            "feesMinor": "0",
+            "slippageMinor": "0",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "0",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": null,
+            "firstMarkedExposureMinor": "0",
+            "maximumMarkedExposureMinor": "0",
+            "sumMarkedExposureMinorSessions": "0",
+            "meanMarkedExposureMinor": {
+              "numerator": "0",
+              "denominator": 102
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.00000000",
+            "heldShareSessions": 0,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "100000",
+          "netReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.00000000",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 0,
+          "fillCount": 0,
+          "firstInvestedDate": null,
+          "investedSessionCount": 0,
+          "evaluatedSessionCount": 102,
+          "decisions": {
+            "noTrade": 96,
+            "submitted": 0,
+            "riskRejected": 6
+          },
+          "reasonCodeCounts": {
+            "MAX_EXPOSURE_EXCEEDED": 6,
+            "NO_POSITION_CHANGE": 96
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "0",
+            "grossDistributionMinor": "0",
+            "feesMinor": "0",
+            "slippageMinor": "0",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "0",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": null,
+            "firstMarkedExposureMinor": "0",
+            "maximumMarkedExposureMinor": "0",
+            "sumMarkedExposureMinorSessions": "0",
+            "meanMarkedExposureMinor": {
+              "numerator": "0",
+              "denominator": 102
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.00000000",
+            "heldShareSessions": 0,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "INCONCLUSIVE_BENCHMARK_NOT_INVESTABLE"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2025-post-split",
+      "startDate": "2025-06-18",
+      "endDate": "2025-12-31",
+      "rowCount": 136,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "4757",
+      "startingRawTargetNotionalMinor": "14271",
+      "projectedInitialBuyExposureMinor": "14415",
+      "projectedInitialBuyReservationMinor": "14460",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "105004",
+        "netReturnBeforePersonalDividendTaxFraction": "0.05004000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01489274",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2025-07-01",
+        "investedSessionCount": 127,
+        "evaluatedSessionCount": 136,
+        "decisions": {
+          "noTrade": 135,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "NO_POSITION_CHANGE": 135,
+          "ORDER_ACCEPTED": 1
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "5088",
+          "grossDistributionMinor": "108",
+          "feesMinor": "45",
+          "slippageMinor": "147",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "5004",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2025-07-01",
+            "quantity": 3,
+            "rawPriceMinor": "4864",
+            "executionPriceMinor": "4913",
+            "totalCashCostMinor": "14784"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "14592",
+          "maximumMarkedExposureMinor": "19680",
+          "sumMarkedExposureMinorSessions": "2187030",
+          "meanMarkedExposureMinor": {
+            "numerator": "2187030",
+            "denominator": 136
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.16081103",
+          "heldShareSessions": 381,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "105471",
+        "netReturnBeforePersonalDividendTaxFraction": "0.05471000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01482664",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2025-06-19",
+        "investedSessionCount": 135,
+        "evaluatedSessionCount": 136,
+        "decisions": {
+          "noTrade": 135,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 135
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "5550",
+          "grossDistributionMinor": "108",
+          "feesMinor": "43",
+          "slippageMinor": "144",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "5471",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2025-06-19",
+            "quantity": 3,
+            "rawPriceMinor": "4710",
+            "executionPriceMinor": "4758",
+            "totalCashCostMinor": "14317"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "14130",
+          "maximumMarkedExposureMinor": "19680",
+          "sumMarkedExposureMinorSessions": "2301429",
+          "meanMarkedExposureMinor": {
+            "numerator": "2301429",
+            "denominator": 136
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.16922272",
+          "heldShareSessions": 405,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "-462",
+        "dividendEffectMinor": "0",
+        "commissionEffectMinor": "-2",
+        "slippageEffectMinor": "-3",
+        "sellTaxEffectMinor": "0",
+        "endingEquityDeltaMinor": "-467",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2025-post-split",
+        "startDate": "2025-06-18",
+        "endDate": "2025-12-31",
+        "rowCount": 136,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105004",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05004000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01489274",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2025-07-01",
+          "investedSessionCount": 127,
+          "evaluatedSessionCount": 136,
+          "decisions": {
+            "noTrade": 135,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "NO_POSITION_CHANGE": 135,
+            "ORDER_ACCEPTED": 1
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5088",
+            "grossDistributionMinor": "108",
+            "feesMinor": "45",
+            "slippageMinor": "147",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5004",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2025-07-01",
+              "quantity": 3,
+              "rawPriceMinor": "4864",
+              "executionPriceMinor": "4913",
+              "totalCashCostMinor": "14784"
+            },
+            "firstMarkedExposureMinor": "14592",
+            "maximumMarkedExposureMinor": "19680",
+            "sumMarkedExposureMinorSessions": "2187030",
+            "meanMarkedExposureMinor": {
+              "numerator": "2187030",
+              "denominator": 136
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.16081103",
+            "heldShareSessions": 381,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105471",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05471000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01482664",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2025-06-19",
+          "investedSessionCount": 135,
+          "evaluatedSessionCount": 136,
+          "decisions": {
+            "noTrade": 135,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 135
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5550",
+            "grossDistributionMinor": "108",
+            "feesMinor": "43",
+            "slippageMinor": "144",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5471",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2025-06-19",
+              "quantity": 3,
+              "rawPriceMinor": "4710",
+              "executionPriceMinor": "4758",
+              "totalCashCostMinor": "14317"
+            },
+            "firstMarkedExposureMinor": "14130",
+            "maximumMarkedExposureMinor": "19680",
+            "sumMarkedExposureMinorSessions": "2301429",
+            "meanMarkedExposureMinor": {
+              "numerator": "2301429",
+              "denominator": 136
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.16922272",
+            "heldShareSessions": 405,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-467",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.00467000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-467",
+            "upper": "-467"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.00467000",
+            "upper": "-0.00467000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2025-post-split",
+        "startDate": "2025-06-18",
+        "endDate": "2025-12-31",
+        "rowCount": 136,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105004",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05004000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01489274",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2025-07-01",
+          "investedSessionCount": 127,
+          "evaluatedSessionCount": 136,
+          "decisions": {
+            "noTrade": 135,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "NO_POSITION_CHANGE": 135,
+            "ORDER_ACCEPTED": 1
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5088",
+            "grossDistributionMinor": "108",
+            "feesMinor": "45",
+            "slippageMinor": "147",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5004",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2025-07-01",
+              "quantity": 3,
+              "rawPriceMinor": "4864",
+              "executionPriceMinor": "4913",
+              "totalCashCostMinor": "14784"
+            },
+            "firstMarkedExposureMinor": "14592",
+            "maximumMarkedExposureMinor": "19680",
+            "sumMarkedExposureMinorSessions": "2187030",
+            "meanMarkedExposureMinor": {
+              "numerator": "2187030",
+              "denominator": 136
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.16081103",
+            "heldShareSessions": 381,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "105471",
+          "netReturnBeforePersonalDividendTaxFraction": "0.05471000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.01482664",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2025-06-19",
+          "investedSessionCount": 135,
+          "evaluatedSessionCount": 136,
+          "decisions": {
+            "noTrade": 135,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 135
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "5550",
+            "grossDistributionMinor": "108",
+            "feesMinor": "43",
+            "slippageMinor": "144",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "5471",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2025-06-19",
+              "quantity": 3,
+              "rawPriceMinor": "4710",
+              "executionPriceMinor": "4758",
+              "totalCashCostMinor": "14317"
+            },
+            "firstMarkedExposureMinor": "14130",
+            "maximumMarkedExposureMinor": "19680",
+            "sumMarkedExposureMinorSessions": "2301429",
+            "meanMarkedExposureMinor": {
+              "numerator": "2301429",
+              "denominator": 136
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.16922272",
+            "heldShareSessions": 405,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "-467",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "-0.00467000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "-467",
+            "upper": "-467"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "-0.00467000",
+            "upper": "-0.00467000"
+          },
+          "directionAcrossModeledTaxBounds": "BENCHMARK_HIGHER",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    },
+    {
+      "id": "2026-YTD",
+      "startDate": "2026-01-02",
+      "endDate": "2026-08-11",
+      "rowCount": 145,
+      "initialCapitalMinor": "100000",
+      "targetQuantity": 3,
+      "startingRawPriceMinor": "6695",
+      "startingRawTargetNotionalMinor": "20085",
+      "projectedInitialBuyExposureMinor": "20286",
+      "projectedInitialBuyReservationMinor": "20349",
+      "sameExecutableRiskAndCostConstraints": true,
+      "constraints": {
+        "maxPositionQuantity": 4,
+        "maxIncreasedPositionExposureMinor": "50000",
+        "feeBps": 30,
+        "slippageBps": 100,
+        "initialCapitalMinor": "100000"
+      },
+      "startDateTargetExecutable": true,
+      "startDateRiskReason": null,
+      "benchmarkInterpretation": "START_DATE_ORDER_NEXT_EVENT_HOLDING",
+      "purchaseOpportunityDifference": "Original hold benchmark retries daily; frozen SMA candidate requests increased exposure at first event or monthly signal dates. Diagnostic comparator below matches these opportunities.",
+      "candidate": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "110736",
+        "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2026-01-05",
+        "investedSessionCount": 144,
+        "evaluatedSessionCount": 145,
+        "decisions": {
+          "noTrade": 144,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 144
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "10530",
+          "grossDistributionMinor": "480",
+          "feesMinor": "64",
+          "slippageMinor": "210",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "10736",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2026-01-05",
+            "quantity": 3,
+            "rawPriceMinor": "6950",
+            "executionPriceMinor": "7020",
+            "totalCashCostMinor": "21124"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "20850",
+          "maximumMarkedExposureMinor": "33345",
+          "sumMarkedExposureMinorSessions": "3852675",
+          "meanMarkedExposureMinor": {
+            "numerator": "3852675",
+            "denominator": 145
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.26570172",
+          "heldShareSessions": 432,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "costMatchedBenchmark": {
+        "startingEquityMinor": "100000",
+        "endingEquityMinor": "110736",
+        "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+        "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+        "completedTradeCount": 0,
+        "completedTradeWinRateBeforePersonalDividendTax": null,
+        "openPositionQuantity": 3,
+        "fillCount": 1,
+        "firstInvestedDate": "2026-01-05",
+        "investedSessionCount": 144,
+        "evaluatedSessionCount": 145,
+        "decisions": {
+          "noTrade": 144,
+          "submitted": 1,
+          "riskRejected": 0
+        },
+        "reasonCodeCounts": {
+          "ORDER_ACCEPTED": 1,
+          "NO_POSITION_CHANGE": 144
+        },
+        "pnlAttribution": {
+          "priceMovementMinor": "10530",
+          "grossDistributionMinor": "480",
+          "feesMinor": "64",
+          "slippageMinor": "210",
+          "sellTaxMinor": "0",
+          "netPnlMinor": "10736",
+          "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+        },
+        "exposureAudit": {
+          "firstBuy": {
+            "date": "2026-01-05",
+            "quantity": 3,
+            "rawPriceMinor": "6950",
+            "executionPriceMinor": "7020",
+            "totalCashCostMinor": "21124"
+          },
+          "rejectedDecisions": [],
+          "firstMarkedExposureMinor": "20850",
+          "maximumMarkedExposureMinor": "33345",
+          "sumMarkedExposureMinorSessions": "3852675",
+          "meanMarkedExposureMinor": {
+            "numerator": "3852675",
+            "denominator": 145
+          },
+          "meanMarkedExposureFractionOfInitialCapital": "0.26570172",
+          "heldShareSessions": 432,
+          "markedExposureAboveOrderCapSessionCount": 0,
+          "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+        }
+      },
+      "relativePnlAttribution": {
+        "differentHoldingDatesPriceEffectMinor": "0",
+        "dividendEffectMinor": "0",
+        "commissionEffectMinor": "0",
+        "slippageEffectMinor": "0",
+        "sellTaxEffectMinor": "0",
+        "endingEquityDeltaMinor": "0",
+        "interpretation": "Exact journal identity. Different holding dates measure changed market exposure; they do not establish predictive signal skill or risk-adjusted alpha."
+      },
+      "commonEligibilityControl": {
+        "id": "2026-YTD",
+        "startDate": "2026-01-02",
+        "endDate": "2026-08-11",
+        "rowCount": 145,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "110736",
+          "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2026-01-05",
+          "investedSessionCount": 144,
+          "evaluatedSessionCount": 145,
+          "decisions": {
+            "noTrade": 144,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 144
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "10530",
+            "grossDistributionMinor": "480",
+            "feesMinor": "64",
+            "slippageMinor": "210",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "10736",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2026-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "6950",
+              "executionPriceMinor": "7020",
+              "totalCashCostMinor": "21124"
+            },
+            "firstMarkedExposureMinor": "20850",
+            "maximumMarkedExposureMinor": "33345",
+            "sumMarkedExposureMinorSessions": "3852675",
+            "meanMarkedExposureMinor": {
+              "numerator": "3852675",
+              "denominator": 145
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.26570172",
+            "heldShareSessions": 432,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "110736",
+          "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2026-01-05",
+          "investedSessionCount": 144,
+          "evaluatedSessionCount": 145,
+          "decisions": {
+            "noTrade": 144,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 144
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "10530",
+            "grossDistributionMinor": "480",
+            "feesMinor": "64",
+            "slippageMinor": "210",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "10736",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2026-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "6950",
+              "executionPriceMinor": "7020",
+              "totalCashCostMinor": "21124"
+            },
+            "firstMarkedExposureMinor": "20850",
+            "maximumMarkedExposureMinor": "33345",
+            "sumMarkedExposureMinorSessions": "3852675",
+            "meanMarkedExposureMinor": {
+              "numerator": "3852675",
+              "denominator": 145
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.26570172",
+            "heldShareSessions": 432,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_COMMON_COMPLETED_SIGNAL_ELIGIBILITY"
+      },
+      "sameMonthlyOpportunityControl": {
+        "id": "2026-YTD",
+        "startDate": "2026-01-02",
+        "endDate": "2026-08-11",
+        "rowCount": 145,
+        "candidate": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "110736",
+          "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2026-01-05",
+          "investedSessionCount": 144,
+          "evaluatedSessionCount": 145,
+          "decisions": {
+            "noTrade": 144,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 144
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "10530",
+            "grossDistributionMinor": "480",
+            "feesMinor": "64",
+            "slippageMinor": "210",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "10736",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2026-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "6950",
+              "executionPriceMinor": "7020",
+              "totalCashCostMinor": "21124"
+            },
+            "firstMarkedExposureMinor": "20850",
+            "maximumMarkedExposureMinor": "33345",
+            "sumMarkedExposureMinorSessions": "3852675",
+            "meanMarkedExposureMinor": {
+              "numerator": "3852675",
+              "denominator": 145
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.26570172",
+            "heldShareSessions": 432,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "costMatchedBenchmark": {
+          "startingEquityMinor": "100000",
+          "endingEquityMinor": "110736",
+          "netReturnBeforePersonalDividendTaxFraction": "0.10736000",
+          "maximumDrawdownBeforePersonalDividendTaxFraction": "0.04545818",
+          "completedTradeCount": 0,
+          "completedTradeWinRateBeforePersonalDividendTax": null,
+          "openPositionQuantity": 3,
+          "fillCount": 1,
+          "firstInvestedDate": "2026-01-05",
+          "investedSessionCount": 144,
+          "evaluatedSessionCount": 145,
+          "decisions": {
+            "noTrade": 144,
+            "submitted": 1,
+            "riskRejected": 0
+          },
+          "reasonCodeCounts": {
+            "ORDER_ACCEPTED": 1,
+            "NO_POSITION_CHANGE": 144
+          },
+          "pnlAttribution": {
+            "priceMovementMinor": "10530",
+            "grossDistributionMinor": "480",
+            "feesMinor": "64",
+            "slippageMinor": "210",
+            "sellTaxMinor": "0",
+            "netPnlMinor": "10736",
+            "identity": "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital"
+          },
+          "exposureAudit": {
+            "firstBuy": {
+              "date": "2026-01-05",
+              "quantity": 3,
+              "rawPriceMinor": "6950",
+              "executionPriceMinor": "7020",
+              "totalCashCostMinor": "21124"
+            },
+            "firstMarkedExposureMinor": "20850",
+            "maximumMarkedExposureMinor": "33345",
+            "sumMarkedExposureMinorSessions": "3852675",
+            "meanMarkedExposureMinor": {
+              "numerator": "3852675",
+              "denominator": 145
+            },
+            "meanMarkedExposureFractionOfInitialCapital": "0.26570172",
+            "heldShareSessions": 432,
+            "markedExposureAboveOrderCapSessionCount": 0,
+            "capInterpretation": "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings."
+          }
+        },
+        "relativeOutcome": {
+          "endingEquityDeltaMinor": "0",
+          "excessNetReturnBeforePersonalDividendTaxFraction": "0.00000000",
+          "taxSensitivityEndingEquityDeltaMinor": {
+            "lower": "0",
+            "upper": "0"
+          },
+          "taxSensitivityExcessReturnFraction": {
+            "lower": "0.00000000",
+            "upper": "0.00000000"
+          },
+          "directionAcrossModeledTaxBounds": "INDETERMINATE",
+          "personalTaxInterpretation": "Common event-specific distribution haircut between 0% and 100% plus sell-tax whole-TWD rounding bounds. This is a sensitivity bound, not an actual tax return."
+        },
+        "classification": "DIAGNOSTIC_ONLY_SAME_MONTHLY_PURCHASE_OPPORTUNITIES",
+        "evaluationStatus": "DESCRIPTIVE_ONLY"
+      },
+      "zeroYieldCashControl": {
+        "endingEquityMinor": "100000",
+        "netReturnFraction": "0.00000000",
+        "classification": "DIAGNOSTIC_ZERO_YIELD_CASH; NOT_A_SELECTED_STRATEGY"
+      }
+    }
+  ],
+  "interpretationLimits": [
+    "This is a diagnostic attribution, not causal proof that a signal has or lacks universal predictive value.",
+    "Same raw 3-share stake is not the same economic stake across the 4:1 split. No pooled success rate or risk-adjusted alpha across eight independent portfolios is claimed.",
+    "Monthly-opportunity control is an explicit comparator; it does not replace the frozen daily-retrying hold benchmark or change live/paper risk.",
+    "Exposure means are actual marked capital per observed session, not executable fractional-share counterfactual portfolios.",
+    "Personal distribution taxes, broker minimum fees, source session completeness and live execution remain unverified as in the frozen source report."
+  ]
+}

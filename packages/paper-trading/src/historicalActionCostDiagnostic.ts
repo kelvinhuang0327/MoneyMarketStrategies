@@ -3,7 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { parseHistoricalCsv, type ParsedHistoricalCsv } from "./historicalBaseline.js";
-import { ceilDiv, reservedBuyCashMinor } from "./money.js";
+import { ceilDiv, executionPriceMinor, reservedBuyCashMinor } from "./money.js";
 import { runPaperSession } from "./sessionRunner.js";
 import { calculateTenMonthSmaSignals, TREND_VS_HOLD_VERSION, type MonthEndTrendSignal } from "./trendVsHoldDiagnostic.js";
 import type { PaperStrategy, SimulationEvent, StrategyInput } from "./types.js";
@@ -36,6 +36,7 @@ interface Point {
   taxFloor: bigint;
   taxCeil: bigint;
   quantity: number;
+  priceMinor: bigint;
 }
 
 function record(value: unknown, name: string): Json {
@@ -117,6 +118,7 @@ export function reconcileHistoricalRun(
   run: Json,
   events: ParsedHistoricalCsv["session"]["events"],
   distributions: readonly HistoricalDividend[],
+  captureExposureAudit = false,
 ): { summary: Json; points: readonly Point[] } {
   validateDividends(distributions);
   const settings = record(run["simulationSettings"], "simulation settings");
@@ -146,6 +148,9 @@ export function reconcileHistoricalRun(
   let quantity = 0;
   let fees = 0n;
   let slippage = 0n;
+  let pricePnl = 0n;
+  let previousMark: bigint | null = null;
+  let firstBuy: { date: string; quantity: number; rawPriceMinor: string; executionPriceMinor: string; totalCashCostMinor: string } | null = null;
   let taxFloor = 0n;
   let taxCeil = 0n;
   let distributionCash = 0n;
@@ -155,6 +160,7 @@ export function reconcileHistoricalRun(
   let exIndex = 0;
   const payable: { payDate: string; amount: bigint }[] = [];
   const entitlements: Json[] = [];
+  const rejectedDecisions: Json[] = [];
   const closed: { netPnlMinor: string; distributionIncomeMinor: string; closedDate: string }[] = [];
   const firstDate = dateOf(events[0]?.eventId ?? "");
   // A fresh portfolio has no rights from ex dates preceding its start.
@@ -162,6 +168,8 @@ export function reconcileHistoricalRun(
   const points: Point[] = [];
   for (const [index, market] of events.entries()) {
     const day = dateOf(market.eventId);
+    if (previousMark !== null) pricePnl += BigInt(quantity) * (market.priceMinor - previousMark);
+    previousMark = market.priceMinor;
     // Entitlements use holdings before today's fill; a missing ex-day observation
     // is booked on the first subsequent observation, without inventing a price.
     while (distributions[exIndex] && distributions[exIndex]!.exDate <= day) {
@@ -188,6 +196,7 @@ export function reconcileHistoricalRun(
         // overlay must never turn an accepted engine fill into unfunded trading.
         if (cash - taxCeil < notional + fill.feeMinor) throw new RangeError("tax-adjusted execution cash insufficient; replay is inconclusive");
         if (quantity === 0) { tradeCashFlow = 0n; tradeIncome = 0n; }
+        firstBuy ??= { date: day, quantity: fill.quantity, rawPriceMinor: market.priceMinor.toString(), executionPriceMinor: fill.executionPriceMinor.toString(), totalCashCostMinor: (notional + fill.feeMinor).toString() };
         cash -= notional + fill.feeMinor;
         tradeCashFlow -= notional + fill.feeMinor;
         quantity += fill.quantity;
@@ -205,6 +214,16 @@ export function reconcileHistoricalRun(
     // Check reservation feasibility as well as fills; otherwise the overlay
     // could hide a tax-induced funding change at order submission.
     for (const item of journal) {
+      if (item.kind === "decision" && item.sourceEventId === market.eventId && item.status === "risk-rejected") {
+        const buyQuantity = item.targetPositionQuantity === null ? 0 : Math.max(0, item.targetPositionQuantity - item.currentPositionQuantity);
+        rejectedDecisions.push({
+          date: day, reasonCode: item.reasonCode, targetQuantity: item.targetPositionQuantity,
+          rawCloseMinor: market.priceMinor.toString(),
+          projectedExposureMinor: (market.priceMinor * BigInt(item.currentPositionQuantity) + executionPriceMinor("buy", market.priceMinor, 100) * BigInt(buyQuantity)).toString(),
+          requiredBuyReservationMinor: reservedBuyCashMinor(buyQuantity, market.priceMinor, 100, 30).toString(),
+          executionCashMinor: cash.toString(), conservativeTaxAdjustedCashMinor: (cash - taxCeil).toString(),
+        });
+      }
       if (item.kind === "order" && item.sourceEventId === market.eventId && item.side === "buy" && item.status === "pending") {
         const reservation = reservedBuyCashMinor(item.remainingQuantity, market.priceMinor, 100, 30);
         if (reservation > cash - taxCeil) throw new RangeError("tax-adjusted order reservation insufficient; replay is inconclusive");
@@ -212,7 +231,7 @@ export function reconcileHistoricalRun(
     }
     const engineEquity = integer(record(rawCurve[index], "equity point")["equityMinor"], "engine equity");
     if (cash + market.priceMinor * BigInt(quantity) !== engineEquity) throw new TypeError("engine cash and holdings do not reconcile to journal");
-    points.push({ date: day, equity: engineEquity + distributionCash + receivable - taxCeil, grossDistribution: distributionCash + receivable, taxFloor, taxCeil, quantity });
+    points.push({ date: day, equity: engineEquity + distributionCash + receivable - taxCeil, grossDistribution: distributionCash + receivable, taxFloor, taxCeil, quantity, priceMinor: market.priceMinor });
   }
   if ([...fills.keys()].some((day) => !points.some((p) => p.date === day))) throw new TypeError("journal contains fills outside observed coverage");
   const last = points.at(-1);
@@ -225,6 +244,12 @@ export function reconcileHistoricalRun(
   const pending = active === null ? [] : [record(active, "active order")];
   const wins = closed.filter((t) => BigInt(t.netPnlMinor) > 0n).length;
   const losses = closed.filter((t) => BigInt(t.netPnlMinor) < 0n).length;
+  const grossDistribution = distributionCash + receivable;
+  if (last.equity - INITIAL !== pricePnl + grossDistribution - fees - slippage - taxCeil) throw new TypeError("price exposure and cost attribution do not reconcile");
+  const markedExposures = points.map((p) => p.priceMinor * BigInt(p.quantity));
+  const exposureSum = markedExposures.reduce((total, value) => total + value, 0n);
+  const maximumExposure = markedExposures.reduce((maximum, value) => value > maximum ? value : maximum, 0n);
+  const firstExposure = points.find((p) => p.quantity > 0);
   return {
     points,
     summary: {
@@ -243,6 +268,24 @@ export function reconcileHistoricalRun(
       markedPositionValueAtCutoffMinor: (events.at(-1)!.priceMinor * BigInt(quantity)).toString(),
       investedSessionCount: points.filter((p) => p.quantity > 0).length, evaluatedSessionCount: points.length,
       adjustedExecutionCashAtCutoffMinor: (cash - taxCeil).toString(),
+      ...(captureExposureAudit ? { exposureAudit: {
+        firstBuy,
+        rejectedDecisions,
+        firstMarkedExposureMinor: firstExposure ? (firstExposure.priceMinor * BigInt(firstExposure.quantity)).toString() : "0",
+        maximumMarkedExposureMinor: maximumExposure.toString(),
+        sumMarkedExposureMinorSessions: exposureSum.toString(),
+        meanMarkedExposureMinor: { numerator: exposureSum.toString(), denominator: points.length },
+        meanMarkedExposureFractionOfInitialCapital: fraction(exposureSum, INITIAL * BigInt(points.length)),
+        heldShareSessions: points.reduce((total, p) => total + p.quantity, 0),
+        markedExposureAboveOrderCapSessionCount: markedExposures.filter((v) => v > 50_000n).length,
+        capInterpretation: "The existing dollar cap is enforced on increased positions and pending/fill exposure, not as a forced liquidation of appreciated holdings.",
+      },
+      pnlAttribution: {
+        priceMovementMinor: pricePnl.toString(), grossDistributionMinor: grossDistribution.toString(),
+        feesMinor: fees.toString(), slippageMinor: slippage.toString(), sellTaxMinor: taxCeil.toString(),
+        netPnlMinor: (last.equity - INITIAL).toString(),
+        identity: "price movement + entitled distribution - commission - slippage - sale tax = equity minus initial capital",
+      } } : {}),
       interpretation: "Equity and closed-trade PnL include entitled distributions and conservative sell tax; personal distribution taxes and broker minimum fees remain unknown. Open positions are marked, not liquidated.",
     },
   };
@@ -254,16 +297,26 @@ export function evaluateHistoricalWindow(
   window: HistoricalDiagnosticWindow,
   signals: readonly MonthEndTrendSignal[],
   dividends: readonly HistoricalDividend[],
+  benchmarkDecisionPolicy: "EVERY_EVENT" | "SAME_MONTHLY_OPPORTUNITIES" = "EVERY_EVENT",
+  captureExposureAudit = false,
 ): Json {
   date(window.startDate); date(window.endDate);
   if (window.startDate > window.endDate || (window.startDate < SPLIT_DATE && window.endDate >= SPLIT_DATE)) throw new TypeError("independent window cannot cross the split boundary");
   const events = parsed.session.events.filter((e) => dateOf(e.eventId) >= window.startDate && dateOf(e.eventId) <= window.endDate);
   if (events.length !== window.rowCount || dateOf(events[0]?.eventId ?? "") !== window.startDate || dateOf(events.at(-1)?.eventId ?? "") !== window.endDate) throw new TypeError("window row count or endpoints do not reconcile");
-  if (parsed.session.simulation.initialCashMinor !== INITIAL || parsed.session.simulation.terms.feeBps !== 30 || parsed.session.simulation.terms.slippageBps !== 100) throw new TypeError("locked execution economics mismatch");
+  if (parsed.session.simulation.initialCashMinor !== INITIAL || parsed.session.simulation.terms.feeBps !== 30 || parsed.session.simulation.terms.slippageBps !== 100
+    || parsed.session.simulation.risk.maxPositionQuantity !== 4 || parsed.session.simulation.risk.maxExposureMinor !== 50_000n) throw new TypeError("locked execution economics or risk mismatch");
   const session = { ...parsed.session, events };
-  const benchmarkStrategy: PaperStrategy = { strategyVersion: "cost-matched-always-long-benchmark-v1", decide: () => 3 };
-  const candidate = reconcileHistoricalRun(runPaperSession(session, sourceSha256, undefined, strategy(signals, window.startDate), undefined, { captureEquityCurve: true }), events, dividends);
-  const benchmark = reconcileHistoricalRun(runPaperSession(session, sourceSha256, undefined, benchmarkStrategy, undefined, { captureEquityCurve: true }), events, dividends);
+  if (benchmarkDecisionPolicy !== "EVERY_EVENT" && benchmarkDecisionPolicy !== "SAME_MONTHLY_OPPORTUNITIES") throw new TypeError("unsupported diagnostic benchmark opportunity policy");
+  const monthlyDates = new Set(signals.map((s) => s.signalDate));
+  const benchmarkStrategy: PaperStrategy = benchmarkDecisionPolicy === "EVERY_EVENT"
+    ? { strategyVersion: "cost-matched-always-long-benchmark-v1", decide: () => 3 }
+    : {
+        strategyVersion: "diagnostic-hold-monthly-opportunities-v1",
+        decide: (input) => dateOf(input.current.eventId) === window.startDate || monthlyDates.has(dateOf(input.current.eventId)) ? 3 : input.positionQuantity,
+      };
+  const candidate = reconcileHistoricalRun(runPaperSession(session, sourceSha256, undefined, strategy(signals, window.startDate), undefined, { captureEquityCurve: true }), events, dividends, captureExposureAudit);
+  const benchmark = reconcileHistoricalRun(runPaperSession(session, sourceSha256, undefined, benchmarkStrategy, undefined, { captureEquityCurve: true }), events, dividends, captureExposureAudit);
   const c = candidate.points.at(-1)!;
   const b = benchmark.points.at(-1)!;
   const delta = c.equity - b.equity;

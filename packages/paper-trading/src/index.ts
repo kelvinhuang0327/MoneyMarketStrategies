@@ -6,6 +6,7 @@ export {
   sellTaxBounds,
 } from "./historicalActionCostDiagnostic.js";
 export type { HistoricalDividend, HistoricalDiagnosticWindow } from "./historicalActionCostDiagnostic.js";
+export { commonEligibilityWindow, relativePnlAttribution, runHistoricalExposureAuditFiles } from "./historicalExposureAudit.js";
 export {
   evaluateSplitRebasedForwardSample,
   evaluateSplitRebasedHistoricalBenchmark,
