@@ -11,6 +11,9 @@
       "path": "./packages/strategy-simulator"
     },
     {
+      "path": "./packages/execution-gateway"
+    },
+    {
       "path": "./packages/paper-trading"
     }
   ]

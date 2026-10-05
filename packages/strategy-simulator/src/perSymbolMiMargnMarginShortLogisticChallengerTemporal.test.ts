@@ -23,7 +23,7 @@ function sha256(text: string): string {
 }
 
 function loadCanonicalInput(): MiMargnMarginShortTemporalInput {
-  const ohlcvPath = "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  const ohlcvPath = path.resolve("data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
   const miMargnPath = path.resolve("outputs/retraining/p197_0056_twse_mi_margn_margin_short_balances.csv");
   const ohlcvText = readFileSync(ohlcvPath, "utf8");
   const miMargnText = readFileSync(miMargnPath, "utf8");

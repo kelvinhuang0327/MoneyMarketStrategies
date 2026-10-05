@@ -22,6 +22,7 @@ const EVENTS_DIRECTORY = "events";
 type JournalCommand =
   | { readonly kind: "market"; readonly payload: MarketEvent }
   | { readonly kind: "cancel"; readonly payload: CancelRequest }
+  | { readonly kind: "cancel-request"; readonly payload: CancelRequest }
   | { readonly kind: "halt"; readonly payload: HaltRequest }
   | { readonly kind: "execution-report"; readonly payload: ExecutionReport };
 
@@ -407,7 +408,7 @@ function encodeCommand(command: JournalCommand): Record<string, unknown> {
       priceMinor: command.payload.priceMinor.toString(),
     };
   }
-  if (command.kind === "cancel") {
+  if (command.kind === "cancel" || command.kind === "cancel-request") {
     return {
       eventId: command.payload.eventId,
       timestamp: command.payload.timestamp,
@@ -442,7 +443,7 @@ function decodeCommand(kind: JournalCommand["kind"], value: unknown): JournalCom
       }),
     });
   }
-  if (kind === "cancel") {
+  if (kind === "cancel" || kind === "cancel-request") {
     exactKeys(value, "cancel journal payload", ["eventId", "timestamp", "clientOrderId"]);
     return Object.freeze({
       kind,
@@ -554,9 +555,11 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
   }
   if (kind === "order") {
     const hasReason = Object.hasOwn(value, "reasonCode");
+    const hasCancelPending = Object.hasOwn(value, "cancelPending");
     exactKeys(value, path, [
       "eventId", "timestamp", "kind", "sourceEventId", "clientOrderId", "status", "side", "quantity",
-      "filledQuantity", "remainingQuantity", ...(hasReason ? ["reasonCode"] : []),
+      "filledQuantity", "remainingQuantity", ...(hasCancelPending ? ["cancelPending"] : []),
+      ...(hasReason ? ["reasonCode"] : []),
     ]);
     const status = value["status"];
     const side = value["side"];
@@ -564,6 +567,8 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
       failCorrupt(`${path}.status is invalid`);
     }
     if (side !== "buy" && side !== "sell") failCorrupt(`${path}.side is invalid`);
+    const cancelPending = value["cancelPending"];
+    if (hasCancelPending && typeof cancelPending !== "boolean") failCorrupt(`${path}.cancelPending is invalid`);
     return Object.freeze({
       eventId,
       timestamp,
@@ -575,6 +580,7 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
       quantity: safeInteger(value["quantity"], `${path}.quantity`, 0),
       filledQuantity: safeInteger(value["filledQuantity"], `${path}.filledQuantity`, 0),
       remainingQuantity: safeInteger(value["remainingQuantity"], `${path}.remainingQuantity`, 0),
+      ...(hasCancelPending ? { cancelPending: cancelPending as boolean } : {}),
       ...(hasReason ? { reasonCode: optionalReason(value, path)! } : {}),
     });
   }
@@ -637,7 +643,7 @@ function decodeEntry(value: unknown, path: string): JournalEntry {
   if (value["recordType"] !== "event") failCorrupt(`${path} recordType is unsupported`);
   const sequence = safeInteger(value["sequence"], `${path}.sequence`, 1);
   const kind = value["kind"];
-  if (kind !== "market" && kind !== "cancel" && kind !== "halt" && kind !== "execution-report") {
+  if (kind !== "market" && kind !== "cancel" && kind !== "cancel-request" && kind !== "halt" && kind !== "execution-report") {
     failCorrupt(`${path}.kind is unsupported`);
   }
   const payload = decodeCommand(kind, value["payload"]);
@@ -816,7 +822,7 @@ function decodeCallerCommand(command: JournalCommand): JournalCommand {
       }),
     });
   }
-  if (command.kind === "cancel") {
+  if (command.kind === "cancel" || command.kind === "cancel-request") {
     if (typeof payload["eventId"] !== "string" || payload["eventId"].trim() === "") throw new TypeError("cancel eventId is required for durable journaling");
     const timestamp = payload["timestamp"];
     if (typeof timestamp !== "number" || !Number.isSafeInteger(timestamp)) throw new TypeError("cancel timestamp must be a safe integer for durable journaling");
@@ -957,6 +963,10 @@ export class DurablePaperTradingSession {
     return this.execute({ kind: "cancel", payload: request });
   }
 
+  async requestCancelOrder(request: CancelRequest): Promise<OperationResult> {
+    return this.execute({ kind: "cancel-request", payload: request });
+  }
+
   async halt(request: HaltRequest): Promise<OperationResult> {
     return this.execute({ kind: "halt", payload: request });
   }
@@ -1064,6 +1074,7 @@ export class DurablePaperTradingSession {
     switch (command.kind) {
       case "market": return this.engine.processMarketEvent(command.payload);
       case "cancel": return this.engine.cancelOrder(command.payload);
+      case "cancel-request": return this.engine.requestCancelOrder(command.payload);
       case "halt": return this.engine.halt(command.payload);
       case "execution-report": return this.engine.acceptExecutionReport(command.payload);
     }
