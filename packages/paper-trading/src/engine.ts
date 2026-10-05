@@ -5,6 +5,7 @@ import type {
   CancelRequest,
   DecisionRecord,
   ExecutionReport,
+  ExternalOrderReconciliation,
   FillRuleDecision,
   HaltRequest,
   MarketEvent,
@@ -190,7 +191,9 @@ export class PaperTradingEngine {
 
   acceptExecutionReport(report: ExecutionReport): OperationResult {
     if (!report || !nonEmpty(report.fillId)) return rejected("INVALID_FILL_ID");
-    if (!nonEmpty(report.clientOrderId) || !nonEmpty(report.marketEventId)) return rejected("INVALID_FILL_REFERENCE");
+    const external = typeof report.externalOrderId === "string";
+    const fillReference = external ? report.externalOrderId : report.marketEventId;
+    if (!nonEmpty(report.clientOrderId) || !nonEmpty(fillReference)) return rejected("INVALID_FILL_REFERENCE");
     if (!safeTimestamp(report.timestamp)) return rejected("INVALID_FILL_TIMESTAMP");
     if (!safeQuantity(report.quantity) || report.quantity === 0) return rejected("INVALID_FILL_QUANTITY");
     if (typeof report.executionPriceMinor !== "bigint" || report.executionPriceMinor <= 0n) return rejected("INVALID_FILL_PRICE");
@@ -199,7 +202,8 @@ export class PaperTradingEngine {
     const canonical = JSON.stringify([
       report.fillId,
       report.clientOrderId,
-      report.marketEventId,
+      external ? "external" : "market",
+      fillReference,
       report.timestamp,
       report.quantity,
       report.executionPriceMinor.toString(),
@@ -212,41 +216,53 @@ export class PaperTradingEngine {
     }
 
     const order = this.ordersById.get(report.clientOrderId);
-    if (!order || !this.isActive(order)) return this.rejectFill(report.fillId, canonical, "ORDER_NOT_ACTIVE");
-    const market = this.freshMarketsById.get(report.marketEventId);
-    if (!market) return this.rejectFill(report.fillId, canonical, "FILL_MARKET_NOT_FOUND");
-    if (this.currentMark?.eventId !== market.eventId) return this.rejectFill(report.fillId, canonical, "FILL_MARKET_NOT_CURRENT");
-    if (report.timestamp !== market.timestamp || market.timestamp <= order.createdAt) {
-      return this.rejectFill(report.fillId, canonical, "FILL_NOT_AFTER_ORDER");
+    if (!order) return this.rejectFill(report.fillId, canonical, external ? "ORDER_NOT_FOUND" : "ORDER_NOT_ACTIVE");
+    let market: MarketObservation | undefined;
+    if (external) {
+      if (report.timestamp < order.createdAt) return this.rejectFill(report.fillId, canonical, "FILL_NOT_AFTER_ORDER");
+    } else {
+      if (!this.isActive(order)) return this.rejectFill(report.fillId, canonical, "ORDER_NOT_ACTIVE");
+      market = this.freshMarketsById.get(report.marketEventId);
+      if (!market) return this.rejectFill(report.fillId, canonical, "FILL_MARKET_NOT_FOUND");
+      if (this.currentMark?.eventId !== market.eventId) return this.rejectFill(report.fillId, canonical, "FILL_MARKET_NOT_CURRENT");
+      if (report.timestamp !== market.timestamp || market.timestamp <= order.createdAt) {
+        return this.rejectFill(report.fillId, canonical, "FILL_NOT_AFTER_ORDER");
+      }
     }
     if (report.quantity > order.remainingQuantity) return this.rejectFill(report.fillId, canonical, "FILL_EXCEEDS_REMAINING");
 
-    const expectedExecutionPrice = executionPriceMinor(order.side, market.priceMinor, this.terms.slippageBps);
-    const expectedFee = feeMinorForFill(expectedExecutionPrice, report.quantity, this.terms.feeBps);
-    if (report.executionPriceMinor !== expectedExecutionPrice || report.feeMinor !== expectedFee) {
-      return this.rejectFill(report.fillId, canonical, "FILL_TERMS_MISMATCH");
+    if (market !== undefined) {
+      const expectedExecutionPrice = executionPriceMinor(order.side, market.priceMinor, this.terms.slippageBps);
+      const expectedFee = feeMinorForFill(expectedExecutionPrice, report.quantity, this.terms.feeBps);
+      if (report.executionPriceMinor !== expectedExecutionPrice || report.feeMinor !== expectedFee) {
+        return this.rejectFill(report.fillId, canonical, "FILL_TERMS_MISMATCH");
+      }
     }
 
     const notionalMinor = report.executionPriceMinor * BigInt(report.quantity);
     const totalBuyCostMinor = notionalMinor + report.feeMinor;
     const remainingAfter = order.remainingQuantity - report.quantity;
     if (order.side === "buy") {
-      const cashAfterFill = this.cashMinor - totalBuyCostMinor;
-      const riskReason = buyFillRiskReason({
-        postFillPosition: this.positionQuantity + report.quantity,
-        fillQuantity: report.quantity,
-        remainingPendingQuantity: remainingAfter,
-        markPriceMinor: market.priceMinor,
-        executionPriceMinor: report.executionPriceMinor,
-        cashAfterFillMinor: cashAfterFill,
-        limits: this.riskLimits,
-        terms: this.terms,
-      });
-      if (riskReason) return this.rejectFill(report.fillId, canonical, riskReason);
+      if (market !== undefined) {
+        const cashAfterFill = this.cashMinor - totalBuyCostMinor;
+        const riskReason = buyFillRiskReason({
+          postFillPosition: this.positionQuantity + report.quantity,
+          fillQuantity: report.quantity,
+          remainingPendingQuantity: remainingAfter,
+          markPriceMinor: market.priceMinor,
+          executionPriceMinor: report.executionPriceMinor,
+          cashAfterFillMinor: cashAfterFill,
+          limits: this.riskLimits,
+          terms: this.terms,
+        });
+        if (riskReason) return this.rejectFill(report.fillId, canonical, riskReason);
+      }
     } else {
       if (report.quantity > this.positionQuantity) return this.rejectFill(report.fillId, canonical, "FILL_EXCEEDS_POSITION");
-      if (remainingAfter > this.positionQuantity - report.quantity) return this.rejectFill(report.fillId, canonical, "FILL_EXCEEDS_POSITION");
-      if (report.feeMinor > notionalMinor) return this.rejectFill(report.fillId, canonical, "FILL_FEE_EXCEEDS_PROCEEDS");
+      if (!external && remainingAfter > this.positionQuantity - report.quantity) {
+        return this.rejectFill(report.fillId, canonical, "FILL_EXCEEDS_POSITION");
+      }
+      if (!external && report.feeMinor > notionalMinor) return this.rejectFill(report.fillId, canonical, "FILL_FEE_EXCEEDS_PROCEEDS");
     }
 
     const acceptedReport = Object.freeze({ ...report });
@@ -268,8 +284,15 @@ export class PaperTradingEngine {
     this.feesPaidMinor += report.feeMinor;
     order.filledQuantity += report.quantity;
     order.remainingQuantity = remainingAfter;
-    order.status = remainingAfter === 0 ? "filled" : "partially-filled";
-    if (remainingAfter === 0) this.activeOrder = null;
+    const statusBeforeFill = order.status;
+    order.status = remainingAfter === 0
+      ? "filled"
+      : external && !this.isActive(statusBeforeFill)
+        ? statusBeforeFill
+        : statusBeforeFill === "cancel-pending"
+          ? "cancel-pending"
+          : "partially-filled";
+    if (remainingAfter === 0 && this.activeOrder === order) this.activeOrder = null;
     this.fillCanonicalById.set(report.fillId, { canonical, result: operation("accepted") });
     this.fills.push(acceptedReport);
     this.events.push(Object.freeze({
@@ -278,14 +301,144 @@ export class PaperTradingEngine {
       kind: "fill",
       fillId: report.fillId,
       clientOrderId: report.clientOrderId,
-      sourceMarketEventId: report.marketEventId,
+      ...(external
+        ? { sourceExternalOrderId: report.externalOrderId }
+        : { sourceMarketEventId: report.marketEventId }),
       side: order.side,
       quantity: report.quantity,
       executionPriceMinor: report.executionPriceMinor,
       feeMinor: report.feeMinor,
     }));
-    this.recordOrder(order, report.timestamp, report.marketEventId, order.status);
+    this.recordOrder(order, report.timestamp, external ? report.fillId : report.marketEventId, order.status);
     return operation("accepted");
+  }
+
+  requestExternalCancel(request: CancelRequest): OperationResult {
+    if (!request || !nonEmpty(request.eventId)) return rejected("INVALID_EVENT_ID");
+    if (!safeTimestamp(request.timestamp)) return rejected("INVALID_TIMESTAMP");
+    if (!nonEmpty(request.clientOrderId)) return rejected("INVALID_ORDER_ID");
+    const canonical = JSON.stringify(["external-cancel-request", request.eventId, request.timestamp, request.clientOrderId]);
+    const replay = this.checkInputReplay(request.eventId, canonical);
+    if (replay) return replay;
+    const timeReason = this.validateControlTime(request.timestamp);
+    if (timeReason) return rejected(timeReason);
+    this.inputCanonicalById.set(request.eventId, canonical);
+
+    const order = this.activeOrder;
+    if (!order || order.clientOrderId !== request.clientOrderId || !this.isActive(order)) {
+      this.events.push(Object.freeze({
+        eventId: `cancel/${encode(request.eventId)}`,
+        timestamp: request.timestamp,
+        kind: "cancel",
+        sourceEventId: request.eventId,
+        clientOrderId: request.clientOrderId,
+        status: "rejected",
+        reasonCode: "ORDER_NOT_ACTIVE",
+      }));
+      return rejected("ORDER_NOT_ACTIVE");
+    }
+
+    order.status = "cancel-pending";
+    this.events.push(Object.freeze({
+      eventId: `cancel/${encode(request.eventId)}`,
+      timestamp: request.timestamp,
+      kind: "cancel",
+      sourceEventId: request.eventId,
+      clientOrderId: request.clientOrderId,
+      status: "pending",
+      reasonCode: "CANCEL_REQUESTED",
+    }));
+    this.recordOrder(order, request.timestamp, request.eventId, "CANCEL_REQUESTED");
+    return operation("accepted");
+  }
+
+  recordExternalReconciliation(reconciliation: ExternalOrderReconciliation): OperationResult {
+    if (!reconciliation || !nonEmpty(reconciliation.eventId)) return rejected("INVALID_EVENT_ID");
+    if (!safeTimestamp(reconciliation.timestamp)) return rejected("INVALID_TIMESTAMP");
+    if (!nonEmpty(reconciliation.clientOrderId)) return rejected("INVALID_ORDER_ID");
+    if (reconciliation.outcome === "orderFound") {
+      if (!nonEmpty(reconciliation.externalOrderId)) return rejected("INVALID_EXTERNAL_ORDER_ID");
+    } else if (reconciliation.outcome !== "unknown" && reconciliation.outcome !== "notFound") {
+      return rejected("INVALID_RECONCILIATION_OUTCOME");
+    }
+    const canonical = JSON.stringify([
+      "external-reconciliation",
+      reconciliation.eventId,
+      reconciliation.timestamp,
+      reconciliation.clientOrderId,
+      reconciliation.outcome,
+      reconciliation.outcome === "orderFound" ? reconciliation.externalOrderId : null,
+      reconciliation.outcome === "orderFound" ? reconciliation.orderStatus : null,
+    ]);
+    const replay = this.checkInputReplay(reconciliation.eventId, canonical);
+    if (replay) return replay;
+    const timeReason = this.validateControlTime(reconciliation.timestamp);
+    if (timeReason) return rejected(timeReason);
+    this.inputCanonicalById.set(reconciliation.eventId, canonical);
+
+    const order = this.ordersById.get(reconciliation.clientOrderId);
+    if (!order) return rejected("ORDER_NOT_FOUND");
+    let result: OperationResult = operation("accepted");
+    if (reconciliation.outcome === "notFound") {
+      if (order.status === "filled") {
+        result = rejected("ORDER_ALREADY_FILLED");
+      } else if (order.status === "cancelled" || order.status === "rejected" || order.status === "absent") {
+        // A prior terminal state is not reopened by a later not-found query.
+      } else {
+        order.status = "absent";
+        this.releaseActiveOrder(order);
+        this.recordOrder(order, reconciliation.timestamp, reconciliation.eventId, "EXTERNAL_ORDER_NOT_FOUND");
+      }
+    } else if (reconciliation.outcome === "orderFound") {
+      const terminal = order.status === "filled" || order.status === "cancelled" || order.status === "rejected" || order.status === "absent";
+      if (reconciliation.orderStatus === "filled" && order.remainingQuantity !== 0) {
+        result = rejected("FILLED_WITHOUT_COMPLETE_FILL_EVIDENCE");
+      } else if (order.status === "filled" && reconciliation.orderStatus !== "filled") {
+        // A stale nonterminal provider response must not reopen a fully booked order.
+      } else if (!terminal && reconciliation.orderStatus === "cancelled") {
+        order.status = "cancelled";
+        this.releaseActiveOrder(order);
+        this.recordOrder(order, reconciliation.timestamp, reconciliation.eventId, "EXTERNAL_CANCEL_CONFIRMED");
+      } else if (!terminal && reconciliation.orderStatus === "rejected") {
+        order.status = "rejected";
+        order.rejectionReason = "EXTERNAL_ORDER_REJECTED";
+        this.releaseActiveOrder(order);
+        this.recordOrder(order, reconciliation.timestamp, reconciliation.eventId, order.rejectionReason);
+      } else if (!terminal && reconciliation.orderStatus === "filled") {
+        order.status = "filled";
+        this.releaseActiveOrder(order);
+        this.recordOrder(order, reconciliation.timestamp, reconciliation.eventId);
+      } else if (
+        !terminal &&
+        (reconciliation.orderStatus === "pending" || reconciliation.orderStatus === "partiallyFilled")
+      ) {
+        if (this.activeOrder !== null && this.activeOrder !== order) {
+          result = rejected("ANOTHER_ORDER_IS_ACTIVE");
+        } else {
+          if (this.activeOrder === null) this.activeOrder = order;
+          if (order.status !== "cancel-pending") {
+            order.status = order.filledQuantity > 0 ? "partially-filled" : "pending";
+            this.recordOrder(order, reconciliation.timestamp, reconciliation.eventId);
+          }
+        }
+      }
+    }
+
+    this.events.push(Object.freeze({
+      eventId: `reconciliation/${encode(reconciliation.eventId)}`,
+      timestamp: reconciliation.timestamp,
+      kind: "reconciliation",
+      sourceEventId: reconciliation.eventId,
+      clientOrderId: reconciliation.clientOrderId,
+      outcome: reconciliation.outcome,
+      ...(reconciliation.outcome === "orderFound"
+        ? {
+            externalOrderId: reconciliation.externalOrderId,
+            orderStatus: reconciliation.orderStatus,
+          }
+        : {}),
+    }));
+    return result;
   }
 
   cancelOrder(request: CancelRequest): OperationResult {
@@ -397,6 +550,7 @@ export class PaperTradingEngine {
   private processActiveOrderAt(market: MarketObservation): void {
     const order = this.activeOrder;
     if (!order) return;
+    if (order.status === "cancel-pending") return;
     if (order.side === "buy") {
       const pendingReason = pendingBuyRiskReason({
         positionQuantity: this.positionQuantity,
@@ -491,6 +645,10 @@ export class PaperTradingEngine {
     }
 
     const order = this.activeOrder;
+    if (order?.status === "cancel-pending") {
+      this.recordDecision(market, target, "no-trade", "CANCEL_PENDING_RECONCILIATION");
+      return;
+    }
     const targetChanged = order !== null && projectedPosition(order, this.positionQuantity) !== target;
     if (order && !targetChanged) {
       this.recordDecision(market, target, "no-trade", "PENDING_ORDER_MATCHES_TARGET");
@@ -581,7 +739,7 @@ export class PaperTradingEngine {
 
   private cancelActive(timestamp: number, sourceEventId: string, reasonCode: string): void {
     const order = this.activeOrder;
-    if (!order) return;
+    if (!order || order.status === "cancel-pending") return;
     order.status = "cancelled";
     order.rejectionReason = reasonCode;
     this.activeOrder = null;
@@ -627,8 +785,13 @@ export class PaperTradingEngine {
     );
   }
 
-  private isActive(order: MutableOrder): boolean {
-    return order.status === "pending" || order.status === "partially-filled";
+  private isActive(orderOrStatus: MutableOrder | OrderStatus): boolean {
+    const status = typeof orderOrStatus === "string" ? orderOrStatus : orderOrStatus.status;
+    return status === "pending" || status === "partially-filled" || status === "cancel-pending";
+  }
+
+  private releaseActiveOrder(order: MutableOrder): void {
+    if (this.activeOrder === order) this.activeOrder = null;
   }
 
   private isFillTimeRiskReason(reasonCode: string | undefined): reasonCode is string {

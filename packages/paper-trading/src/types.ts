@@ -3,9 +3,31 @@ export type OrderSide = "buy" | "sell";
 export type OrderStatus =
   | "pending"
   | "partially-filled"
+  | "cancel-pending"
+  | "absent"
   | "filled"
   | "rejected"
   | "cancelled";
+
+export type ExternalOrderStatus =
+  | "pending"
+  | "partiallyFilled"
+  | "filled"
+  | "cancelled"
+  | "rejected";
+
+export type ExternalOrderReconciliation = Readonly<{
+  eventId: string;
+  timestamp: number;
+  clientOrderId: string;
+}> & (
+  | Readonly<{ outcome: "unknown" | "notFound" }>
+  | Readonly<{
+      outcome: "orderFound";
+      externalOrderId: string;
+      orderStatus: ExternalOrderStatus;
+    }>
+);
 
 export interface MarketEvent {
   readonly eventId: string;
@@ -62,15 +84,17 @@ export interface PaperOrder {
   readonly rejectionReason?: string;
 }
 
-export interface ExecutionReport {
-  readonly fillId: string;
-  readonly clientOrderId: string;
-  readonly marketEventId: string;
-  readonly timestamp: number;
-  readonly quantity: number;
-  readonly executionPriceMinor: bigint;
-  readonly feeMinor: bigint;
-}
+export type ExecutionReport = Readonly<{
+  fillId: string;
+  clientOrderId: string;
+  timestamp: number;
+  quantity: number;
+  executionPriceMinor: bigint;
+  feeMinor: bigint;
+}> & (
+  | Readonly<{ marketEventId: string; externalOrderId?: never }>
+  | Readonly<{ externalOrderId: string; marketEventId?: never }>
+);
 
 export type FillRuleDecision =
   | { readonly kind: "no-fill" }
@@ -128,18 +152,20 @@ export type SimulationEvent =
       readonly remainingQuantity: number;
       readonly reasonCode?: string;
     }
-  | {
+  | ({
       readonly eventId: string;
       readonly timestamp: number;
       readonly kind: "fill";
       readonly fillId: string;
       readonly clientOrderId: string;
-      readonly sourceMarketEventId: string;
       readonly side: OrderSide;
       readonly quantity: number;
       readonly executionPriceMinor: bigint;
       readonly feeMinor: bigint;
-    }
+    } & (
+      | Readonly<{ sourceMarketEventId: string; sourceExternalOrderId?: never }>
+      | Readonly<{ sourceExternalOrderId: string; sourceMarketEventId?: never }>
+    ))
   | {
       readonly eventId: string;
       readonly timestamp: number;
@@ -153,8 +179,18 @@ export type SimulationEvent =
       readonly kind: "cancel";
       readonly sourceEventId: string;
       readonly clientOrderId: string;
-      readonly status: "cancelled" | "rejected";
+      readonly status: "pending" | "cancelled" | "rejected";
       readonly reasonCode: string;
+    }
+  | {
+      readonly eventId: string;
+      readonly timestamp: number;
+      readonly kind: "reconciliation";
+      readonly sourceEventId: string;
+      readonly clientOrderId: string;
+      readonly outcome: "unknown" | "notFound" | "orderFound";
+      readonly externalOrderId?: string;
+      readonly orderStatus?: ExternalOrderStatus;
     };
 
 export interface AccountSnapshot {

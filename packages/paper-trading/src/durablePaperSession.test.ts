@@ -212,6 +212,163 @@ describe("durable paper trading journal", () => {
     });
   });
 
+  it("replays cancel-pending, unknown, confirmed cancellation, and late external fills exactly once", async () => {
+    await withTemporaryRoot(async (root) => {
+      const path = join(root, "gateway-race-journal");
+      const fillRule: SimulatedFillRule = ({ order, market }) => ({
+        kind: "fill",
+        fillId: `unexpected-synthetic-fill:${market.eventId}`,
+        quantity: order.remainingQuantity,
+      });
+      const firstConfig = harness({ feeBps: 0, fillRule });
+      const first = await DurablePaperTradingSession.open(firstConfig.config, path);
+      await commitMarket(first, firstConfig, quote("gateway-order", 10, 80n));
+      const clientOrderId = first.getOrders()[0]!.clientOrderId;
+      expect(first.getSnapshot().reservedCashMinor).toBe(160n);
+
+      firstConfig.setNow(11);
+      expect(await first.requestExternalCancel({
+        eventId: "gateway-cancel-request",
+        timestamp: 11,
+        clientOrderId,
+      })).toEqual({ status: "accepted" });
+      expect(first.getOrders()[0]).toMatchObject({ status: "cancel-pending", remainingQuantity: 2 });
+      expect(first.getSnapshot()).toMatchObject({ reservedCashMinor: 160n, activeOrder: { status: "cancel-pending" } });
+
+      expect(await first.recordExternalReconciliation({
+        eventId: "gateway-unknown",
+        timestamp: 11,
+        clientOrderId,
+        outcome: "unknown",
+      })).toEqual({ status: "accepted" });
+      expect(first.getOrders()[0]?.status).toBe("cancel-pending");
+      expect(first.getSnapshot().reservedCashMinor).toBe(160n);
+
+      await commitMarket(first, firstConfig, quote("market-during-cancel", 12, 80n));
+      expect(first.getFills()).toHaveLength(0);
+      expect(first.getOrders()[0]).toMatchObject({ status: "cancel-pending", remainingQuantity: 2 });
+      expect(first.getSnapshot().reservedCashMinor).toBe(160n);
+
+      firstConfig.setNow(13);
+      const firstFill = {
+        fillId: "gateway-fill-1",
+        clientOrderId,
+        externalOrderId: "external-order-1",
+        timestamp: 13,
+        quantity: 1,
+        executionPriceMinor: 79n,
+        feeMinor: 1n,
+      } as const;
+      expect(await first.acceptExecutionReport(firstFill)).toEqual({ status: "accepted" });
+      expect(first.getOrders()[0]).toMatchObject({ status: "cancel-pending", filledQuantity: 1, remainingQuantity: 1 });
+      expect(first.getSnapshot()).toMatchObject({ positionQuantity: 1, reservedCashMinor: 80n });
+      first.close();
+
+      const resumedConfig = harness({ feeBps: 0, fillRule });
+      const resumed = await DurablePaperTradingSession.open(resumedConfig.config, path);
+      expect(resumed.getOrders()[0]).toMatchObject({ status: "cancel-pending", filledQuantity: 1, remainingQuantity: 1 });
+      expect(resumed.getSnapshot()).toMatchObject({ positionQuantity: 1, reservedCashMinor: 80n });
+      const sequenceBeforeDuplicate = resumed.getJournalSequence();
+      expect(await resumed.acceptExecutionReport(firstFill)).toEqual({ status: "duplicate" });
+      expect(resumed.getJournalSequence()).toBe(sequenceBeforeDuplicate);
+
+      resumedConfig.setNow(14);
+      expect(await resumed.recordExternalReconciliation({
+        eventId: "gateway-cancel-confirmed",
+        timestamp: 14,
+        clientOrderId,
+        outcome: "orderFound",
+        externalOrderId: "external-order-1",
+        orderStatus: "cancelled",
+      })).toEqual({ status: "accepted" });
+      expect(resumed.getOrders()[0]).toMatchObject({ status: "cancelled", filledQuantity: 1, remainingQuantity: 1 });
+      expect(resumed.getSnapshot()).toMatchObject({ reservedCashMinor: 0n, activeOrder: null, positionQuantity: 1 });
+
+      resumedConfig.setNow(15);
+      const lateFill = { ...firstFill, fillId: "gateway-fill-2", timestamp: 15, executionPriceMinor: 81n };
+      expect(await resumed.acceptExecutionReport(lateFill)).toEqual({ status: "accepted" });
+      expect(resumed.getOrders()[0]).toMatchObject({ status: "filled", filledQuantity: 2, remainingQuantity: 0 });
+      expect(resumed.getSnapshot()).toMatchObject({ reservedCashMinor: 0n, activeOrder: null, positionQuantity: 2 });
+      const finalState = state(resumed);
+      resumed.close();
+
+      const replayed = await DurablePaperTradingSession.open(harness({ feeBps: 0, fillRule }).config, path);
+      expect(state(replayed)).toEqual(finalState);
+      const replaySequence = replayed.getJournalSequence();
+      expect(await replayed.acceptExecutionReport(lateFill)).toEqual({ status: "duplicate" });
+      expect(replayed.getJournalSequence()).toBe(replaySequence);
+      expect(replayed.getFills()).toHaveLength(2);
+      replayed.close();
+    });
+  });
+
+  it("releases a cancel-pending reserve only on explicit reconciled absence", async () => {
+    await withTemporaryRoot(async (root) => {
+      const path = join(root, "absence-journal");
+      const config = harness();
+      const session = await DurablePaperTradingSession.open(config.config, path);
+      await commitMarket(session, config, quote("absence-order", 30, 80n));
+      const clientOrderId = session.getOrders()[0]!.clientOrderId;
+      config.setNow(31);
+      await session.requestExternalCancel({ eventId: "absence-cancel", timestamp: 31, clientOrderId });
+      config.setNow(32);
+      expect(await session.recordExternalReconciliation({
+        eventId: "absence-unknown",
+        timestamp: 32,
+        clientOrderId,
+        outcome: "unknown",
+      })).toEqual({ status: "accepted" });
+      expect(session.getOrders()[0]?.status).toBe("cancel-pending");
+      expect(session.getSnapshot().reservedCashMinor).toBe(162n);
+
+      config.setNow(33);
+      expect(await session.recordExternalReconciliation({
+        eventId: "absence-confirmed",
+        timestamp: 33,
+        clientOrderId,
+        outcome: "notFound",
+      })).toEqual({ status: "accepted" });
+      expect(session.getOrders()[0]).toMatchObject({ status: "absent", remainingQuantity: 2 });
+      expect(session.getSnapshot()).toMatchObject({ reservedCashMinor: 0n, activeOrder: null });
+      session.close();
+
+      const replayed = await DurablePaperTradingSession.open(harness().config, path);
+      expect(replayed.getOrders()[0]?.status).toBe("absent");
+      expect(replayed.getSnapshot().reservedCashMinor).toBe(0n);
+      replayed.close();
+    });
+  });
+
+  it("replays a schema-v1 journal before upgrading its header for new transitions", async () => {
+    await withTemporaryRoot(async (root) => {
+      const path = join(root, "legacy-journal");
+      const firstConfig = harness();
+      const first = await DurablePaperTradingSession.open(firstConfig.config, path);
+      await commitMarket(first, firstConfig, quote("legacy-v1", 20, 100n));
+      const expectedState = state(first);
+      first.close();
+
+      const headerPath = join(path, "header.json");
+      const header = JSON.parse(await readFile(headerPath, "utf8")) as Record<string, unknown>;
+      header["schemaVersion"] = 1;
+      await writeFile(headerPath, JSON.stringify(header), "utf8");
+      const eventsDirectory = join(path, "events");
+      for (const name of await readdir(eventsDirectory)) {
+        if (!name.endsWith(".json")) continue;
+        const eventPath = join(eventsDirectory, name);
+        const entry = JSON.parse(await readFile(eventPath, "utf8")) as Record<string, unknown>;
+        entry["schemaVersion"] = 1;
+        await writeFile(eventPath, JSON.stringify(entry), "utf8");
+      }
+
+      const resumed = await DurablePaperTradingSession.open(harness().config, path);
+      expect(state(resumed)).toEqual(expectedState);
+      const upgradedHeader = JSON.parse(await readFile(headerPath, "utf8")) as Record<string, unknown>;
+      expect(upgradedHeader["schemaVersion"]).toBe(2);
+      resumed.close();
+    });
+  });
+
   it("preserves minor-unit amounts above Number.MAX_SAFE_INTEGER exactly", async () => {
     await withTemporaryRoot(async (root) => {
       const path = join(root, "journal");
@@ -379,7 +536,7 @@ describe("durable paper trading journal", () => {
       const eventsDirectory = join(path, "events");
       const [firstFile] = await readdir(eventsDirectory);
       const entry = JSON.parse(await readFile(join(eventsDirectory, firstFile!), "utf8")) as Record<string, unknown>;
-      entry["schemaVersion"] = 2;
+      entry["schemaVersion"] = 3;
       await writeFile(join(eventsDirectory, firstFile!), JSON.stringify(entry), "utf8");
       await expect(DurablePaperTradingSession.open(harness().config, path)).rejects.toBeInstanceOf(PaperJournalCorruptError);
     });

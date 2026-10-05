@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { link, mkdir, open, readdir, readFile, stat, unlink } from "node:fs/promises";
+import { link, mkdir, open, readdir, readFile, rename, stat, unlink } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { PaperTradingEngine } from "./engine.js";
 import type {
@@ -7,6 +7,7 @@ import type {
   CancelRequest,
   Clock,
   ExecutionReport,
+  ExternalOrderReconciliation,
   HaltRequest,
   MarketEvent,
   OperationResult,
@@ -15,18 +16,22 @@ import type {
   SimulationEvent,
 } from "./types.js";
 
-const JOURNAL_SCHEMA_VERSION = 1;
+const LEGACY_JOURNAL_SCHEMA_VERSION = 1;
+const JOURNAL_SCHEMA_VERSION = 2;
+type JournalSchemaVersion = typeof LEGACY_JOURNAL_SCHEMA_VERSION | typeof JOURNAL_SCHEMA_VERSION;
 const HEADER_FILE = "header.json";
 const EVENTS_DIRECTORY = "events";
 
 type JournalCommand =
   | { readonly kind: "market"; readonly payload: MarketEvent }
   | { readonly kind: "cancel"; readonly payload: CancelRequest }
+  | { readonly kind: "cancel-request"; readonly payload: CancelRequest }
+  | { readonly kind: "external-reconciliation"; readonly payload: ExternalOrderReconciliation }
   | { readonly kind: "halt"; readonly payload: HaltRequest }
   | { readonly kind: "execution-report"; readonly payload: ExecutionReport };
 
 interface JournalHeader {
-  readonly schemaVersion: typeof JOURNAL_SCHEMA_VERSION;
+  readonly schemaVersion: JournalSchemaVersion;
   readonly recordType: "paper-trading-journal";
   readonly journalId: string;
   readonly symbol: string;
@@ -46,7 +51,7 @@ interface JournalHeader {
 }
 
 type JournalEntry = {
-  readonly schemaVersion: typeof JOURNAL_SCHEMA_VERSION;
+  readonly schemaVersion: JournalSchemaVersion;
   readonly recordType: "event";
   readonly sequence: number;
   /** The source event ID, or the fill ID for an execution report. */
@@ -189,7 +194,6 @@ function makeHeader(config: PaperTradingEngineConfig, journalId: string = random
 
 function headerConfiguration(header: JournalHeader): unknown {
   return {
-    schemaVersion: header.schemaVersion,
     recordType: header.recordType,
     symbol: header.symbol,
     initialCashMinor: header.initialCashMinor,
@@ -214,7 +218,7 @@ function decodeParameters(value: unknown): JournalHeader["strategyParameters"] {
 
 function decodeHeader(value: unknown): JournalHeader {
   if (!isRecord(value)) failCorrupt("journal header must be an object");
-  if (value["schemaVersion"] !== JOURNAL_SCHEMA_VERSION) {
+  if (value["schemaVersion"] !== LEGACY_JOURNAL_SCHEMA_VERSION && value["schemaVersion"] !== JOURNAL_SCHEMA_VERSION) {
     failCorrupt(`unknown paper journal schema version: ${String(value["schemaVersion"])}`);
   }
   exactKeys(value, "journal header", [
@@ -250,7 +254,7 @@ function decodeHeader(value: unknown): JournalHeader {
 
   const strategyVersion = nonEmptyString(value["strategyVersion"], "journal header strategyVersion");
   return Object.freeze({
-    schemaVersion: JOURNAL_SCHEMA_VERSION,
+    schemaVersion: value["schemaVersion"] as JournalSchemaVersion,
     recordType: "paper-trading-journal",
     journalId,
     symbol,
@@ -323,6 +327,32 @@ async function atomicCreateFile(path: string, content: string): Promise<void> {
   }
 }
 
+async function atomicReplaceFile(path: string, content: string): Promise<void> {
+  const directory = dirname(path);
+  const temporaryPath = join(directory, `.paper-journal-${randomUUID()}.tmp`);
+  const handle = await open(temporaryPath, "wx", 0o600);
+  try {
+    await handle.writeFile(content, "utf8");
+    await handle.sync();
+  } finally {
+    await handle.close();
+  }
+  let replaced = false;
+  try {
+    await rename(temporaryPath, path);
+    replaced = true;
+    await syncDirectory(directory);
+  } finally {
+    if (!replaced) {
+      try {
+        await unlink(temporaryPath);
+      } catch (error) {
+        if (!isNotFound(error)) throw error;
+      }
+    }
+  }
+}
+
 async function readHeaderOrCreate(root: string, config: PaperTradingEngineConfig): Promise<JournalHeader> {
   const headerPath = join(root, HEADER_FILE);
   const eventsPath = join(root, EVENTS_DIRECTORY);
@@ -390,7 +420,9 @@ function executionReportCanonical(report: ExecutionReport): string {
   return canonicalJson({
     fillId: report.fillId,
     clientOrderId: report.clientOrderId,
-    marketEventId: report.marketEventId,
+    ...(typeof report.externalOrderId === "string"
+      ? { externalOrderId: report.externalOrderId }
+      : { marketEventId: report.marketEventId }),
     timestamp: report.timestamp,
     quantity: report.quantity,
     executionPriceMinor: report.executionPriceMinor,
@@ -414,21 +446,44 @@ function encodeCommand(command: JournalCommand): Record<string, unknown> {
       clientOrderId: command.payload.clientOrderId,
     };
   }
+  if (command.kind === "cancel-request") {
+    return {
+      eventId: command.payload.eventId,
+      timestamp: command.payload.timestamp,
+      clientOrderId: command.payload.clientOrderId,
+    };
+  }
+  if (command.kind === "external-reconciliation") {
+    return {
+      eventId: command.payload.eventId,
+      timestamp: command.payload.timestamp,
+      clientOrderId: command.payload.clientOrderId,
+      outcome: command.payload.outcome,
+      ...(command.payload.outcome === "orderFound"
+        ? {
+            externalOrderId: command.payload.externalOrderId,
+            orderStatus: command.payload.orderStatus,
+          }
+        : {}),
+    };
+  }
   if (command.kind === "halt") {
     return { eventId: command.payload.eventId, timestamp: command.payload.timestamp, reason: command.payload.reason };
   }
-  return {
+  const reportPayload = {
     fillId: command.payload.fillId,
     clientOrderId: command.payload.clientOrderId,
-    marketEventId: command.payload.marketEventId,
     timestamp: command.payload.timestamp,
     quantity: command.payload.quantity,
     executionPriceMinor: command.payload.executionPriceMinor.toString(),
     feeMinor: command.payload.feeMinor.toString(),
   };
+  return typeof command.payload.externalOrderId === "string"
+    ? { ...reportPayload, externalOrderId: command.payload.externalOrderId }
+    : { ...reportPayload, marketEventId: command.payload.marketEventId };
 }
 
-function decodeCommand(kind: JournalCommand["kind"], value: unknown): JournalCommand {
+function decodeCommand(kind: JournalCommand["kind"], value: unknown, schemaVersion: JournalSchemaVersion): JournalCommand {
   if (!isRecord(value)) failCorrupt("journal event payload must be an object");
   if (kind === "market") {
     exactKeys(value, "market journal payload", ["eventId", "timestamp", "symbol", "priceMinor"]);
@@ -453,6 +508,54 @@ function decodeCommand(kind: JournalCommand["kind"], value: unknown): JournalCom
       }),
     });
   }
+  if (kind === "cancel-request") {
+    if (schemaVersion < JOURNAL_SCHEMA_VERSION) failCorrupt("cancel-request is unsupported in paper journal schema v1");
+    exactKeys(value, "cancel-request journal payload", ["eventId", "timestamp", "clientOrderId"]);
+    return Object.freeze({
+      kind,
+      payload: Object.freeze({
+        eventId: nonEmptyString(value["eventId"], "cancel-request journal payload eventId"),
+        timestamp: safeInteger(value["timestamp"], "cancel-request journal payload timestamp"),
+        clientOrderId: nonEmptyString(value["clientOrderId"], "cancel-request journal payload clientOrderId"),
+      }),
+    });
+  }
+  if (kind === "external-reconciliation") {
+    if (schemaVersion < JOURNAL_SCHEMA_VERSION) failCorrupt("external-reconciliation is unsupported in paper journal schema v1");
+    if (value["outcome"] === "orderFound") {
+      exactKeys(value, "external-reconciliation journal payload", [
+        "eventId", "timestamp", "clientOrderId", "outcome", "externalOrderId", "orderStatus",
+      ]);
+      const orderStatus = value["orderStatus"];
+      if (orderStatus !== "pending" && orderStatus !== "partiallyFilled" && orderStatus !== "filled"
+        && orderStatus !== "cancelled" && orderStatus !== "rejected") {
+        failCorrupt("external-reconciliation journal payload orderStatus is invalid");
+      }
+      return Object.freeze({
+        kind,
+        payload: Object.freeze({
+          eventId: nonEmptyString(value["eventId"], "external-reconciliation journal payload eventId"),
+          timestamp: safeInteger(value["timestamp"], "external-reconciliation journal payload timestamp"),
+          clientOrderId: nonEmptyString(value["clientOrderId"], "external-reconciliation journal payload clientOrderId"),
+          outcome: "orderFound",
+          externalOrderId: nonEmptyString(value["externalOrderId"], "external-reconciliation journal payload externalOrderId"),
+          orderStatus,
+        }),
+      });
+    }
+    exactKeys(value, "external-reconciliation journal payload", ["eventId", "timestamp", "clientOrderId", "outcome"]);
+    const outcome = value["outcome"];
+    if (outcome !== "unknown" && outcome !== "notFound") failCorrupt("external-reconciliation journal payload outcome is invalid");
+    return Object.freeze({
+      kind,
+      payload: Object.freeze({
+        eventId: nonEmptyString(value["eventId"], "external-reconciliation journal payload eventId"),
+        timestamp: safeInteger(value["timestamp"], "external-reconciliation journal payload timestamp"),
+        clientOrderId: nonEmptyString(value["clientOrderId"], "external-reconciliation journal payload clientOrderId"),
+        outcome,
+      }),
+    });
+  }
   if (kind === "halt") {
     exactKeys(value, "halt journal payload", ["eventId", "timestamp", "reason"]);
     return Object.freeze({
@@ -464,25 +567,38 @@ function decodeCommand(kind: JournalCommand["kind"], value: unknown): JournalCom
       }),
     });
   }
-  exactKeys(value, "execution-report journal payload", [
+  const baseKeys = [
     "fillId",
     "clientOrderId",
-    "marketEventId",
     "timestamp",
     "quantity",
     "executionPriceMinor",
     "feeMinor",
+  ];
+  const hasMarketEventId = Object.hasOwn(value, "marketEventId");
+  const hasExternalOrderId = Object.hasOwn(value, "externalOrderId");
+  if (hasMarketEventId === hasExternalOrderId || (schemaVersion === LEGACY_JOURNAL_SCHEMA_VERSION && !hasMarketEventId)) {
+    failCorrupt("execution-report journal payload must identify exactly one supported source");
+  }
+  exactKeys(value, "execution-report journal payload", [
+    ...baseKeys,
+    hasMarketEventId ? "marketEventId" : "externalOrderId",
   ]);
+  const reportBase = {
+    fillId: nonEmptyString(value["fillId"], "execution-report journal payload fillId"),
+    clientOrderId: nonEmptyString(value["clientOrderId"], "execution-report journal payload clientOrderId"),
+    timestamp: safeInteger(value["timestamp"], "execution-report journal payload timestamp"),
+    quantity: safeInteger(value["quantity"], "execution-report journal payload quantity", 0),
+    executionPriceMinor: decimalBigint(value["executionPriceMinor"], "execution-report journal payload executionPriceMinor", true),
+    feeMinor: decimalBigint(value["feeMinor"], "execution-report journal payload feeMinor", true),
+  };
   return Object.freeze({
     kind,
     payload: Object.freeze({
-      fillId: nonEmptyString(value["fillId"], "execution-report journal payload fillId"),
-      clientOrderId: nonEmptyString(value["clientOrderId"], "execution-report journal payload clientOrderId"),
-      marketEventId: nonEmptyString(value["marketEventId"], "execution-report journal payload marketEventId"),
-      timestamp: safeInteger(value["timestamp"], "execution-report journal payload timestamp"),
-      quantity: safeInteger(value["quantity"], "execution-report journal payload quantity", 0),
-      executionPriceMinor: decimalBigint(value["executionPriceMinor"], "execution-report journal payload executionPriceMinor", true),
-      feeMinor: decimalBigint(value["feeMinor"], "execution-report journal payload feeMinor", true),
+      ...reportBase,
+      ...(hasExternalOrderId
+        ? { externalOrderId: nonEmptyString(value["externalOrderId"], "execution-report journal payload externalOrderId") }
+        : { marketEventId: nonEmptyString(value["marketEventId"], "execution-report journal payload marketEventId") }),
     }),
   });
 }
@@ -507,7 +623,7 @@ function optionalReason(value: Record<string, unknown>, path: string): string | 
     : undefined;
 }
 
-function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
+function decodeSimulationEvent(value: unknown, index: number, schemaVersion: JournalSchemaVersion): SimulationEvent {
   const path = `journal event emitted event ${index}`;
   if (!isRecord(value)) failCorrupt(`${path} must be an object`);
   const kind = value["kind"];
@@ -560,7 +676,8 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
     ]);
     const status = value["status"];
     const side = value["side"];
-    if (status !== "pending" && status !== "partially-filled" && status !== "filled" && status !== "rejected" && status !== "cancelled") {
+    if (status !== "pending" && status !== "partially-filled" && status !== "filled" && status !== "rejected" && status !== "cancelled"
+      && !(schemaVersion === JOURNAL_SCHEMA_VERSION && (status === "cancel-pending" || status === "absent"))) {
       failCorrupt(`${path}.status is invalid`);
     }
     if (side !== "buy" && side !== "sell") failCorrupt(`${path}.side is invalid`);
@@ -579,9 +696,14 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
     });
   }
   if (kind === "fill") {
+    const hasMarketEventId = Object.hasOwn(value, "sourceMarketEventId");
+    const hasExternalOrderId = Object.hasOwn(value, "sourceExternalOrderId");
+    if (hasMarketEventId === hasExternalOrderId || (schemaVersion === LEGACY_JOURNAL_SCHEMA_VERSION && !hasMarketEventId)) {
+      failCorrupt(`${path} must identify exactly one supported fill source`);
+    }
     exactKeys(value, path, [
-      "eventId", "timestamp", "kind", "fillId", "clientOrderId", "sourceMarketEventId", "side", "quantity",
-      "executionPriceMinor", "feeMinor",
+      "eventId", "timestamp", "kind", "fillId", "clientOrderId", ...(hasMarketEventId ? ["sourceMarketEventId"] : ["sourceExternalOrderId"]),
+      "side", "quantity", "executionPriceMinor", "feeMinor",
     ]);
     const side = value["side"];
     if (side !== "buy" && side !== "sell") failCorrupt(`${path}.side is invalid`);
@@ -591,7 +713,9 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
       kind,
       fillId: nonEmptyString(value["fillId"], `${path}.fillId`),
       clientOrderId: nonEmptyString(value["clientOrderId"], `${path}.clientOrderId`),
-      sourceMarketEventId: nonEmptyString(value["sourceMarketEventId"], `${path}.sourceMarketEventId`),
+      ...(hasMarketEventId
+        ? { sourceMarketEventId: nonEmptyString(value["sourceMarketEventId"], `${path}.sourceMarketEventId`) }
+        : { sourceExternalOrderId: nonEmptyString(value["sourceExternalOrderId"], `${path}.sourceExternalOrderId`) }),
       side,
       quantity: safeInteger(value["quantity"], `${path}.quantity`, 0),
       executionPriceMinor: decimalBigint(value["executionPriceMinor"], `${path}.executionPriceMinor`, false),
@@ -611,7 +735,8 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
   if (kind === "cancel") {
     exactKeys(value, path, ["eventId", "timestamp", "kind", "sourceEventId", "clientOrderId", "status", "reasonCode"]);
     const status = value["status"];
-    if (status !== "cancelled" && status !== "rejected") failCorrupt(`${path}.status is invalid`);
+    if (status !== "cancelled" && status !== "rejected"
+      && !(schemaVersion === JOURNAL_SCHEMA_VERSION && status === "pending")) failCorrupt(`${path}.status is invalid`);
     return Object.freeze({
       eventId,
       timestamp,
@@ -622,12 +747,44 @@ function decodeSimulationEvent(value: unknown, index: number): SimulationEvent {
       reasonCode: nonEmptyString(value["reasonCode"], `${path}.reasonCode`),
     });
   }
+  if (kind === "reconciliation") {
+    if (schemaVersion < JOURNAL_SCHEMA_VERSION) failCorrupt(`${path} is unsupported in paper journal schema v1`);
+    const outcome = value["outcome"];
+    if (outcome === "orderFound") {
+      exactKeys(value, path, [
+        "eventId", "timestamp", "kind", "sourceEventId", "clientOrderId", "outcome", "externalOrderId", "orderStatus",
+      ]);
+      const orderStatus = value["orderStatus"];
+      if (orderStatus !== "pending" && orderStatus !== "partiallyFilled" && orderStatus !== "filled"
+        && orderStatus !== "cancelled" && orderStatus !== "rejected") failCorrupt(`${path}.orderStatus is invalid`);
+      return Object.freeze({
+        eventId,
+        timestamp,
+        kind,
+        sourceEventId: nonEmptyString(value["sourceEventId"], `${path}.sourceEventId`),
+        clientOrderId: nonEmptyString(value["clientOrderId"], `${path}.clientOrderId`),
+        outcome,
+        externalOrderId: nonEmptyString(value["externalOrderId"], `${path}.externalOrderId`),
+        orderStatus,
+      });
+    }
+    if (outcome !== "unknown" && outcome !== "notFound") failCorrupt(`${path}.outcome is invalid`);
+    exactKeys(value, path, ["eventId", "timestamp", "kind", "sourceEventId", "clientOrderId", "outcome"]);
+    return Object.freeze({
+      eventId,
+      timestamp,
+      kind,
+      sourceEventId: nonEmptyString(value["sourceEventId"], `${path}.sourceEventId`),
+      clientOrderId: nonEmptyString(value["clientOrderId"], `${path}.clientOrderId`),
+      outcome,
+    });
+  }
   return failCorrupt(`${path} has unknown kind ${String(kind)}`);
 }
 
 function decodeEntry(value: unknown, path: string): JournalEntry {
   if (!isRecord(value)) failCorrupt(`${path} must contain an object`);
-  if (value["schemaVersion"] !== JOURNAL_SCHEMA_VERSION) {
+  if (value["schemaVersion"] !== LEGACY_JOURNAL_SCHEMA_VERSION && value["schemaVersion"] !== JOURNAL_SCHEMA_VERSION) {
     failCorrupt(`${path} has unknown paper journal schema version ${String(value["schemaVersion"])}`);
   }
   exactKeys(value, path, [
@@ -637,10 +794,12 @@ function decodeEntry(value: unknown, path: string): JournalEntry {
   if (value["recordType"] !== "event") failCorrupt(`${path} recordType is unsupported`);
   const sequence = safeInteger(value["sequence"], `${path}.sequence`, 1);
   const kind = value["kind"];
-  if (kind !== "market" && kind !== "cancel" && kind !== "halt" && kind !== "execution-report") {
+  if (kind !== "market" && kind !== "cancel" && kind !== "halt" && kind !== "execution-report"
+    && !(value["schemaVersion"] === JOURNAL_SCHEMA_VERSION && (kind === "cancel-request" || kind === "external-reconciliation"))) {
     failCorrupt(`${path}.kind is unsupported`);
   }
-  const payload = decodeCommand(kind, value["payload"]);
+  const schemaVersion = value["schemaVersion"] as JournalSchemaVersion;
+  const payload = decodeCommand(kind, value["payload"], schemaVersion);
   const eventId = nonEmptyString(value["eventId"], `${path}.eventId`);
   const timestamp = safeInteger(value["timestamp"], `${path}.timestamp`);
   if (eventId !== commandEventId(payload) || timestamp !== commandTimestamp(payload)) {
@@ -652,7 +811,7 @@ function decodeEntry(value: unknown, path: string): JournalEntry {
   const rawEvents = value["events"];
   if (!Array.isArray(rawEvents)) failCorrupt(`${path}.events must be an array`);
   return Object.freeze({
-    schemaVersion: JOURNAL_SCHEMA_VERSION,
+    schemaVersion,
     recordType: "event",
     sequence,
     eventId,
@@ -660,7 +819,7 @@ function decodeEntry(value: unknown, path: string): JournalEntry {
     ...payload,
     clockTimestamp,
     outcome: decodeOutcome(value["outcome"]),
-    events: Object.freeze(rawEvents.map((event, index) => decodeSimulationEvent(event, index))),
+    events: Object.freeze(rawEvents.map((event, index) => decodeSimulationEvent(event, index, schemaVersion))),
     strategyVersion: nonEmptyString(value["strategyVersion"], `${path}.strategyVersion`),
   });
 }
@@ -713,7 +872,9 @@ function fillEventCanonical(event: Extract<SimulationEvent, { kind: "fill" }>): 
   return canonicalJson({
     fillId: event.fillId,
     clientOrderId: event.clientOrderId,
-    marketEventId: event.sourceMarketEventId,
+    ...(typeof event.sourceExternalOrderId === "string"
+      ? { externalOrderId: event.sourceExternalOrderId }
+      : { marketEventId: event.sourceMarketEventId }),
     timestamp: event.timestamp,
     quantity: event.quantity,
     executionPriceMinor: event.executionPriceMinor,
@@ -816,12 +977,13 @@ function decodeCallerCommand(command: JournalCommand): JournalCommand {
       }),
     });
   }
-  if (command.kind === "cancel") {
-    if (typeof payload["eventId"] !== "string" || payload["eventId"].trim() === "") throw new TypeError("cancel eventId is required for durable journaling");
+  if (command.kind === "cancel" || command.kind === "cancel-request") {
+    const label = command.kind === "cancel" ? "cancel" : "cancel-request";
+    if (typeof payload["eventId"] !== "string" || payload["eventId"].trim() === "") throw new TypeError(`${label} eventId is required for durable journaling`);
     const timestamp = payload["timestamp"];
-    if (typeof timestamp !== "number" || !Number.isSafeInteger(timestamp)) throw new TypeError("cancel timestamp must be a safe integer for durable journaling");
+    if (typeof timestamp !== "number" || !Number.isSafeInteger(timestamp)) throw new TypeError(`${label} timestamp must be a safe integer for durable journaling`);
     if (typeof payload["clientOrderId"] !== "string" || payload["clientOrderId"].trim() === "") {
-      throw new TypeError("cancel clientOrderId must be a non-empty string");
+      throw new TypeError(`${label} clientOrderId must be a non-empty string`);
     }
     return Object.freeze({
       kind: command.kind,
@@ -830,6 +992,34 @@ function decodeCallerCommand(command: JournalCommand): JournalCommand {
         timestamp,
         clientOrderId: payload["clientOrderId"],
       }),
+    });
+  }
+  if (command.kind === "external-reconciliation") {
+    if (typeof payload["eventId"] !== "string" || payload["eventId"].trim() === "") throw new TypeError("reconciliation eventId is required for durable journaling");
+    const timestamp = payload["timestamp"];
+    if (typeof timestamp !== "number" || !Number.isSafeInteger(timestamp)) throw new TypeError("reconciliation timestamp must be a safe integer for durable journaling");
+    if (typeof payload["clientOrderId"] !== "string" || payload["clientOrderId"].trim() === "") {
+      throw new TypeError("reconciliation clientOrderId must be a non-empty string");
+    }
+    const outcome = payload["outcome"];
+    if (outcome === "orderFound") {
+      const externalOrderId = payload["externalOrderId"];
+      const orderStatus = payload["orderStatus"];
+      if (typeof externalOrderId !== "string" || externalOrderId.trim() === "") throw new TypeError("reconciliation externalOrderId must be a non-empty string");
+      if (orderStatus !== "pending" && orderStatus !== "partiallyFilled" && orderStatus !== "filled"
+        && orderStatus !== "cancelled" && orderStatus !== "rejected") throw new TypeError("reconciliation orderStatus is invalid");
+      return Object.freeze({
+        kind: command.kind,
+        payload: Object.freeze({
+          eventId: payload["eventId"], timestamp, clientOrderId: payload["clientOrderId"], outcome,
+          externalOrderId, orderStatus,
+        }),
+      });
+    }
+    if (outcome !== "unknown" && outcome !== "notFound") throw new TypeError("reconciliation outcome is invalid");
+    return Object.freeze({
+      kind: command.kind,
+      payload: Object.freeze({ eventId: payload["eventId"], timestamp, clientOrderId: payload["clientOrderId"], outcome }),
     });
   }
   if (command.kind === "halt") {
@@ -846,9 +1036,13 @@ function decodeCallerCommand(command: JournalCommand): JournalCommand {
   const timestamp = payload["timestamp"];
   const quantity = payload["quantity"];
   if (typeof timestamp !== "number" || !Number.isSafeInteger(timestamp)) throw new TypeError("execution report timestamp must be a safe integer for durable journaling");
-  if (typeof payload["clientOrderId"] !== "string" || payload["clientOrderId"].trim() === ""
-    || typeof payload["marketEventId"] !== "string" || payload["marketEventId"].trim() === "") {
-    throw new TypeError("execution report order and market IDs must be non-empty strings");
+  if (typeof payload["clientOrderId"] !== "string" || payload["clientOrderId"].trim() === "") {
+    throw new TypeError("execution report clientOrderId must be a non-empty string");
+  }
+  const hasMarketEventId = typeof payload["marketEventId"] === "string" && payload["marketEventId"].trim() !== "";
+  const hasExternalOrderId = typeof payload["externalOrderId"] === "string" && payload["externalOrderId"].trim() !== "";
+  if (hasMarketEventId === hasExternalOrderId) {
+    throw new TypeError("execution report must identify exactly one market or external order");
   }
   if (typeof quantity !== "number" || !Number.isSafeInteger(quantity) || quantity < 0) {
     throw new TypeError("execution report quantity must be a non-negative safe integer for durable journaling");
@@ -861,7 +1055,9 @@ function decodeCallerCommand(command: JournalCommand): JournalCommand {
     payload: Object.freeze({
       fillId: payload["fillId"],
       clientOrderId: payload["clientOrderId"],
-      marketEventId: payload["marketEventId"],
+      ...(hasExternalOrderId
+        ? { externalOrderId: payload["externalOrderId"] as string }
+        : { marketEventId: payload["marketEventId"] as string }),
       timestamp,
       quantity,
       executionPriceMinor: payload["executionPriceMinor"],
@@ -901,7 +1097,7 @@ export class DurablePaperTradingSession {
   }
 
   /**
-   * Opens or creates a durable session at an explicit directory. Schema v1 stores a
+   * Opens or creates a durable session at an explicit directory. Schema v2 stores a
    * configuration header and immutable, sequence-numbered event files. Replay uses
    * the supplied strategy and fill rule, then rejects any output that diverges.
    */
@@ -920,6 +1116,13 @@ export class DurablePaperTradingSession {
     const entries = await loadEntries(eventsDirectory);
     for (const entry of entries) {
       session.replayEntry(entry, header);
+    }
+    if (header.schemaVersion !== JOURNAL_SCHEMA_VERSION) {
+      try {
+        await atomicReplaceFile(join(root, HEADER_FILE), serializedJson(makeHeader(config, header.journalId)));
+      } catch (error) {
+        throw new PaperJournalError("could not upgrade the paper journal header after replay", { cause: error });
+      }
     }
     return session;
   }
@@ -955,6 +1158,16 @@ export class DurablePaperTradingSession {
 
   async cancelOrder(request: CancelRequest): Promise<OperationResult> {
     return this.execute({ kind: "cancel", payload: request });
+  }
+
+  /** Persist an external cancel intent while the order and its exposure stay open. */
+  async requestExternalCancel(request: CancelRequest): Promise<OperationResult> {
+    return this.execute({ kind: "cancel-request", payload: request });
+  }
+
+  /** Persist an external order status only after the gateway has been reconciled. */
+  async recordExternalReconciliation(reconciliation: ExternalOrderReconciliation): Promise<OperationResult> {
+    return this.execute({ kind: "external-reconciliation", payload: reconciliation });
   }
 
   async halt(request: HaltRequest): Promise<OperationResult> {
@@ -1064,6 +1277,8 @@ export class DurablePaperTradingSession {
     switch (command.kind) {
       case "market": return this.engine.processMarketEvent(command.payload);
       case "cancel": return this.engine.cancelOrder(command.payload);
+      case "cancel-request": return this.engine.requestExternalCancel(command.payload);
+      case "external-reconciliation": return this.engine.recordExternalReconciliation(command.payload);
       case "halt": return this.engine.halt(command.payload);
       case "execution-report": return this.engine.acceptExecutionReport(command.payload);
     }

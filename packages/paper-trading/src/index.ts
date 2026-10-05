@@ -28,6 +28,8 @@ export type {
   Clock,
   DecisionRecord,
   ExecutionReport,
+  ExternalOrderReconciliation,
+  ExternalOrderStatus,
   FillRuleDecision,
   HaltRequest,
   MarketEvent,
