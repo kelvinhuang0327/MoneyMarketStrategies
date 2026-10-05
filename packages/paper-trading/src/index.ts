@@ -1,5 +1,12 @@
 export { PaperTradingEngine } from "./engine.js";
 export {
+  evaluateHistoricalWindow,
+  reconcileHistoricalRun,
+  runHistoricalActionCostDiagnosticFiles,
+  sellTaxBounds,
+} from "./historicalActionCostDiagnostic.js";
+export type { HistoricalDividend, HistoricalDiagnosticWindow } from "./historicalActionCostDiagnostic.js";
+export {
   evaluateSplitRebasedForwardSample,
   evaluateSplitRebasedHistoricalBenchmark,
   rebasePriceBandForSplit,

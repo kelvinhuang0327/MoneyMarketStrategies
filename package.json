@@ -34,7 +34,8 @@
     "verify": "npm run lint && npm run build && npm run typecheck && npm test",
     "research:tw": "node scripts/runTwStrategyResearchStudy.mjs",
     "inspect:prediction-result": "node scripts/inspectPredictionRetrainingResult.mjs",
-    "inspect:research-run": "node scripts/inspectTwResearchRun.mjs"
+    "inspect:research-run": "node scripts/inspectTwResearchRun.mjs",
+    "paper:evaluate-historical-actions-v2": "node scripts/runHistoricalActionCostDiagnostic.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.1",
