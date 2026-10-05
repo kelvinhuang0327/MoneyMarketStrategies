@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "symbol": "0050",
+  "fundId": "1066",
+  "source": "https://www.yuantafunds.com/myfund/information/1066?tab=3",
+  "retrievedDate": "2026-10-05",
+  "sourcePageSha256": "d1976ad3d7723d58d30d2e579e963c898d1ae2f09573eb404924e510abe12a37",
+  "extraction": "Public __NUXT_DATA__ indexed object; SHARE_DATE is ex date, PAY_DATE payment date, DIVIDEN_PER_UNIT TWD per raw share. Only records through archive cutoff retained.",
+  "coverage": {
+    "start": "2020-01-01",
+    "end": "2026-08-11",
+    "eventCount": 14
+  },
+  "events": [
+    {
+      "exDate": "2020-01-31",
+      "payDate": "2020-03-06",
+      "amountPerShareMinor": "290",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2020/01/31",
+        "PAY_DATE": "2020/03/06",
+        "DIVIDEN_PER_UNIT": 2.9
+      }
+    },
+    {
+      "exDate": "2020-07-21",
+      "payDate": "2020-08-24",
+      "amountPerShareMinor": "70",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2020/07/21",
+        "PAY_DATE": "2020/08/24",
+        "DIVIDEN_PER_UNIT": 0.7
+      }
+    },
+    {
+      "exDate": "2021-01-22",
+      "payDate": "2021-03-09",
+      "amountPerShareMinor": "305",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2021/01/22",
+        "PAY_DATE": "2021/03/09",
+        "DIVIDEN_PER_UNIT": 3.05
+      }
+    },
+    {
+      "exDate": "2021-07-21",
+      "payDate": "2021-08-24",
+      "amountPerShareMinor": "35",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2021/07/21",
+        "PAY_DATE": "2021/08/24",
+        "DIVIDEN_PER_UNIT": 0.35
+      }
+    },
+    {
+      "exDate": "2022-01-21",
+      "payDate": "2022-03-04",
+      "amountPerShareMinor": "320",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2022/01/21",
+        "PAY_DATE": "2022/03/04",
+        "DIVIDEN_PER_UNIT": 3.2
+      }
+    },
+    {
+      "exDate": "2022-07-18",
+      "payDate": "2022-08-19",
+      "amountPerShareMinor": "180",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2022/07/18",
+        "PAY_DATE": "2022/08/19",
+        "DIVIDEN_PER_UNIT": 1.8
+      }
+    },
+    {
+      "exDate": "2023-01-30",
+      "payDate": "2023-03-07",
+      "amountPerShareMinor": "260",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2023/01/30",
+        "PAY_DATE": "2023/03/07",
+        "DIVIDEN_PER_UNIT": 2.6
+      }
+    },
+    {
+      "exDate": "2023-07-18",
+      "payDate": "2023-08-11",
+      "amountPerShareMinor": "190",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2023/07/18",
+        "PAY_DATE": "2023/08/11",
+        "DIVIDEN_PER_UNIT": 1.9
+      }
+    },
+    {
+      "exDate": "2024-01-17",
+      "payDate": "2024-02-21",
+      "amountPerShareMinor": "300",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2024/01/17",
+        "PAY_DATE": "2024/02/21",
+        "DIVIDEN_PER_UNIT": 3
+      }
+    },
+    {
+      "exDate": "2024-07-16",
+      "payDate": "2024-08-09",
+      "amountPerShareMinor": "100",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2024/07/16",
+        "PAY_DATE": "2024/08/09",
+        "DIVIDEN_PER_UNIT": 1
+      }
+    },
+    {
+      "exDate": "2025-01-17",
+      "payDate": "2025-02-20",
+      "amountPerShareMinor": "270",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2025/01/17",
+        "PAY_DATE": "2025/02/20",
+        "DIVIDEN_PER_UNIT": 2.7
+      }
+    },
+    {
+      "exDate": "2025-07-21",
+      "payDate": "2025-08-08",
+      "amountPerShareMinor": "36",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2025/07/21",
+        "PAY_DATE": "2025/08/08",
+        "DIVIDEN_PER_UNIT": 0.36
+      }
+    },
+    {
+      "exDate": "2026-01-22",
+      "payDate": "2026-02-11",
+      "amountPerShareMinor": "100",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2026/01/22",
+        "PAY_DATE": "2026/02/11",
+        "DIVIDEN_PER_UNIT": 1
+      }
+    },
+    {
+      "exDate": "2026-07-21",
+      "payDate": "2026-08-10",
+      "amountPerShareMinor": "60",
+      "sourceRecord": {
+        "FUND_ID": "1066",
+        "FUND_SH_NM": "元大台灣卓越50基金",
+        "SHARE_DATE": "2026/07/21",
+        "PAY_DATE": "2026/08/10",
+        "DIVIDEN_PER_UNIT": 0.6
+      }
+    }
+  ]
+}

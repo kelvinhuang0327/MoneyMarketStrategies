@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 2,
+  "artifactId": "0050-historical-action-cost-config-v2",
+  "classification": "RETROSPECTIVE_DIAGNOSTIC_ONLY",
+  "sourceSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "sourceRowCount": 1599,
+  "sourceStartDate": "2020-01-02",
+  "sourceEndDate": "2026-08-11",
+  "dividendsSha256": "f82f4aa3fcc9a19f1dda7cae5d31039e06685f0b450e4a087322e01f518c3e6b",
+  "candidate": {
+    "version": "0050-month-end-10m-sma-long-cash-v1",
+    "lookbackMonths": 10,
+    "targetQuantity": 3,
+    "candidateCount": 1,
+    "parameterSearch": false
+  },
+  "economics": {
+    "initialCapitalMinor": "100000",
+    "feeBps": 30,
+    "slippageBps": 100,
+    "sellTransactionTaxBps": 10,
+    "taxRounding": "CONSERVATIVE_CEIL_TWD_PER_FILL_WITH_FLOOR_BOUND",
+    "cashYield": 0,
+    "dividendReinvestment": false,
+    "personalDividendTax": "UNKNOWN; COMMON_EVENT_HAIRCUT_0_TO_100_PERCENT_SENSITIVITY",
+    "brokerMinimumFee": "UNKNOWN; EXISTING_30_BPS_SIMULATED_COMMISSION_ONLY"
+  },
+  "split": {
+    "effectiveDate": "2025-06-18",
+    "ratio": 4,
+    "source": "https://www.twse.com.tw/zh/ETFortune/announcement?company=A00005&date=20250617&fund=0050&seq=1&type=other",
+    "treatment": "Indicator uses pre-split units. Independent raw-share portfolios reset at split boundary; no holding spans split. No compounded aggregate return."
+  },
+  "windows": [
+    {
+      "id": "2020-Q4",
+      "startDate": "2020-10-05",
+      "endDate": "2020-12-31",
+      "rowCount": 63
+    },
+    {
+      "id": "2021",
+      "startDate": "2021-01-04",
+      "endDate": "2021-12-30",
+      "rowCount": 244
+    },
+    {
+      "id": "2022",
+      "startDate": "2022-01-03",
+      "endDate": "2022-12-30",
+      "rowCount": 246
+    },
+    {
+      "id": "2023",
+      "startDate": "2023-01-03",
+      "endDate": "2023-12-29",
+      "rowCount": 239
+    },
+    {
+      "id": "2024",
+      "startDate": "2024-01-02",
+      "endDate": "2024-12-31",
+      "rowCount": 242
+    },
+    {
+      "id": "2025-pre-split",
+      "startDate": "2025-01-02",
+      "endDate": "2025-06-10",
+      "rowCount": 102
+    },
+    {
+      "id": "2025-post-split",
+      "startDate": "2025-06-18",
+      "endDate": "2025-12-31",
+      "rowCount": 136
+    },
+    {
+      "id": "2026-YTD",
+      "startDate": "2026-01-02",
+      "endDate": "2026-08-11",
+      "rowCount": 145
+    }
+  ],
+  "windowPolicy": "Calendar years; split year partitioned at verified boundary. First nine months warm up. Same initial cash and raw 3-share target in both arms. First event uses last completed signal if available, then month-end decisions only. Unfilled end orders and open holdings reported, no forced liquidation.",
+  "signalBasis": "Raw close, split-normalized; dividends credited separately; zero cash yield. Fixed adaptation, not replication of total-return/T-bill source paper.",
+  "taxSource": "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=G0340078",
+  "promotionStatus": "NOT_ELIGIBLE_RETROSPECTIVE_DIAGNOSTIC"
+}
