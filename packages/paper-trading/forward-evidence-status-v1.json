@@ -34,8 +34,8 @@
   },
   "historicalCutoff": "2026-08-11",
   "firstForwardDate": "2026-08-12",
-  "latestForwardDate": "2026-09-30",
-  "batchCount": 1,
+  "latestForwardDate": "2026-10-02",
+  "batchCount": 2,
   "batchHashes": [
     {
       "dateRange": {
@@ -43,6 +43,13 @@
         "end": "2026-09-30"
       },
       "sha256": "48638edc85ca924119499c53020c5748feacf42f4432b65bbbbc7edfbbde3e18"
+    },
+    {
+      "dateRange": {
+        "start": "2026-10-01",
+        "end": "2026-10-02"
+      },
+      "sha256": "eb61a565d41ba1256d94b369566aff4c2e0a49c8a15b7ced35bd2a71cc620d3d"
     }
   ],
   "legacyReference": {
@@ -175,6 +182,6 @@
       "sufficient": false
     }
   },
-  "forwardEvidenceStatus": "NO_NEW_DATA",
+  "forwardEvidenceStatus": "ACCUMULATING_EVIDENCE",
   "tradingWinRateImprovement": "NOT_EVALUABLE"
 }
