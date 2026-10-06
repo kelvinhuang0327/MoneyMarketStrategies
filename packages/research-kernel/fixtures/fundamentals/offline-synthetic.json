@@ -1,0 +1,430 @@
+{
+  "schemaVersion": 1,
+  "datasetId": "synthetic-fundamentals-v1",
+  "dataKind": "SYNTHETIC",
+  "reuseBasis": "Task-created synthetic example; no real company financials or personal data.",
+  "symbol": "SYNTH-TARGET",
+  "kind": "stock",
+  "asOf": "2026-10-01T00:00:00Z",
+  "peerBasis": "industry",
+  "observations": [
+    {
+      "recordId": "revenue-6",
+      "symbol": "SYNTH-TARGET",
+      "family": "REVENUE",
+      "period": "2026-06",
+      "publishedAt": "2026-07-10T00:00:00Z",
+      "observedAt": "2026-07-10T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "revenue": {
+          "value": 100,
+          "unit": "CURRENCY",
+          "scale": 1000
+        },
+        "yoyGrowth": {
+          "value": 8,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "momGrowth": {
+          "value": null,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        }
+      }
+    },
+    {
+      "recordId": "revenue-7",
+      "symbol": "SYNTH-TARGET",
+      "family": "REVENUE",
+      "period": "2026-07",
+      "publishedAt": "2026-08-10T00:00:00Z",
+      "observedAt": "2026-08-10T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "revenue": {
+          "value": 110,
+          "unit": "CURRENCY",
+          "scale": 1000
+        },
+        "yoyGrowth": {
+          "value": 10,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "momGrowth": {
+          "value": null,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        }
+      }
+    },
+    {
+      "recordId": "revenue-8",
+      "symbol": "SYNTH-TARGET",
+      "family": "REVENUE",
+      "period": "2026-08",
+      "publishedAt": "2026-09-10T00:00:00Z",
+      "observedAt": "2026-09-10T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "revenue": {
+          "value": 125,
+          "unit": "CURRENCY",
+          "scale": 1000
+        },
+        "yoyGrowth": {
+          "value": 15,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "momGrowth": {
+          "value": null,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        }
+      }
+    },
+    {
+      "recordId": "profit-q1",
+      "symbol": "SYNTH-TARGET",
+      "family": "PROFITABILITY",
+      "period": "2026-Q1",
+      "publishedAt": "2026-05-15T00:00:00Z",
+      "observedAt": "2026-05-15T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "eps": {
+          "value": 1.1,
+          "unit": "CURRENCY_PER_SHARE",
+          "scale": 1
+        },
+        "grossMargin": {
+          "value": 30,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "operatingMargin": {
+          "value": 12,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        }
+      },
+      "reportingBasis": "SINGLE_QUARTER"
+    },
+    {
+      "recordId": "profit-q2",
+      "symbol": "SYNTH-TARGET",
+      "family": "PROFITABILITY",
+      "period": "2026-Q2",
+      "publishedAt": "2026-08-15T00:00:00Z",
+      "observedAt": "2026-08-15T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "eps": {
+          "value": 1.5,
+          "unit": "CURRENCY_PER_SHARE",
+          "scale": 1
+        },
+        "grossMargin": {
+          "value": 32,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "operatingMargin": {
+          "value": 14,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        }
+      },
+      "reportingBasis": "SINGLE_QUARTER"
+    },
+    {
+      "recordId": "valuation",
+      "symbol": "SYNTH-TARGET",
+      "family": "VALUATION",
+      "period": "2026-09-30",
+      "publishedAt": "2026-09-30T08:00:00Z",
+      "observedAt": "2026-09-30T08:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "pe": {
+          "value": 18,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "pb": {
+          "value": 2,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "dividendYield": {
+          "value": 3,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        }
+      }
+    },
+    {
+      "recordId": "structure-SYNTH-TARGET",
+      "symbol": "SYNTH-TARGET",
+      "family": "FINANCIAL_STRUCTURE",
+      "period": "2026-Q2",
+      "publishedAt": "2026-08-15T00:00:00Z",
+      "observedAt": "2026-08-15T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "debtRatio": {
+          "value": 30,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "liabilitiesRatio": {
+          "value": 40,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "currentRatio": {
+          "value": 2,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "quickRatio": {
+          "value": 1.5,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "roe": {
+          "value": 12,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "roa": {
+          "value": 6,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "assetTurnover": {
+          "value": 0.8,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "cashflowConversion": {
+          "value": 1.1,
+          "unit": "MULTIPLE",
+          "scale": 1
+        }
+      },
+      "group": {
+        "industry": "SYNTH-INDUSTRY",
+        "sector": "SYNTH-SECTOR"
+      }
+    },
+    {
+      "recordId": "structure-SYNTH-P1",
+      "symbol": "SYNTH-P1",
+      "family": "FINANCIAL_STRUCTURE",
+      "period": "2026-Q2",
+      "publishedAt": "2026-08-15T00:00:00Z",
+      "observedAt": "2026-08-15T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "debtRatio": {
+          "value": 20,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "liabilitiesRatio": {
+          "value": 30,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "currentRatio": {
+          "value": 1.5,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "quickRatio": {
+          "value": 1.0,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "roe": {
+          "value": 8,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "roa": {
+          "value": 4,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "assetTurnover": {
+          "value": 0.6,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "cashflowConversion": {
+          "value": 0.9,
+          "unit": "MULTIPLE",
+          "scale": 1
+        }
+      },
+      "group": {
+        "industry": "SYNTH-INDUSTRY",
+        "sector": "SYNTH-SECTOR"
+      }
+    },
+    {
+      "recordId": "structure-SYNTH-P2",
+      "symbol": "SYNTH-P2",
+      "family": "FINANCIAL_STRUCTURE",
+      "period": "2026-Q2",
+      "publishedAt": "2026-08-15T00:00:00Z",
+      "observedAt": "2026-08-15T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "debtRatio": {
+          "value": 30,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "liabilitiesRatio": {
+          "value": 40,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "currentRatio": {
+          "value": 2,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "quickRatio": {
+          "value": 1.5,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "roe": {
+          "value": 12,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "roa": {
+          "value": 6,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "assetTurnover": {
+          "value": 0.8,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "cashflowConversion": {
+          "value": 1.1,
+          "unit": "MULTIPLE",
+          "scale": 1
+        }
+      },
+      "group": {
+        "industry": "SYNTH-INDUSTRY",
+        "sector": "SYNTH-SECTOR"
+      }
+    },
+    {
+      "recordId": "structure-SYNTH-P3",
+      "symbol": "SYNTH-P3",
+      "family": "FINANCIAL_STRUCTURE",
+      "period": "2026-Q2",
+      "publishedAt": "2026-08-15T00:00:00Z",
+      "observedAt": "2026-08-15T00:00:00Z",
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      },
+      "currencyCode": "TWD",
+      "values": {
+        "debtRatio": {
+          "value": 40,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "liabilitiesRatio": {
+          "value": 50,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "currentRatio": {
+          "value": 2.5,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "quickRatio": {
+          "value": 2,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "roe": {
+          "value": 16,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "roa": {
+          "value": 8,
+          "unit": "PERCENT_POINTS",
+          "scale": 1
+        },
+        "assetTurnover": {
+          "value": 1,
+          "unit": "MULTIPLE",
+          "scale": 1
+        },
+        "cashflowConversion": {
+          "value": 1.3,
+          "unit": "MULTIPLE",
+          "scale": 1
+        }
+      },
+      "group": {
+        "industry": "SYNTH-INDUSTRY",
+        "sector": "SYNTH-SECTOR"
+      }
+    }
+  ]
+}

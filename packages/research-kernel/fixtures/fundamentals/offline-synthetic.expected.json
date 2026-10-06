@@ -1,0 +1,792 @@
+{
+  "schemaVersion": "MMS_OFFLINE_FUNDAMENTALS_V1",
+  "classification": "DIAGNOSTIC_ONLY",
+  "datasetId": "synthetic-fundamentals-v1",
+  "dataKind": "SYNTHETIC",
+  "declaredReuseBasis": "Task-created synthetic example; no real company financials or personal data.",
+  "sourceAccess": "LOCAL_INPUT_ONLY_NO_NETWORK",
+  "snapshot": {
+    "schemaVersion": "MMS_FUNDAMENTAL_SNAPSHOT_V1",
+    "classification": "DIAGNOSTIC_ONLY",
+    "symbol": "SYNTH-TARGET",
+    "kind": "stock",
+    "asOf": "2026-10-01T00:00:00.000Z",
+    "dataCoverage": "full",
+    "dataCoverageMeaning": "Availability of fields, not freshness, audited accuracy or accounting completeness.",
+    "revenue": {
+      "applicable": true,
+      "sourceRecord": {
+        "recordId": "revenue-8",
+        "symbol": "SYNTH-TARGET",
+        "period": "2026-08",
+        "publishedAt": "2026-09-10T00:00:00Z",
+        "observedAt": "2026-09-10T00:00:00Z",
+        "currencyCode": "TWD",
+        "reportingBasis": null,
+        "source": {
+          "id": "synthetic-fixture-v1",
+          "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+        }
+      },
+      "revenue": {
+        "value": 125000,
+        "unit": "CURRENCY",
+        "currencyCode": "TWD",
+        "sourceScale": 1000,
+        "missingReason": null
+      },
+      "yoyGrowth": {
+        "value": 15,
+        "unit": "PERCENT_POINTS",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "momGrowth": {
+        "value": null,
+        "unit": "PERCENT_POINTS",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": "MISSING_VALUE"
+      },
+      "trend": "accelerating",
+      "consecutivePositiveYoYMonths": 3
+    },
+    "profitability": {
+      "applicable": true,
+      "sourceRecord": {
+        "recordId": "profit-q2",
+        "symbol": "SYNTH-TARGET",
+        "period": "2026-Q2",
+        "publishedAt": "2026-08-15T00:00:00Z",
+        "observedAt": "2026-08-15T00:00:00Z",
+        "currencyCode": "TWD",
+        "reportingBasis": "SINGLE_QUARTER",
+        "source": {
+          "id": "synthetic-fixture-v1",
+          "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+        }
+      },
+      "previousSourceRecord": {
+        "recordId": "profit-q1",
+        "symbol": "SYNTH-TARGET",
+        "period": "2026-Q1",
+        "publishedAt": "2026-05-15T00:00:00Z",
+        "observedAt": "2026-05-15T00:00:00Z",
+        "currencyCode": "TWD",
+        "reportingBasis": "SINGLE_QUARTER",
+        "source": {
+          "id": "synthetic-fixture-v1",
+          "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+        }
+      },
+      "eps": {
+        "value": 1.5,
+        "unit": "CURRENCY_PER_SHARE",
+        "currencyCode": "TWD",
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "previousEps": {
+        "value": 1.1,
+        "unit": "CURRENCY_PER_SHARE",
+        "currencyCode": "TWD",
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "grossMargin": {
+        "value": 32,
+        "unit": "PERCENT_POINTS",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "operatingMargin": {
+        "value": 14,
+        "unit": "PERCENT_POINTS",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "epsQoQDelta": 0.4,
+      "grossMarginDeltaPercentagePoints": 2,
+      "operatingMarginDeltaPercentagePoints": 2,
+      "deltaUnavailableReason": null
+    },
+    "valuation": {
+      "sourceRecord": {
+        "recordId": "valuation",
+        "symbol": "SYNTH-TARGET",
+        "period": "2026-09-30",
+        "publishedAt": "2026-09-30T08:00:00Z",
+        "observedAt": "2026-09-30T08:00:00Z",
+        "currencyCode": "TWD",
+        "reportingBasis": null,
+        "source": {
+          "id": "synthetic-fixture-v1",
+          "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+        }
+      },
+      "pe": {
+        "value": 18,
+        "unit": "MULTIPLE",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "pb": {
+        "value": 2,
+        "unit": "MULTIPLE",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": null
+      },
+      "dividendYield": {
+        "value": 3,
+        "unit": "PERCENT_POINTS",
+        "currencyCode": null,
+        "sourceScale": 1,
+        "missingReason": null
+      }
+    },
+    "availabilityAudit": {
+      "inputRecordCount": 10,
+      "selectedPeriodRecordCount": 10,
+      "findings": []
+    },
+    "limitations": [
+      "Publication, version availability, fiscal periods, currency and source are input declarations; this function does not independently verify them.",
+      "Unknown publication/availability is excluded; future/restated versions are not backdated. Calendar month/quarter periods must finish on the UTC calendar before publication; same-day valuation quotes use explicit publication time.",
+      "Money scales normalize to major currency units; currencies are never converted. Missing values stay null; audit counts are not predictive features.",
+      "Quarter changes require declared single-quarter reporting. Share-basis adjustments, fiscal-calendar remapping and accounting-definition verification are not performed.",
+      "This snapshot is descriptive. It provides no trading signal, profitability claim or execution capability."
+    ]
+  },
+  "peerComparison": {
+    "schemaVersion": "MMS_FINANCIAL_STRUCTURE_PEERS_V1",
+    "classification": "DIAGNOSTIC_ONLY",
+    "asOf": "2026-10-01T00:00:00.000Z",
+    "targetSymbol": "SYNTH-TARGET",
+    "targetSourceRecord": {
+      "recordId": "structure-SYNTH-TARGET",
+      "symbol": "SYNTH-TARGET",
+      "period": "2026-Q2",
+      "publishedAt": "2026-08-15T00:00:00Z",
+      "observedAt": "2026-08-15T00:00:00Z",
+      "currencyCode": "TWD",
+      "reportingBasis": null,
+      "source": {
+        "id": "synthetic-fixture-v1",
+        "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+      }
+    },
+    "basis": "industry",
+    "groupId": "SYNTH-INDUSTRY",
+    "matchedReportPeriod": "2026-Q2",
+    "inputPeerSymbolCount": 3,
+    "eligiblePeerCount": 3,
+    "excludedPeers": [],
+    "assessableMetricCount": 8,
+    "fullCoverageMetricCount": 0,
+    "dataCoverage": "limited",
+    "metrics": {
+      "debtRatio": {
+        "target": {
+          "value": 30,
+          "unit": "PERCENT_POINTS",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "PERCENT_POINTS",
+        "direction": "lower",
+        "median": 30,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 20,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 30,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 40,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "liabilitiesRatio": {
+        "target": {
+          "value": 40,
+          "unit": "PERCENT_POINTS",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "PERCENT_POINTS",
+        "direction": "lower",
+        "median": 40,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 30,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 40,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 50,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "currentRatio": {
+        "target": {
+          "value": 2,
+          "unit": "MULTIPLE",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "MULTIPLE",
+        "direction": "higher",
+        "median": 2,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 1.5,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 2,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 2.5,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "quickRatio": {
+        "target": {
+          "value": 1.5,
+          "unit": "MULTIPLE",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "MULTIPLE",
+        "direction": "higher",
+        "median": 1.5,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 1,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 1.5,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 2,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "roe": {
+        "target": {
+          "value": 12,
+          "unit": "PERCENT_POINTS",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "PERCENT_POINTS",
+        "direction": "higher",
+        "median": 12,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 8,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 12,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 16,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "roa": {
+        "target": {
+          "value": 6,
+          "unit": "PERCENT_POINTS",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "PERCENT_POINTS",
+        "direction": "higher",
+        "median": 6,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 4,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 6,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 8,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "assetTurnover": {
+        "target": {
+          "value": 0.8,
+          "unit": "MULTIPLE",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "MULTIPLE",
+        "direction": "higher",
+        "median": 0.8,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 0.6,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 0.8,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 1,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      },
+      "cashflowConversion": {
+        "target": {
+          "value": 1.1,
+          "unit": "MULTIPLE",
+          "currencyCode": null,
+          "sourceScale": 1,
+          "missingReason": null
+        },
+        "unit": "MULTIPLE",
+        "direction": "higher",
+        "median": 1.1,
+        "favorableRankPercentile": 50,
+        "status": "DESCRIPTIVE_COMPARISON",
+        "validPeerCount": 3,
+        "eligiblePeerCount": 3,
+        "missingPeerCount": 0,
+        "validPeers": [
+          {
+            "symbol": "SYNTH-P1",
+            "value": 0.9,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P1",
+              "symbol": "SYNTH-P1",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P2",
+            "value": 1.1,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P2",
+              "symbol": "SYNTH-P2",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          },
+          {
+            "symbol": "SYNTH-P3",
+            "value": 1.3,
+            "sourceRecord": {
+              "recordId": "structure-SYNTH-P3",
+              "symbol": "SYNTH-P3",
+              "period": "2026-Q2",
+              "publishedAt": "2026-08-15T00:00:00Z",
+              "observedAt": "2026-08-15T00:00:00Z",
+              "currencyCode": "TWD",
+              "reportingBasis": null,
+              "source": {
+                "id": "synthetic-fixture-v1",
+                "uri": "fixture://mms/fundamentals/offline-synthetic-v1"
+              }
+            }
+          }
+        ],
+        "missingPeers": [],
+        "tieCount": 1,
+        "method": "100 * (strictly less favorable peers + 0.5 * tied peers) / valid unique peers; target excluded"
+      }
+    },
+    "strengths": [],
+    "pressures": [],
+    "availabilityFindings": [],
+    "limitations": [
+      "Only available versions with the target's exact fiscal quarter and declared group are compared; target/self and duplicate versions are excluded from peer denominators.",
+      "Each metric requires at least three valid distinct peers; null or incompatible units do not become zero. Identical values have a neutral 50th midrank.",
+      "Financial ratios use declared percentage points or multiples. Filing currencies remain in provenance; no currency conversion is performed.",
+      "Group membership, definitions and accounting comparability are caller declarations, not independently validated. Higher/lower directions are descriptive legacy heuristics, not universal financial-health rules.",
+      "ETF company peer comparison is not applicable. This function is not connected to prediction, trading or promotion."
+    ]
+  },
+  "supportsTradingExecution": false,
+  "profitabilityEvidence": "NOT_EVALUATED",
+  "inputSha256": "e29c38aba640ba80ad74c37bd931fead4d62905272540b39483ef557f82e4df3"
+}

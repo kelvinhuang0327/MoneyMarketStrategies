@@ -1,0 +1,24 @@
+{
+  "baseCommit": "7c7d5a51bd232475280a464d4613954be13c6493",
+  "sourceFiles": [
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/src/lib/fundamentals/StockFundamentalSnapshot.ts",
+      "sha256": "67f7bd46310141550a10ee756d6f85cdbfa3b8dd3d34253b4a7547e645f5c40c",
+      "function": "StockFundamentalSnapshot"
+    },
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/src/lib/fundamental/FinancialStructurePeerComparisonEngine.ts",
+      "sha256": "224c3db19a2db7830aab54757693859ac795fe5e3853632e00bb6797985242a0",
+      "function": "FinancialStructurePeerComparisonEngine"
+    }
+  ],
+  "classification": "LOCAL_SOURCE_MIGRATION_PROVENANCE",
+  "adaptations": [
+    "Require explicit publication, version observed time and as-of timestamp; never infer availability from fiscal period.",
+    "Canonical currency/percentage-point/multiple units and scales; null remains missing.",
+    "Exact-quarter and group peer matching with unique issuer denominators per metric.",
+    "Midrank ties replace legacy full credit for equality; ETF company metrics remain not applicable.",
+    "No provider fetching, database, prediction-model or trading integration.",
+    "Quarter-on-quarter deltas require adjacent periods, matching currencies and explicitly single-quarter reporting; cumulative/unknown basis remains unranked."
+  ]
+}
