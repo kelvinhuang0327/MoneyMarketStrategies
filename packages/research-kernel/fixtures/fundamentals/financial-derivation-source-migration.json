@@ -1,0 +1,37 @@
+{
+  "baseCommit": "efd14b17a6ce5b1e33587e3cd13c0c0ec1f312fa",
+  "sourceFiles": [
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/src/lib/fundamental/FinancialStructureMetricsBuilder.ts",
+      "sha256": "e33c2bdc658da91dc67a3b26e05fb24eb4c696c1eef2bbcf0c7396a87fe40559"
+    },
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/src/lib/fundamental/CapitalEfficiencyMetricsBuilder.ts",
+      "sha256": "85874dd33a65f492a62a78274d0bb259943ab6b3d1b34c98938459325d27f0c1"
+    },
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/src/lib/fundamental/FinancialReportSync.ts",
+      "sha256": "ef4b32c040b2a28cb23cab8e60eb725301f727e7fe127f94053871bc2545a9ce"
+    },
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/src/lib/onlineValidation/P26CFinancialReportAvailabilityAdapterUtils.ts",
+      "sha256": "4bf2a88aa16772cc8dda3350deab4cf0a697f2da0878ce4fbe917134305d80db"
+    },
+    {
+      "legacyPath": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/online_validation/fixtures/p26c_financial_reports_fixture.json",
+      "sha256": "cf25c80d1ff2084f8f7379f5b3cafce8d8081c29fec8e756343711ebaed85e4b"
+    }
+  ],
+  "classification": "LOCAL_SOURCE_MIGRATION_PROVENANCE",
+  "legacyFixtureClassification": "SYNTHETIC_TEST_CASES_WITH_PLACEHOLDER_SOURCE_HASHES_NOT_PUBLIC_FILING_EVIDENCE",
+  "adaptations": [
+    "Pure report-level adapter; no provider, Prisma writes, score or autonomous trading.",
+    "Require version source hash/URI, publication evidence and independently known availability at explicit timezone instants.",
+    "No default-zero operands, unknown units, FX guessing or expense abs().",
+    "Calendar quarter YTD differencing needs explicitly pinned latest available comparable revision and evidenced accounting/restatement cohort.",
+    "ROE/ROA and asset turnover use explicitly dated average quarter balances; no annualization or TTM claim.",
+    "Each metric retains operands, source scale, normalized amount, formula, actual denominator and unknown reason.",
+    "Peer denominators exclude incompatible declared measurement bases; supplied and derived overlapping periods fail closed."
+  ],
+  "publicFinancialArchiveStatus": "NO_VERIFIED_PUBLIC_FINANCIAL_STATEMENT_ARCHIVE_FOUND_LOCALLY; existing legacy fixture is synthetic, not monetary evidence"
+}

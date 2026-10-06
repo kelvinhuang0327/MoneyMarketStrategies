@@ -1,0 +1,23 @@
+{
+  "inputReportCount": 5,
+  "selectedReportCount": 5,
+  "peerValidCount": 3,
+  "targetQuarterNetIncome": 120000,
+  "targetQuarterRevenue": 900000,
+  "targetFreeCashFlow": 100000,
+  "targetInterestCoverage": 20,
+  "targetMetrics": {
+    "debtRatio": 19.230769230769234,
+    "liabilitiesRatio": 46.15384615384615,
+    "currentRatio": 2,
+    "quickRatio": 1.6,
+    "roe": 9.230769230769232,
+    "roa": 5,
+    "assetTurnover": 0.375,
+    "cashflowConversion": 1.25
+  },
+  "roeNumerator": 120000,
+  "roeDenominator": 1300000,
+  "roaDenominator": 2400000,
+  "profitabilityEvidence": "NOT_EVALUATED"
+}

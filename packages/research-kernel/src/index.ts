@@ -13,6 +13,7 @@ export * from "./finalTestEconomicEvidence.js";
 export * from "./fundamentalSnapshots.js";
 export * from "./fundamentalPeerComparison.js";
 export * from "./fundamentalOfflineDiagnostic.js";
+export * from "./financialDerivationAdapter.js";
 export * from "./features.js";
 export * from "./gaussianNaiveBayes.js";
 export * from "./gaussianNaiveBayesChallenger.js";

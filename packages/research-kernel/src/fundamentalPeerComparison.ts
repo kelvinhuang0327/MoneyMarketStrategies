@@ -29,7 +29,10 @@ export function buildFinancialStructurePeerComparison(input: {
     const missingPeers: { symbol: string; reason: string }[] = [];
     for (const row of eligible) {
       const value = normalizeFundamentalValue(row, key);
-      if (value.value === null) missingPeers.push({ symbol: row.symbol, reason: value.missingReason ?? "MISSING_VALUE" });
+      const basisMismatch = row.metricBases?.[key] !== target?.metricBases?.[key]
+        || (["roe", "roa", "assetTurnover", "cashflowConversion"].includes(key) && row.reportingBasis !== target?.reportingBasis);
+      if (basisMismatch) missingPeers.push({ symbol: row.symbol, reason: "MEASUREMENT_BASIS_MISMATCH" });
+      else if (value.value === null) missingPeers.push({ symbol: row.symbol, reason: value.missingReason ?? "MISSING_VALUE" });
       else validPeers.push({ symbol: row.symbol, value: value.value, sourceRecord: fundamentalReference(row) });
     }
     validPeers.sort((a, b) => a.symbol.localeCompare(b.symbol));

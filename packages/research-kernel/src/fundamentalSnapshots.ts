@@ -22,6 +22,8 @@ export interface FundamentalObservation {
   readonly source: { readonly id: string; readonly uri: string | null };
   readonly currencyCode: string;
   readonly reportingBasis?: "SINGLE_QUARTER" | "CUMULATIVE_YTD";
+  /** Explicit formula/measurement conventions for derived ratios. Missing is unknown. */
+  readonly metricBases?: Readonly<Partial<Record<FundamentalMetric, string>>>;
   readonly values: Readonly<Partial<Record<FundamentalMetric, FundamentalValue>>>;
   /** Membership must also have been known by this record's availability time. */
   readonly group?: { readonly industry?: string | null; readonly sector?: string | null };
@@ -92,6 +94,8 @@ export function selectFundamentalObservations(observations: readonly Fundamental
       throw new TypeError("group membership must be explicit non-empty identifiers or null");
     }
     if (row.reportingBasis !== undefined && !["SINGLE_QUARTER", "CUMULATIVE_YTD"].includes(row.reportingBasis)) throw new TypeError("unknown reporting basis");
+    if (row.metricBases !== undefined && (row.metricBases === null || typeof row.metricBases !== "object" || Array.isArray(row.metricBases)
+      || Object.entries(row.metricBases).some(([key, value]) => !Object.hasOwn(FUNDAMENTAL_UNITS, key) || typeof value !== "string" || !value.trim()))) throw new TypeError("invalid metric measurement basis");
     const publication = fundamentalTimestamp(row.publishedAt);
     const observed = fundamentalTimestamp(row.observedAt);
     const end = typeof row.period === "string" ? periodEnd(row) : null;
@@ -123,7 +127,7 @@ export function selectFundamentalObservations(observations: readonly Fundamental
     const latest = sorted[0]!;
     const ties = sorted.filter((row) => row.publishedAt !== null && fundamentalTimestamp(row.publishedAt) === fundamentalTimestamp(latest.publishedAt)
       && fundamentalTimestamp(row.observedAt) === fundamentalTimestamp(latest.observedAt));
-    const content = (row: FundamentalObservation) => stable({ values: row.values, currencyCode: row.currencyCode, reportingBasis: row.reportingBasis, group: row.group });
+    const content = (row: FundamentalObservation) => stable({ values: row.values, currencyCode: row.currencyCode, reportingBasis: row.reportingBasis, metricBases: row.metricBases, group: row.group });
     if (ties.some((row) => content(row) !== content(latest))) {
       for (const row of ties) findings.push({ recordId: row.recordId, code: "AMBIGUOUS_PERIOD_REVISION" });
       continue;
@@ -154,7 +158,8 @@ export function normalizeFundamentalValue(row: FundamentalObservation | null, me
 }
 export function fundamentalReference(row: FundamentalObservation | null) {
   return row === null ? null : { recordId: row.recordId, symbol: row.symbol, period: row.period,
-    publishedAt: row.publishedAt, observedAt: row.observedAt, currencyCode: row.currencyCode, reportingBasis: row.reportingBasis ?? null, source: { ...row.source } };
+    publishedAt: row.publishedAt, observedAt: row.observedAt, currencyCode: row.currencyCode, reportingBasis: row.reportingBasis ?? null,
+    ...(row.metricBases ? { metricBases: { ...row.metricBases } } : {}), source: { ...row.source } };
 }
 function monthOrdinal(period: string): number { return Number(period.slice(0, 4)) * 12 + Number(period.slice(5)) - 1; }
 function quarterOrdinal(period: string): number { return Number(period.slice(0, 4)) * 4 + Number(period.slice(6)) - 1; }

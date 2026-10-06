@@ -1,0 +1,654 @@
+{
+  "schemaVersion": 1,
+  "datasetId": "synthetic-financial-derivation-v1",
+  "dataKind": "SYNTHETIC",
+  "reuseBasis": "Task-created synthetic statement archives; no real company financials. SHA-256 matches each preserved archive; publication/availability are simulated evidence.",
+  "symbol": "SYNTH-TARGET",
+  "kind": "stock",
+  "asOf": "2026-10-01T00:00:00Z",
+  "peerBasis": "industry",
+  "observations": [],
+  "financialStatements": [
+    {
+      "reportId": "SYNTH-TARGET-2026-Q1-v1",
+      "symbol": "SYNTH-TARGET",
+      "period": "2026-Q1",
+      "currencyCode": "TWD",
+      "publication": {
+        "at": "2026-05-15T00:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q1-v1.json"
+      },
+      "availability": {
+        "at": "2026-05-15T01:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q1-v1.json"
+      },
+      "balanceDate": "2026-03-31",
+      "openingBalanceDate": "2025-12-31",
+      "flowStartDate": "2026-01-01",
+      "flowEndDate": "2026-03-31",
+      "flowBasis": "CUMULATIVE_YTD",
+      "comparability": {
+        "key": "SYNTH-TARGET:consolidated:synthetic-policy:2026-original",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q1-v1.json"
+      },
+      "expenseSign": "POSITIVE_EXPENSE",
+      "amounts": {
+        "revenue": {
+          "value": 700,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "netIncome": {
+          "value": 100,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingIncome": {
+          "value": 140,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingCashFlow": {
+          "value": 100,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "capitalExpenditure": {
+          "value": 30,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "interestExpense": {
+          "value": 8,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalAssets": {
+          "value": 2200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalLiabilities": {
+          "value": 1000,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentAssets": {
+          "value": 900,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentLiabilities": {
+          "value": 450,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "inventory": {
+          "value": 180,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "shortTermDebt": {
+          "value": 150,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "longTermDebt": {
+          "value": 300,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingTotalAssets": {
+          "value": 2000,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingEquity": {
+          "value": 1000,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        }
+      },
+      "group": {
+        "industry": "synthetic-industry"
+      },
+      "source": {
+        "id": "TASK_SYNTHETIC_FINANCIAL_STATEMENT",
+        "uri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q1-v1.json",
+        "sha256": "4a1ead03e2f0a6c24a98c6c27b0b5a444a9db65500139d2086d0d83b27920a31"
+      },
+      "accountingBasis": {
+        "kind": "CONSOLIDATED_TOTAL_ENTITY",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q1-v1.json"
+      }
+    },
+    {
+      "reportId": "SYNTH-TARGET-2026-Q2-v1",
+      "symbol": "SYNTH-TARGET",
+      "period": "2026-Q2",
+      "currencyCode": "TWD",
+      "publication": {
+        "at": "2026-08-15T00:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q2-v1.json"
+      },
+      "availability": {
+        "at": "2026-08-15T01:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q2-v1.json"
+      },
+      "balanceDate": "2026-06-30",
+      "openingBalanceDate": "2026-03-31",
+      "flowStartDate": "2026-01-01",
+      "flowEndDate": "2026-06-30",
+      "flowBasis": "CUMULATIVE_YTD",
+      "comparability": {
+        "key": "SYNTH-TARGET:consolidated:synthetic-policy:2026-original",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q2-v1.json"
+      },
+      "expenseSign": "POSITIVE_EXPENSE",
+      "amounts": {
+        "revenue": {
+          "value": 1600,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "netIncome": {
+          "value": 220,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingIncome": {
+          "value": 340,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingCashFlow": {
+          "value": 250,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "capitalExpenditure": {
+          "value": 80,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "interestExpense": {
+          "value": 18,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalAssets": {
+          "value": 2600,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalLiabilities": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentAssets": {
+          "value": 1100,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentLiabilities": {
+          "value": 550,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "inventory": {
+          "value": 220,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "shortTermDebt": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "longTermDebt": {
+          "value": 300,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingTotalAssets": {
+          "value": 2200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingEquity": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        }
+      },
+      "group": {
+        "industry": "synthetic-industry"
+      },
+      "priorCumulativeReportId": "SYNTH-TARGET-2026-Q1-v1",
+      "source": {
+        "id": "TASK_SYNTHETIC_FINANCIAL_STATEMENT",
+        "uri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q2-v1.json",
+        "sha256": "6c7d5bb07b4583ecf791f17c92968601299ad32e5805433ecfbecaa8b9a486fa"
+      },
+      "accountingBasis": {
+        "kind": "CONSOLIDATED_TOTAL_ENTITY",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-TARGET-2026-Q2-v1.json"
+      }
+    },
+    {
+      "reportId": "SYNTH-P1-2026-Q2-v1",
+      "symbol": "SYNTH-P1",
+      "period": "2026-Q2",
+      "currencyCode": "TWD",
+      "publication": {
+        "at": "2026-08-15T00:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P1-2026-Q2-v1.json"
+      },
+      "availability": {
+        "at": "2026-08-15T01:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P1-2026-Q2-v1.json"
+      },
+      "balanceDate": "2026-06-30",
+      "openingBalanceDate": "2026-03-31",
+      "flowStartDate": "2026-04-01",
+      "flowEndDate": "2026-06-30",
+      "flowBasis": "SINGLE_QUARTER",
+      "comparability": {
+        "key": "SYNTH-P1:consolidated:synthetic-policy:2026-original",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P1-2026-Q2-v1.json"
+      },
+      "expenseSign": "POSITIVE_EXPENSE",
+      "amounts": {
+        "revenue": {
+          "value": 900,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "netIncome": {
+          "value": 120,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingIncome": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingCashFlow": {
+          "value": 150,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "capitalExpenditure": {
+          "value": 50,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "interestExpense": {
+          "value": 10,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalAssets": {
+          "value": 2600,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalLiabilities": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentAssets": {
+          "value": 1100,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentLiabilities": {
+          "value": 550,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "inventory": {
+          "value": 220,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "shortTermDebt": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "longTermDebt": {
+          "value": 300,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingTotalAssets": {
+          "value": 2200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingEquity": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        }
+      },
+      "group": {
+        "industry": "synthetic-industry"
+      },
+      "source": {
+        "id": "TASK_SYNTHETIC_FINANCIAL_STATEMENT",
+        "uri": "fixture://financial-archive-synthetic/SYNTH-P1-2026-Q2-v1.json",
+        "sha256": "44c98c49d289c0361054fbbd05ae5fb0027a763a02ad0d5e9ea9962213a8ca9c"
+      },
+      "accountingBasis": {
+        "kind": "CONSOLIDATED_TOTAL_ENTITY",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P1-2026-Q2-v1.json"
+      }
+    },
+    {
+      "reportId": "SYNTH-P2-2026-Q2-v1",
+      "symbol": "SYNTH-P2",
+      "period": "2026-Q2",
+      "currencyCode": "TWD",
+      "publication": {
+        "at": "2026-08-15T00:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P2-2026-Q2-v1.json"
+      },
+      "availability": {
+        "at": "2026-08-15T01:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P2-2026-Q2-v1.json"
+      },
+      "balanceDate": "2026-06-30",
+      "openingBalanceDate": "2026-03-31",
+      "flowStartDate": "2026-04-01",
+      "flowEndDate": "2026-06-30",
+      "flowBasis": "SINGLE_QUARTER",
+      "comparability": {
+        "key": "SYNTH-P2:consolidated:synthetic-policy:2026-original",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P2-2026-Q2-v1.json"
+      },
+      "expenseSign": "POSITIVE_EXPENSE",
+      "amounts": {
+        "revenue": {
+          "value": 900,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "netIncome": {
+          "value": 120,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingIncome": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingCashFlow": {
+          "value": 150,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "capitalExpenditure": {
+          "value": 50,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "interestExpense": {
+          "value": 10,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalAssets": {
+          "value": 2600,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalLiabilities": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentAssets": {
+          "value": 1100,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentLiabilities": {
+          "value": 550,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "inventory": {
+          "value": 220,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "shortTermDebt": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "longTermDebt": {
+          "value": 300,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingTotalAssets": {
+          "value": 2200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingEquity": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        }
+      },
+      "group": {
+        "industry": "synthetic-industry"
+      },
+      "source": {
+        "id": "TASK_SYNTHETIC_FINANCIAL_STATEMENT",
+        "uri": "fixture://financial-archive-synthetic/SYNTH-P2-2026-Q2-v1.json",
+        "sha256": "a32bc15a7f5f3a3e249f2d1e9310a41b802df6e219b0eb8b351a24d0848a43ad"
+      },
+      "accountingBasis": {
+        "kind": "CONSOLIDATED_TOTAL_ENTITY",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P2-2026-Q2-v1.json"
+      }
+    },
+    {
+      "reportId": "SYNTH-P3-2026-Q2-v1",
+      "symbol": "SYNTH-P3",
+      "period": "2026-Q2",
+      "currencyCode": "TWD",
+      "publication": {
+        "at": "2026-08-15T00:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P3-2026-Q2-v1.json"
+      },
+      "availability": {
+        "at": "2026-08-15T01:00:00Z",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P3-2026-Q2-v1.json"
+      },
+      "balanceDate": "2026-06-30",
+      "openingBalanceDate": "2026-03-31",
+      "flowStartDate": "2026-04-01",
+      "flowEndDate": "2026-06-30",
+      "flowBasis": "SINGLE_QUARTER",
+      "comparability": {
+        "key": "SYNTH-P3:consolidated:synthetic-policy:2026-original",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P3-2026-Q2-v1.json"
+      },
+      "expenseSign": "POSITIVE_EXPENSE",
+      "amounts": {
+        "revenue": {
+          "value": 900,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "netIncome": {
+          "value": 120,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingIncome": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "operatingCashFlow": {
+          "value": 150,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "capitalExpenditure": {
+          "value": 50,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "interestExpense": {
+          "value": 10,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalAssets": {
+          "value": 2600,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "totalLiabilities": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentAssets": {
+          "value": 1100,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "currentLiabilities": {
+          "value": 550,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "inventory": {
+          "value": 220,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "shortTermDebt": {
+          "value": 200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "longTermDebt": {
+          "value": 300,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingTotalAssets": {
+          "value": 2200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        },
+        "openingEquity": {
+          "value": 1200,
+          "unit": "CURRENCY",
+          "scale": 1000,
+          "currencyCode": "TWD"
+        }
+      },
+      "group": {
+        "industry": "synthetic-industry"
+      },
+      "source": {
+        "id": "TASK_SYNTHETIC_FINANCIAL_STATEMENT",
+        "uri": "fixture://financial-archive-synthetic/SYNTH-P3-2026-Q2-v1.json",
+        "sha256": "6107fe7d7394370e3909f3abf9909cc219a8ba228f7bddd3760b517c3b173968"
+      },
+      "accountingBasis": {
+        "kind": "CONSOLIDATED_TOTAL_ENTITY",
+        "evidenceUri": "fixture://financial-archive-synthetic/SYNTH-P3-2026-Q2-v1.json"
+      }
+    }
+  ]
+}
