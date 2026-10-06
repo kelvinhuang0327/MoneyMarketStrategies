@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "artifactId": "cross-symbol-risk-normalized-forward-batch-v1",
+  "symbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "source": "TWSE STOCK_DAY monthly report API",
+  "providerVersion": "TWSE exchangeReport/STOCK_DAY monthly report API response=json",
+  "fetchedAtUtc": "2026-10-02T13:11:26.768Z",
+  "previousForwardEnd": "2026-09-30",
+  "dateRange": {
+    "start": "2026-10-01",
+    "end": "2026-10-02"
+  },
+  "perSymbolRowCounts": {
+    "2317": 2,
+    "2330": 2,
+    "2454": 2,
+    "0056": 2
+  },
+  "rowCount": 8,
+  "sha256": "eb61a565d41ba1256d94b369566aff4c2e0a49c8a15b7ced35bd2a71cc620d3d"
+}
