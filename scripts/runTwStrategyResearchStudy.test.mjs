@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { test } from "node:test";
@@ -101,6 +102,8 @@ test("uses portable project-local implicit output defaults and preserves explici
     {
       legacyRepo: defaultArgs.legacyRepo,
       ref: defaultArgs.ref,
+      csvRepo: defaultArgs.csvRepo,
+      csvRef: defaultArgs.csvRef,
       csvPath: defaultArgs.csvPath,
       refitReportPath: defaultArgs.refitReportPath,
       expectedSha256: defaultArgs.expectedSha256,
@@ -111,7 +114,9 @@ test("uses portable project-local implicit output defaults and preserves explici
     {
       legacyRepo: "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
       ref: "WORKTREE",
-      csvPath: "outputs/retraining/p194_twstock_ohlcv_export.csv",
+      csvRepo: fileURLToPath(new URL("../", import.meta.url)),
+      csvRef: "WORKTREE",
+      csvPath: "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
       refitReportPath: "outputs/retraining/p193_real_ohlcv_refit_report.json",
       expectedSha256: "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
       dataEndDate: "2026-08-11",
@@ -119,6 +124,86 @@ test("uses portable project-local implicit output defaults and preserves explici
       qualificationAsOf: "2025-06-18T10:00:00.000Z",
     },
   );
+});
+
+test("separates project CSV defaults from explicit legacy source/ref overrides", () => {
+  const old = parseArgs(["--legacy-repo", "/caller/legacy", "--ref", "pinned-old-ref"]);
+  assert.equal(old.csvRepo, "/caller/legacy");
+  assert.equal(old.csvRef, "pinned-old-ref");
+  assert.equal(old.csvPath, "outputs/retraining/p194_twstock_ohlcv_export.csv");
+  const customOld = parseArgs(["--csv-path", "historical.csv", "--ref", "custom-ref"]);
+  assert.equal(customOld.csvRepo, customOld.legacyRepo);
+  assert.equal(customOld.csvRef, "custom-ref");
+  assert.equal(customOld.csvPath, "historical.csv");
+  for (const flags of [
+    ["--legacy-repo", "/caller/legacy", "--ref", "report-ref", "--csv-repo", "/caller/mms", "--csv-ref", "csv-ref"],
+    ["--csv-repo", "/caller/mms", "--csv-ref", "csv-ref", "--ref", "report-ref", "--legacy-repo", "/caller/legacy"],
+  ]) {
+    const args = parseArgs(flags);
+    assert.equal(args.csvRepo, "/caller/mms");
+    assert.equal(args.csvRef, "csv-ref");
+    assert.equal(args.ref, "report-ref");
+    assert.equal(args.csvPath, "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
+  }
+});
+
+test("both actual CLI consumers verify the project-local canonical CSV from another cwd without research", () => {
+  const root = fileURLToPath(new URL("../", import.meta.url));
+  const csvPath = path.join(root, "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
+  const bytes = readFileSync(csvPath);
+  const sha256 = createHash("sha256").update(bytes).digest("hex");
+  const isolatedCwd = mkdtempSync(path.join(tmpdir(), "mms-csv-consumer-"));
+  try {
+    for (const script of ["runTwStrategyResearchStudy.mjs", "runMiQfiisMultiSymbolGeneralization.mjs"]) {
+      const result = JSON.parse(execFileSync(process.execPath, [path.join(root, "scripts", script), "--check-csv-input"],
+        { cwd: isolatedCwd, encoding: "utf8" }));
+      const effectivePath = result.repository ? path.resolve(result.repository, result.path) : result.path;
+      assert.equal(effectivePath, csvPath);
+      assert.equal(result.sha256, sha256);
+      assert.equal(result.bytes, bytes.length);
+      assert.equal(result.researchExecuted, false);
+      assert.equal(result.artifactsWritten, false);
+    }
+    assert.deepEqual(readdirSync(isolatedCwd), []);
+  } finally { rmSync(isolatedCwd, { recursive: true, force: true }); }
+});
+
+test("CSV check mode honors an isolated custom input and rejects a wrong hash without artifacts", () => {
+  const root = fileURLToPath(new URL("../", import.meta.url));
+  const directory = mkdtempSync(path.join(tmpdir(), "mms-csv-pin-"));
+  const bytes = Buffer.from("synthetic-input-only-no-model-run\n");
+  const sha256 = createHash("sha256").update(bytes).digest("hex");
+  try {
+    writeFileSync(path.join(directory, "input.csv"), bytes);
+    const args = [path.join(root, "scripts/runTwStrategyResearchStudy.mjs"), "--check-csv-input", "--csv-repo", directory,
+      "--csv-path", "input.csv", "--expected-sha256", sha256];
+    const result = JSON.parse(execFileSync(process.execPath, args, { cwd: directory, encoding: "utf8" }));
+    assert.equal(result.sha256, sha256);
+    assert.equal(result.researchExecuted, false);
+    assert.throws(() => execFileSync(process.execPath, [...args.slice(0, -1), "0".repeat(64)],
+      { cwd: directory, encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }), /SOURCE_SHA256_MISMATCH/);
+    assert.deepEqual(readdirSync(directory), ["input.csv"]);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
+});
+
+test("MI_QFIIS input verification needs no research packages and preserves the frozen hash pin", () => {
+  const root = fileURLToPath(new URL("../", import.meta.url));
+  const directory = mkdtempSync(path.join(tmpdir(), "mms-csv-standalone-"));
+  const script = path.join(directory, "scripts/runMiQfiisMultiSymbolGeneralization.mjs");
+  const relativeCsv = "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv";
+  try {
+    mkdirSync(path.dirname(script), { recursive: true });
+    mkdirSync(path.dirname(path.join(directory, relativeCsv)), { recursive: true });
+    copyFileSync(path.join(root, "scripts/runMiQfiisMultiSymbolGeneralization.mjs"), script);
+    copyFileSync(path.join(root, relativeCsv), path.join(directory, relativeCsv));
+    const result = JSON.parse(execFileSync(process.execPath, [script, "--check-csv-input"], { cwd: tmpdir(), encoding: "utf8" }));
+    assert.equal(realpathSync(result.path), realpathSync(path.join(directory, relativeCsv)));
+    assert.equal(result.sha256, "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7");
+    writeFileSync(path.join(directory, relativeCsv), "isolated-synthetic-tamper\n");
+    assert.throws(() => execFileSync(process.execPath, [script, "--check-csv-input"],
+      { cwd: tmpdir(), encoding: "utf8", stdio: ["ignore", "pipe", "pipe"] }), /STOP_P194_HASH_MISMATCH/);
+    assert.deepEqual(readdirSync(directory).sort(), ["data", "scripts"]);
+  } finally { rmSync(directory, { recursive: true, force: true }); }
 });
 
 function replaySummary(strategyProfitFactor) {

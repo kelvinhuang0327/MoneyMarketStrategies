@@ -71,7 +71,10 @@ import {
 const DEFAULTS = Object.freeze({
   legacyRepo: "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
   ref: "WORKTREE",
-  csvPath: "outputs/retraining/p194_twstock_ohlcv_export.csv",
+  csvRepo: fileURLToPath(new URL("../", import.meta.url)),
+  csvRef: "WORKTREE",
+  csvPath: "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
+  checkCsvInput: false,
   refitReportPath: "outputs/retraining/p193_real_ohlcv_refit_report.json",
   expectedSha256: "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
   dataEndDate: "2026-08-11",
@@ -123,11 +126,19 @@ function resolveDefaultOutputDir(args) {
 export function parseArgs(argv) {
   const args = { ...DEFAULTS };
   let customOutDir = false;
+  let customCsvRepo = false;
+  let customCsvRef = false;
+  let legacyCsvInvocation = false;
+  let customCsvPath = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     if (!flag.startsWith("--")) continue;
     const key = flag.slice(2);
+    if (key === "check-csv-input") {
+      args.checkCsvInput = true;
+      continue;
+    }
     if (key === "challenger-temporal") {
       args.challengerTemporal = true;
       continue;
@@ -166,9 +177,11 @@ export function parseArgs(argv) {
     }
     const value = argv[index + 1];
     if (value === undefined) throw new Error(`missing value for --${key}`);
-    if (key === "legacy-repo") args.legacyRepo = value;
-    else if (key === "ref") args.ref = value;
-    else if (key === "csv-path") args.csvPath = value;
+    if (key === "legacy-repo") { args.legacyRepo = value; legacyCsvInvocation = true; }
+    else if (key === "ref") { args.ref = value; legacyCsvInvocation = true; }
+    else if (key === "csv-repo") { args.csvRepo = value; customCsvRepo = true; }
+    else if (key === "csv-ref") { args.csvRef = value; customCsvRef = true; }
+    else if (key === "csv-path") { args.csvPath = value; customCsvPath = true; }
     else if (key === "refit-report-path") args.refitReportPath = value;
     else if (key === "expected-sha256") args.expectedSha256 = value;
     else if (key === "data-end-date") args.dataEndDate = value;
@@ -182,6 +195,14 @@ export function parseArgs(argv) {
       args.roundTripCostBps = value.split(",").map((s) => Number(s.trim()));
     } else throw new Error(`unrecognized flag --${key}`);
     index += 1;
+  }
+
+  // Explicit old-style invocations retain their source/ref semantics. A caller
+  // can separate auxiliary legacy inputs by explicitly choosing --csv-repo.
+  if (!customCsvRepo && (legacyCsvInvocation || customCsvPath)) {
+    args.csvRepo = args.legacyRepo;
+    if (!customCsvPath) args.csvPath = "outputs/retraining/p194_twstock_ohlcv_export.csv";
+    if (!customCsvRef) args.csvRef = args.ref;
   }
 
   if (!customOutDir) {
@@ -649,7 +670,7 @@ export function buildPredictionRetrainingResultV1FromFreshResearch({
   const evidenceResult = suppliedResearchEvidenceResult ?? runResearchEvidenceKernel({
     datasetVersion: {
       datasetId: "p194_twstock_ohlcv_export",
-      version: output.repositories.legacyRepo.ref,
+      version: output.repositories.csvRepo?.ref ?? output.repositories.legacyRepo.ref,
       source: "twstock/twse",
     },
     marketRows,
@@ -729,7 +750,7 @@ export function buildPredictionRetrainingResultV1FromFreshResearch({
   const provenanceReferences = [
     {
       kind: "dataset",
-      reference: `${output.repositories.legacyRepo.ref}:${output.source.path}`,
+      reference: `${output.repositories.csvRepo?.ref ?? output.repositories.legacyRepo.ref}:${output.source.path}`,
       sha256: output.source.sha256,
     },
     ...CONTRACT_SCENARIO_IDS
@@ -1354,10 +1375,15 @@ function generatePerSymbolLogisticChallengerTemporalMarkdown(output) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
 
-  const csvBytes = readPinnedGitBlob(args.legacyRepo, args.ref, args.csvPath);
+  const csvBytes = readPinnedGitBlob(args.csvRepo, args.csvRef, args.csvPath);
   const actualSha256 = sha256Hex(csvBytes);
   if (actualSha256 !== args.expectedSha256) {
     throw new Error(`SOURCE_SHA256_MISMATCH:expected=${args.expectedSha256}:actual=${actualSha256}`);
+  }
+  if (args.checkCsvInput) {
+    console.log(JSON.stringify({ status: "CSV_INPUT_VERIFIED", repository: args.csvRepo, ref: args.csvRef,
+      path: args.csvPath, sha256: actualSha256, bytes: csvBytes.length, researchExecuted: false, artifactsWritten: false }));
+    return;
   }
   const csvText = csvBytes.toString("utf8");
   const rawRows = parseTwStrategyResearchCsvText(csvText);
@@ -1428,11 +1454,13 @@ async function main() {
       cutoffDates,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       datasetVersion: {
         datasetId: "p194_twstock_ohlcv_export",
-        version: args.ref,
+        version: args.csvRef,
         source: "twstock/twse",
       },
       reviewDate: args.reviewDate,
@@ -1520,11 +1548,13 @@ async function main() {
       cutoffDates,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       datasetVersion: {
         datasetId: "p194_twstock_ohlcv_export",
-        version: args.ref,
+        version: args.csvRef,
         source: "twstock/twse",
       },
       reviewDate: args.reviewDate,
@@ -1612,11 +1642,13 @@ async function main() {
       cutoffDates,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       datasetVersion: {
         datasetId: "p194_twstock_ohlcv_export",
-        version: args.ref,
+        version: args.csvRef,
         source: "twstock/twse",
       },
       reviewDate: args.reviewDate,
@@ -1701,11 +1733,13 @@ async function main() {
       cutoffDates,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       datasetVersion: {
         datasetId: "p194_twstock_ohlcv_export",
-        version: args.ref,
+        version: args.csvRef,
         source: "twstock/twse",
       },
       reviewDate: args.reviewDate,
@@ -1790,11 +1824,13 @@ async function main() {
       cutoffDates,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       datasetVersion: {
         datasetId: "p194_twstock_ohlcv_export",
-        version: args.ref,
+        version: args.csvRef,
         source: "twstock/twse",
       },
       reviewDate: args.reviewDate,
@@ -1883,11 +1919,13 @@ async function main() {
       cutoffDates,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       datasetVersion: {
         datasetId: "p194_twstock_ohlcv_export",
-        version: args.ref,
+        version: args.csvRef,
         source: "twstock/twse",
       },
       reviewDate: args.reviewDate,
@@ -2016,6 +2054,8 @@ async function main() {
       roundTripCostBpsValues: validatedCosts,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       policy: TW_STABILITY_RESEARCH_POLICY_V1,
@@ -2157,6 +2197,8 @@ async function main() {
       cutoffDates: validatedCutoffs,
       source: {
         path: args.csvPath,
+        repository: args.csvRepo,
+        ref: args.csvRef,
         sha256: actualSha256,
       },
       policy: TW_STABILITY_RESEARCH_POLICY_V1,
@@ -2292,7 +2334,7 @@ async function main() {
   });
   const researchDatasetVersion = {
     datasetId: "p194_twstock_ohlcv_export",
-    version: args.ref,
+    version: args.csvRef,
     source: "twstock/twse",
   };
   const rawResearchEvidenceResult = runResearchEvidenceKernel({
@@ -2333,7 +2375,7 @@ async function main() {
     raw: {
       scenario: "0050_RAW",
       sourceDataQualityClassification: "RAW_UNADJUSTED_PRICE_PATH",
-      sourceEvidenceReference: `${args.ref}:${args.csvPath}`,
+      sourceEvidenceReference: `${args.csvRef}:${args.csvPath}`,
       finalTestEvidence: rawResearchEvidenceResult.finalTestEconomicEvidence,
       dataQualityFindings: result0050Raw.dataQualityFindings,
       corporateActionWarnings,
@@ -2341,7 +2383,7 @@ async function main() {
     adjusted: {
       scenario: "0050_SOURCE_QUALIFIED_ADJUSTED",
       sourceDataQualityClassification: "SOURCE_QUALIFIED_ADJUSTED_PRICE_PATH",
-      sourceEvidenceReference: `${args.ref}:${args.csvPath}:TWSE_0050_SOURCE_QUALIFIED_ADJUSTED`,
+      sourceEvidenceReference: `${args.csvRef}:${args.csvPath}:TWSE_0050_SOURCE_QUALIFIED_ADJUSTED`,
       finalTestEvidence: adjustedResearchEvidenceResult.finalTestEconomicEvidence,
       dataQualityFindings: result0050Adjusted.dataQualityFindings,
       corporateActionWarnings,
@@ -2396,9 +2438,12 @@ async function main() {
     currentUnresolvedPredictionClaim: true,
     repositories: {
       legacyRepo: { path: args.legacyRepo, ref: args.ref },
+      csvRepo: { path: args.csvRepo, ref: args.csvRef },
     },
     source: {
       path: args.csvPath,
+      repository: args.csvRepo,
+      ref: args.csvRef,
       sha256: actualSha256,
       dateRange: validated.dateRange,
       rowCount: validated.rows.length,

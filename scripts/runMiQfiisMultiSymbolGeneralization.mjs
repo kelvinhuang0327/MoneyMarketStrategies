@@ -5,28 +5,11 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-import {
-  CANONICAL_TRANSACTION_COST_BPS,
-  canonicalStringify,
-  hashValue,
-  parseTwStrategyResearchCsvText,
-  parseTwseMiQfiisCsvText,
-  SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES,
-  TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
-  TWSE_MI_QFIIS_STRICT_PIT_RULE,
-  validateTwStrategyResearchRows,
-} from "@mms/research-kernel";
-import {
-  evaluateMultiSymbolMiQfiisForeignOwnershipGeneralizationGate,
-  MI_QFIIS_GENERALIZATION_OOS_SYMBOLS,
-  MI_QFIIS_GENERALIZATION_POOLED_METRICS_ROLE,
-  runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal,
-  toMultiSymbolMiQfiisSymbolVerdict,
-} from "@mms/strategy-simulator";
 
 const OHLCV_PATH =
-  "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  fileURLToPath(new URL("../data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv", import.meta.url));
 const OHLCV_SHA256 = "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7";
 const MI_QFIIS_PATH = path.resolve(
   "outputs/retraining/p199_0050_2317_2330_2454_twse_mi_qfiis_foreign_ownership.csv",
@@ -39,7 +22,6 @@ const MI_QFIIS_MANIFEST_SHA256 = "f6c885ef708cfa1360a27c2a44382459a3da96454d4e3d
 const DATA_END_DATE = "2026-08-11";
 const REVIEW_DATE = "2026-08-27";
 const INITIAL_CAPITAL = 1_000_000;
-const OOS_SYMBOLS = Object.freeze([...MI_QFIIS_GENERALIZATION_OOS_SYMBOLS]);
 const SCOPE_CAVEAT =
   "This is fixed-panel diagnostic historical research only. The four OOS symbols are not claimed to be statistically independent or representative of the full Taiwan equity universe. No promotion or investment advice is authorized.";
 
@@ -201,11 +183,37 @@ function mean(values) {
   return round8(values.reduce((sum, value) => sum + value, 0) / values.length);
 }
 
+const ohlcvBytes = readPinnedBytes(OHLCV_PATH, OHLCV_SHA256, "STOP_P194_HASH_MISMATCH");
+if (process.argv.includes("--check-csv-input")) {
+  console.log(JSON.stringify({ status: "CSV_INPUT_VERIFIED", path: OHLCV_PATH, sha256: OHLCV_SHA256,
+    bytes: ohlcvBytes.length, researchExecuted: false, artifactsWritten: false }));
+  process.exit(0);
+}
+// Input-only mode does not load research packages or execute historical models.
+const {
+  CANONICAL_TRANSACTION_COST_BPS,
+  canonicalStringify,
+  hashValue,
+  parseTwStrategyResearchCsvText,
+  parseTwseMiQfiisCsvText,
+  SUPPORTED_TW_STRATEGY_TEMPORAL_CUTOFF_DATES,
+  TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS,
+  TWSE_MI_QFIIS_STRICT_PIT_RULE,
+  validateTwStrategyResearchRows,
+} = await import("@mms/research-kernel");
+const {
+  evaluateMultiSymbolMiQfiisForeignOwnershipGeneralizationGate,
+  MI_QFIIS_GENERALIZATION_OOS_SYMBOLS,
+  MI_QFIIS_GENERALIZATION_POOLED_METRICS_ROLE,
+  runPerSymbolMiQfiisForeignOwnershipLogisticChallengerTemporal,
+  toMultiSymbolMiQfiisSymbolVerdict,
+} = await import("@mms/strategy-simulator");
+
+const OOS_SYMBOLS = Object.freeze([...MI_QFIIS_GENERALIZATION_OOS_SYMBOLS]);
 if (!sameOrderedValues(OOS_SYMBOLS, TWSE_MI_QFIIS_MULTI_SYMBOL_TARGETS)) {
   fail("STOP_SOURCE_COVERAGE_MISMATCH", "research-kernel and gate OOS symbol constants differ");
 }
 
-const ohlcvBytes = readPinnedBytes(OHLCV_PATH, OHLCV_SHA256, "STOP_P194_HASH_MISMATCH");
 const miQfiisBytes = readPinnedBytes(MI_QFIIS_PATH, MI_QFIIS_SHA256, "STOP_P199_HASH_MISMATCH");
 const manifestBytes = readPinnedBytes(
   MI_QFIIS_MANIFEST_PATH,
