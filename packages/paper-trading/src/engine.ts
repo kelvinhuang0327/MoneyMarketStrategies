@@ -1,3 +1,4 @@
+import { freezePaperCostModelV2, paperFillCostsV2 } from "./paperCostModelV2.js";
 import { allocateCostBasisMinor, executionPriceMinor, feeMinorForFill, reservedBuyCashMinor } from "./money.js";
 import { buyFillRiskReason, pendingBuyRiskReason, targetRiskReason, validateRiskLimits } from "./risk.js";
 import type {
@@ -123,10 +124,19 @@ export class PaperTradingEngine {
     if (!Number.isSafeInteger(config.terms.slippageBps) || config.terms.slippageBps < 0 || config.terms.slippageBps >= 10_000) {
       throw new RangeError("slippageBps must be an integer from 0 through 9999");
     }
+    if (config.terms.costModel && config.strategy.strategyVersion === "cost-covered-zscore-exit-v1") {
+      throw new TypeError("frozen cost-covered v1 cannot use the new cost model; select the shared-cost v2 candidate");
+    }
+    if (!config.terms.costModel && config.strategy.strategyVersion === "cost-covered-zscore-exit-shared-cost-v2") {
+      throw new TypeError("shared-cost v2 candidate requires costModel");
+    }
     this.symbol = config.symbol;
     this.cashMinor = config.initialCashMinor;
     this.riskLimits = Object.freeze({ ...config.risk });
-    this.terms = Object.freeze({ ...config.terms });
+    if (config.terms.costModel && config.terms.feeBps !== 0) throw new TypeError("costModel requires legacy feeBps zero to prevent ambiguous charges");
+    this.terms = Object.freeze({ ...config.terms,
+      ...(config.terms.costModel ? { costModel: freezePaperCostModelV2(config.terms.costModel) } : {}),
+    });
     this.strategyVersion = config.strategy.strategyVersion;
     this.clock = config.clock;
     this.strategy = config.strategy;
@@ -234,7 +244,7 @@ export class PaperTradingEngine {
 
     if (market !== undefined) {
       const expectedExecutionPrice = executionPriceMinor(order.side, market.priceMinor, this.terms.slippageBps);
-      const expectedFee = feeMinorForFill(expectedExecutionPrice, report.quantity, this.terms.feeBps);
+      const expectedFee = this.fillFeeMinor(order.side, expectedExecutionPrice, report.quantity);
       if (report.executionPriceMinor !== expectedExecutionPrice || report.feeMinor !== expectedFee) {
         return this.rejectFill(report.fillId, canonical, "FILL_TERMS_MISMATCH");
       }
@@ -532,6 +542,7 @@ export class PaperTradingEngine {
           this.currentMark?.priceMinor ?? this.activeOrder.referencePriceMinor,
           this.terms.slippageBps,
           this.terms.feeBps,
+          this.terms.costModel,
         )
       : 0n;
     const markPriceMinor = this.currentMark?.priceMinor ?? null;
@@ -637,7 +648,7 @@ export class PaperTradingEngine {
       timestamp: market.timestamp,
       quantity: fillDecision.quantity,
       executionPriceMinor: execution,
-      feeMinor: feeMinorForFill(execution, fillDecision.quantity, this.terms.feeBps),
+      feeMinor: this.fillFeeMinor(order.side, execution, fillDecision.quantity),
     };
     const fillResult = this.acceptExecutionReport(report);
     if (fillResult.status === "rejected" && this.isFillTimeRiskReason(fillResult.reasonCode)) {
@@ -656,6 +667,7 @@ export class PaperTradingEngine {
       positionQuantity: this.positionQuantity,
       positionEntryExecutionNotionalMinor,
       positionCostBasisMinor: this.lots.reduce((sum, lot) => sum + lot.totalCostMinor, 0n),
+      ...(this.terms.costModel ? { paperTradingTerms: this.terms } : {}),
     });
     let target: number;
     try {
@@ -803,6 +815,11 @@ export class PaperTradingEngine {
     }
   }
 
+  private fillFeeMinor(side: "buy" | "sell", price: bigint, quantity: number): bigint {
+    return this.terms.costModel ? paperFillCostsV2(side, price, quantity, this.terms.costModel).totalFeeMinor
+      : feeMinorForFill(price, quantity, this.terms.feeBps);
+  }
+
   private currentReservedCashMinor(): bigint {
     if (!this.activeOrder || this.activeOrder.side !== "buy") return 0n;
     return reservedBuyCashMinor(
@@ -810,6 +827,7 @@ export class PaperTradingEngine {
       this.currentMark?.priceMinor ?? this.activeOrder.referencePriceMinor,
       this.terms.slippageBps,
       this.terms.feeBps,
+      this.terms.costModel,
     );
   }
 

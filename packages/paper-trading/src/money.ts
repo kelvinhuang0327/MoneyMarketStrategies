@@ -1,4 +1,5 @@
-import type { OrderSide } from "./types.js";
+import { paperFillCostsV2 } from "./paperCostModelV2.js";
+import type { PaperCostModelV2, OrderSide } from "./types.js";
 
 const BPS_DENOMINATOR = 10_000n;
 
@@ -37,17 +38,22 @@ export function feeMinorForFill(
 
 /**
  * Conservative buy reservation. It rounds the fee up separately per share,
- * so any sequence of partial fills at this price remains covered.
+ * so any sequence of partial fills at this price remains covered. For v2,
+ * reserve uses ceiling-rounding as an upper bound even if actual fees round
+ * down or to nearest (nearest per-share fees alone need not bound partitions).
  */
 export function reservedBuyCashMinor(
   quantity: number,
   referencePriceMinor: bigint,
   slippageBps: number,
   feeBps: number,
+  costModel?: PaperCostModelV2,
 ): bigint {
   if (quantity <= 0) return 0n;
   const price = executionPriceMinor("buy", referencePriceMinor, slippageBps);
-  const perShareFee = ceilDiv(price * BigInt(feeBps), BPS_DENOMINATOR);
+  const reservationModel = costModel ? { ...costModel, roundingMode: "ceil" as const } : undefined;
+  const perShareFee = reservationModel ? paperFillCostsV2("buy", price, 1, reservationModel).totalFeeMinor
+    : ceilDiv(price * BigInt(feeBps), BPS_DENOMINATOR);
   return BigInt(quantity) * (price + perShareFee);
 }
 

@@ -50,6 +50,7 @@ export function targetRiskReason(input: {
       markPriceMinor,
       input.terms.slippageBps,
       input.terms.feeBps,
+      input.terms.costModel,
     );
     if (input.cashMinor - input.reservedCashMinor < needed) return "INSUFFICIENT_FUNDS";
   }
@@ -78,6 +79,7 @@ export function pendingBuyRiskReason(input: {
     input.markPriceMinor,
     input.terms.slippageBps,
     input.terms.feeBps,
+    input.terms.costModel,
   );
   if (reserve > input.cashMinor) return "PENDING_FUNDS_LIMIT";
   return null;
@@ -108,6 +110,7 @@ export function buyFillRiskReason(input: {
     input.markPriceMinor,
     input.terms.slippageBps,
     input.terms.feeBps,
+    input.terms.costModel,
   );
   if (input.cashAfterFillMinor < reserveAfter) return "INSUFFICIENT_FUNDS_AT_FILL";
   return null;

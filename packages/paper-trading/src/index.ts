@@ -78,3 +78,9 @@ export type {
 
 export { CostCoveredZScoreExitV1Strategy } from "./costCoveredZScoreExit.js";
 export type { CostCoveredZScoreExitV1Config } from "./costCoveredZScoreExit.js";
+
+export { CostCoveredZScoreExitV2Strategy } from "./costCoveredZScoreExitV2.js";
+export type { CostCoveredZScoreExitV2Config } from "./costCoveredZScoreExitV2.js";
+export { freezePaperCostModelV2, paperFillCostsV2, publicTwCostScenarioV2 } from "./paperCostModelV2.js";
+export { createSharedCostPaperPairV2 } from "./sharedCostPaperPairV2.js";
+export type { PaperCostModelV2 } from "./types.js";

@@ -1088,6 +1088,7 @@ export class DurablePaperTradingSession {
    * the supplied strategy and fill rule, then rejects any output that diverges.
    */
   static async open(config: PaperTradingEngineConfig, journalPath: string): Promise<DurablePaperTradingSession> {
+    if (config.terms.costModel) throw new TypeError("shared cost model v2 requires the isolated paper engine; durable journal cost schema is unsupported");
     if (typeof journalPath !== "string" || journalPath.trim() === "") throw new TypeError("journalPath is required");
     const root = resolve(journalPath);
     const clockState = { value: Number.NaN };

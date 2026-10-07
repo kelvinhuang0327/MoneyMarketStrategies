@@ -48,6 +48,8 @@ export interface StrategyInput {
   readonly positionEntryExecutionNotionalMinor: bigint;
   /** Actual remaining lot cost including paid entry fees. Absent in legacy/custom inputs. */
   readonly positionCostBasisMinor?: bigint;
+  /** Engine-owned immutable terms; present only for the new shared-cost mode. */
+  readonly paperTradingTerms?: SyntheticTradingTerms;
 }
 
 export interface PaperStrategy {
@@ -66,9 +68,28 @@ export interface RiskLimits {
   readonly maxMarketAgeMs: number;
 }
 
+export interface PaperCostModelV2 {
+  readonly version: "paper-cost-model-v2";
+  readonly scenarioLabel: string;
+  readonly currency: "TWD";
+  readonly minorUnitsPerMajor: 100;
+  readonly instrumentType: "stock" | "equity-etf";
+  /** Fraction of notional, denominator 1,000,000 (1425 = 0.1425%). */
+  readonly commissionRateMillionths: number;
+  readonly minimumCommissionMinor: bigint;
+  readonly stockSellTaxRateMillionths: number;
+  readonly equityEtfSellTaxRateMillionths: number;
+  readonly minimumScope: "PER_EXECUTION_REPORT";
+  readonly notionalRounding: "EXACT_MINOR_UNITS";
+  readonly roundingIncrementMinor: bigint;
+  readonly roundingMode: "ceil" | "floor" | "nearest-half-up";
+}
+
 export interface SyntheticTradingTerms {
   readonly label: "SYNTHETIC_ONLY";
+  /** Legacy fee rate. Must be zero when costModel supplies all charges. */
   readonly feeBps: number;
+  readonly costModel?: PaperCostModelV2;
   readonly slippageBps: number;
 }
 
