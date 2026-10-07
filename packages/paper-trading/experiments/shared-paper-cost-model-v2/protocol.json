@@ -1,0 +1,122 @@
+{
+  "protocolVersion": "shared-paper-cost-model-v2",
+  "status": "FROZEN_SOURCE_AND_PUBLIC_RATE_SCENARIO_NO_PERFORMANCE_CLAIM",
+  "frozenAtUtc": "2026-10-07T20:07:12Z",
+  "implementationCommit": "b6eb944e8fc70937dd3ef07bde60c013f7f7ec86",
+  "baselineStrategyVersion": "rolling-zscore-mean-reversion-v1",
+  "candidateStrategyVersion": "cost-covered-zscore-exit-shared-cost-v2",
+  "entrypoint": "packages/paper-trading/src/sharedCostPaperPairV2.ts#createSharedCostPaperPairV2",
+  "originalV1FrozenCandidateHead": "d70d024c566b422c109f42b83515c365ec1564d6",
+  "originalV1ProtocolUnchanged": true,
+  "sourceSha256": {
+    "packages/paper-trading/src/paperCostModelV2.ts": "e449bc0d55d5644c8d928e7e3d9dd9d584dba7725846f0acb335df7e606710c4",
+    "packages/paper-trading/src/paperCostModelV2.test.ts": "410bcfb130f5f25c36d23ef62b576c3ba93ffc2b7ae88a3ea5888c0fec6648c4",
+    "packages/paper-trading/src/costCoveredZScoreExitV2.ts": "83e5566cbc80221ef0ad4720f13cb05d4933fbb256b02e7ef7ec510b5492764d",
+    "packages/paper-trading/src/sharedCostPaperPairV2.ts": "ae48fdefd21b7e11f051dfc1fa813ac96857771de36439ec15210044110a92d6",
+    "packages/paper-trading/src/engine.ts": "a8b0c7a543f4c87b43e731c0a469cde51d4852f09abd313ac4780e81e2ea5be4",
+    "packages/paper-trading/src/types.ts": "239b3d9186ff50f962d8e7214943f2942ce747c26b5f66b1e18a449d17d52171",
+    "packages/paper-trading/src/money.ts": "fa617c6eefa85a9c00a6346022f2836c76579fa2925cd436994e34ffb04c0c2f",
+    "packages/paper-trading/src/risk.ts": "0c80176990099b0ae4f95cc1f6e4b08ce40e862f4f010c43404a0f4bbb06d559",
+    "packages/paper-trading/src/durablePaperSession.ts": "8c8da1c448ec9ed3f8eeb0bba032b92d88dc5028a3c4253f7d2400af4a1b55b5",
+    "packages/paper-trading/src/index.ts": "d9127f2d7ffa49ec1f15cfc02cd9cd2375be5569b6e064325a91afe0018a102e",
+    "packages/paper-trading/src/zscoreStrategy.ts": "0e1652e14eabf375fe82fd71ec9d24ed45cbff5851cb46730e6aaab8e36cb256",
+    "packages/paper-trading/src/strategy.ts": "4980501015f5f601874ba905fceb349543a9b08a8e6f66fd330dcfbbc5ea7184"
+  },
+  "strategyConfig": {
+    "lookback": 40,
+    "entryZ": 1,
+    "exitZ": 0,
+    "maxHoldBars": 20,
+    "activeFromTimestamp": 1791403632000
+  },
+  "targetQuantity": 3,
+  "initialCashMinorPerIndependentSymbol": "10000000",
+  "risk": {
+    "maxPositionQuantity": 4,
+    "maxExposureMinor": "2000000",
+    "maxMarketAgeMs": 5000
+  },
+  "slippageBps": 100,
+  "legacyFeeBpsInV2": 0,
+  "costModelsBySymbol": {
+    "0056": {
+      "version": "paper-cost-model-v2",
+      "scenarioLabel": "PUBLIC_POSTED_RATE_MIN20_SCENARIO_NOT_USER_BROKER",
+      "currency": "TWD",
+      "minorUnitsPerMajor": 100,
+      "commissionRateMillionths": 1425,
+      "minimumCommissionMinor": "2000",
+      "stockSellTaxRateMillionths": 3000,
+      "equityEtfSellTaxRateMillionths": 1000,
+      "minimumScope": "PER_EXECUTION_REPORT",
+      "notionalRounding": "EXACT_MINOR_UNITS",
+      "roundingIncrementMinor": "100",
+      "roundingMode": "ceil",
+      "instrumentType": "equity-etf"
+    },
+    "2317": {
+      "version": "paper-cost-model-v2",
+      "scenarioLabel": "PUBLIC_POSTED_RATE_MIN20_SCENARIO_NOT_USER_BROKER",
+      "currency": "TWD",
+      "minorUnitsPerMajor": 100,
+      "commissionRateMillionths": 1425,
+      "minimumCommissionMinor": "2000",
+      "stockSellTaxRateMillionths": 3000,
+      "equityEtfSellTaxRateMillionths": 1000,
+      "minimumScope": "PER_EXECUTION_REPORT",
+      "notionalRounding": "EXACT_MINOR_UNITS",
+      "roundingIncrementMinor": "100",
+      "roundingMode": "ceil",
+      "instrumentType": "stock"
+    },
+    "2330": {
+      "version": "paper-cost-model-v2",
+      "scenarioLabel": "PUBLIC_POSTED_RATE_MIN20_SCENARIO_NOT_USER_BROKER",
+      "currency": "TWD",
+      "minorUnitsPerMajor": 100,
+      "commissionRateMillionths": 1425,
+      "minimumCommissionMinor": "2000",
+      "stockSellTaxRateMillionths": 3000,
+      "equityEtfSellTaxRateMillionths": 1000,
+      "minimumScope": "PER_EXECUTION_REPORT",
+      "notionalRounding": "EXACT_MINOR_UNITS",
+      "roundingIncrementMinor": "100",
+      "roundingMode": "ceil",
+      "instrumentType": "stock"
+    },
+    "2454": {
+      "version": "paper-cost-model-v2",
+      "scenarioLabel": "PUBLIC_POSTED_RATE_MIN20_SCENARIO_NOT_USER_BROKER",
+      "currency": "TWD",
+      "minorUnitsPerMajor": 100,
+      "commissionRateMillionths": 1425,
+      "minimumCommissionMinor": "2000",
+      "stockSellTaxRateMillionths": 3000,
+      "equityEtfSellTaxRateMillionths": 1000,
+      "minimumScope": "PER_EXECUTION_REPORT",
+      "notionalRounding": "EXACT_MINOR_UNITS",
+      "roundingIncrementMinor": "100",
+      "roundingMode": "ceil",
+      "instrumentType": "stock"
+    }
+  },
+  "fillRule": "alwaysFillNextEvent: single full execution report per order",
+  "partialFillDefinition": "Every partial report independently pays its commission minimum and rounded sale tax; report IDs deduplicated before fee posting. Not an asserted broker order-aggregation rule.",
+  "exitGate": "Quote-time full-fill estimate uses same paperFillCostsV2 as simulated execution; entry basis is actual remaining lots including each paid entry fee. Equality allowed; unknown cost blocks discretionary exit; maxHold exit unchanged.",
+  "cashReservation": "Worst-case single-share fills and ceiling-rounding bound; reserve conservatively includes repeated minima even under alternate actual rounding modes. Risk thresholds unchanged.",
+  "scope": "Isolated synthetic paper engine only; strict legacy sessionRunner CLI and durable journal have no costModel schema support. Durable entry rejects before path creation. No gateway or real ledger.",
+  "sources": [
+    "https://www.sinotrade.com.tw/ec/upload/Service-charge.pdf",
+    "https://www.sinotrade.com.tw/richclub/invest/offer",
+    "https://www.twse.com.tw/en/about/company/guide.html"
+  ],
+  "limitations": [
+    "Public-rate scenario is not universal market pricing or verified user broker terms; ETF commission agreement unconfirmed.",
+    "Whole-TWD ceiling and exact-cent notional are declared conservative choices, not asserted broker settlement rounding.",
+    "Full quote coverage does not guarantee next-event proceeds or coverage under actual partial fills.",
+    "Existing FILL_FEE_EXCEEDS_PROCEEDS safety rejection retained for simulated sell fees exceeding entire proceeds.",
+    "Corporate actions, dividends and actual execution liquidity not modeled; no promotion/no proof of profitability.",
+    "No historical replay, parameter selection or mature forward observations run in this implementation task."
+  ],
+  "forwardEvaluation": "No forward data acquired. Evaluation events must be strictly after frozenAtUtc; pre-cutoff observations may warm up both arms only."
+}

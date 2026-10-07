@@ -1,0 +1,25 @@
+shared-paper-cost-model-v2：新隔離紙上候選，未跑歷史績效
+
+根因與修正：v1 gate只有比例feeBps，真實小額情境最低佣金／股票及ETF出售稅未共同入帳。新PaperCostModelV2用整數millionths（1,425/1,000,000=0.1425%）、TWD cents bigint金額，明確配置佣金、最低佣金、兩種賣出稅、捨入quantum與ceil/floor/nearest-half-up。佣金與賣出稅分開捨入，最低額只套佣金；無買入出售稅。0成交數量不收费。公開情境是每次佣金最低20元、股票0.3%賣稅、股票ETF0.1%賣稅、逐項整TWD進位；不是全市場或使用者實際費率。
+
+執行入口：packages/paper-trading/src/sharedCostPaperPairV2.ts#createSharedCostPaperPairV2。
+傳入symbol、initialCashMinor、risk、clock、fillRule、strategyConfig、costModel、slippageBps；回傳baseline、candidate、terms。下一輪依protocol.json傳入凍結值，model內minimumCommissionMinor與roundingIncrementMinor須由JSON字串轉bigint。兩臂同成本／滑價／資金／風控；候選不另收費配置，直接讀引擎注入且不可變的paperTradingTerms。第三個hold benchmark亦可用相同terms建PaperTradingEngine；本輪沒有跑此比較。
+
+共用paperFillCostsV2同時供gate、紙上fill生成與fill terms核對。入場basis含每個實際fill的佣金。gate完整單次成交估算允许net==basis；unknown basis/terms阻擋自由出場；原maxHold20強制出場不變。此估算不保證next-event成交的价格或獲利；合成示例在覆蓋报价後next-event下跌，仍實現-3200 minor（-NT$32）。
+
+部分成交定義：每份execution report獨立最低佣金與捨入出售稅；三個1股成交不視為一張3股委托收费。這是明訂紙上情境，使用者券商可能按委托合併計費，未聲稱等同。quote gate假設一份完整退出report；實際分拆報告可能多收最低費。資金保留按每股分拆＋進位上界計算，ceil bound避免實際nearest捨入不具可分割性的低估。沒有修改maxPosition／maxExposure／maxAge門檻。
+
+安全與相容：原feeBps模式未配置costModel時原路徑保留。新模式feeBps必须0，防止混算；禁止將凍結cost-covered v1搭配新模型。v2候選要求新模型。cancel-pending保留、late-fill與重複回報去重維持。原模擬成交FILL_FEE_EXCEEDS_PROCEEDS拒絕語義保留，佣金高於整筆出售價金時仍不能紙上結算（本輪未修改）。
+
+限制入口：既有sessionRunner CLI exact terms keys沒有costModel schema；DurablePaperTradingSession journal terms也没有序列化/恢復新模型格式，所以新模式在建立任何journal路徑前明確拒絕。本輪支援隔離純紙上引擎，不串gateway，不修改真實ledger或journal。未来若需長期accumulator/durable接入，需要另做有版本的header與恢复格式迁移；不可移除拒絕後沿用舊header。
+
+凍結：protocol.json列出implementationCommit、12個相關source SHA256、四symbol分類、共用參數、成本、滑價、原風控與freeze截止。activeFromTimestamp等於2026-10-07T20:07:12Z；原v1候選d70d024c及v1凍結協議保留於其原worktree，本新分支不取代它。新引擎source變更因此不能冒充舊v1 source-pin通過。任何實際比較须先核對protocol sourceSha256，使用同一費用情境、可用資料與分母。未来資料尚未取得。
+
+檢查：37/37 focused tests（新成本16、legacy gate7、legacy engine14），strict focused TypeScript --noEmit、durable guard strict --noEmit、targeted ESLint、git diff --check通過。focused-test-results.json為實際Vitest輸出，validation.json含摘要和hash。測試涵蓋最低佣金、買賣稅、ETF/股票、零成交、捨入邊界、部分買/賣費用、費用高於毛利、配置凍結、風控資金保留、晚到成交去重、next-event虧損與不支援journal零寫入。
+
+重現（沿用原repo現有依賴，不下載新依賴）：
+在本worktree建立僅本地未提交的node_modules symlink到原repo現有node_modules，或使用既有依賴配置後執行：
+node_modules/.bin/vitest run packages/paper-trading/src/paperCostModelV2.test.ts packages/paper-trading/src/costCoveredZScoreExit.test.ts packages/paper-trading/src/paperTrading.test.ts --maxWorkers=1
+node_modules/.bin/tsc --ignoreConfig --noEmit --types node --target ES2022 --module NodeNext --moduleResolution NodeNext --strict --noUncheckedIndexedAccess --exactOptionalPropertyTypes --noImplicitOverride --noFallthroughCasesInSwitch --noPropertyAccessFromIndexSignature --verbatimModuleSyntax --skipLibCheck packages/paper-trading/src/paperCostModelV2.ts packages/paper-trading/src/costCoveredZScoreExitV2.ts packages/paper-trading/src/sharedCostPaperPairV2.ts packages/paper-trading/src/durablePaperSession.ts
+
+本輪只新合成測試；未大回測、重選參、fullbuild/full suite、solver、資料下載、下單、部署、push或merge。沒有碰舊歷史結果或舊EPERM鎖，也没有執行新舊cached-history入口。公司行動與流動性缺口不在本次費用修正內；沒有策略獲利改善結論。

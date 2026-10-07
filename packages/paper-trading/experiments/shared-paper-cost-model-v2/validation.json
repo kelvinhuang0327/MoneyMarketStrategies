@@ -1,0 +1,41 @@
+{
+  "implementationCommit": "b6eb944e8fc70937dd3ef07bde60c013f7f7ec86",
+  "protocolSha256": "bd991540df4e364d97492ccffeac9b563b64e088d4244b646c1f38a2ab957a59",
+  "tests": {
+    "passed": 37,
+    "failed": 0,
+    "total": 37,
+    "success": true,
+    "newCostTests": 16,
+    "legacyGateTests": 7,
+    "legacyEngineTests": 14,
+    "rawResultSha256": "7a70a19eb4abb5b197dd1c787e793a165a59cb43abcc6a34f94b39f9bb7ef0b6"
+  },
+  "checks": {
+    "strictFocusedTypeScriptNoEmit": true,
+    "targetedEslint": true,
+    "gitDiffCheck": true,
+    "strictDurableGuardTypeScriptNoEmit": true
+  },
+  "syntheticEvidence": {
+    "minimumBuyFeeMinor": "2000",
+    "stockVsEtfSaleFeeAt3000TwdMinor": [
+      "2900",
+      "2300"
+    ],
+    "actualPartialBuyAndSellFeeMinor": "12300",
+    "nextEventLossAfterQuoteCostCoverageMinor": "-3200",
+    "duplicateLateFillAdditionalFeeMinor": "0",
+    "unsupportedDurableJournalCreated": false
+  },
+  "heavyWork": {
+    "fullBuild": false,
+    "fullSuite": false,
+    "historicalReplay": false,
+    "modelOrSolver": false,
+    "newNetworkData": false,
+    "realTrading": false,
+    "pushOrMerge": false,
+    "oldLockAccess": false
+  }
+}
