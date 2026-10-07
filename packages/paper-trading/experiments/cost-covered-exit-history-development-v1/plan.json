@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "experimentId": "cost-covered-exit-history-development-v1",
+  "classification": "RETROSPECTIVE_DEVELOPMENT_NOT_UNSEEN_FORWARD",
+  "registrationRule": "First Git commit adding this exact plan precedes every real development replay. Source fingerprints must remain exact; no runtime window, symbol, cost or strategy overrides.",
+  "frozenProtocol": {
+    "path": "packages/paper-trading/experiments/cost-covered-zscore-exit-v1/protocol.json",
+    "commit": "c28794d109b4007f2f24caae2d9c8c88b191a74f",
+    "sha256": "26af15c66d531078a86ac18d871a710fe47881da8d2dc0eee580215de86d3743",
+    "headWhenAuthorized": "d70d024c566b422c109f42b83515c365ec1564d6"
+  },
+  "symbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "window": {
+    "startDate": "2026-01-01",
+    "endDate": "2026-08-11"
+  },
+  "windowReason": "Calendar year to the existing historical cache cutoff, fixed before reading strategy outcomes; keep all four frozen symbols and every supplied observation in the range. Do not extend or replace the window after seeing no signals, losses or open positions.",
+  "warmupRowsPerSymbol": 39,
+  "maximumRowsPerSymbol": 256,
+  "maximumMarketEventsAcrossAllArms": 3072,
+  "csv": {
+    "path": "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
+    "sha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+    "profile": "twse-daily-ohlcv-close-v1",
+    "fetchedAtUtc": "2026-08-12T03:29:21Z",
+    "globalRowCount": 8014,
+    "globalDateRange": {
+      "start": "2020-01-02",
+      "end": "2026-08-11"
+    }
+  },
+  "unchangedParameters": {
+    "lookback": 40,
+    "entryZ": 1,
+    "exitZ": 0,
+    "maxHoldBars": 20,
+    "targetQuantity": 3,
+    "feeBps": 30,
+    "slippageBps": 100,
+    "initialCapitalMinorPerSymbol": "10000000",
+    "maxExposureMinorPerSymbol": "2000000",
+    "maxPositionQuantity": 4,
+    "maxMarketAgeMs": 5000,
+    "fillModel": "alwaysFillNextEvent"
+  },
+  "benchmark": "Quantity 3 from first eligible development quote, next-event execution, identical modeled fee/slippage/capital/risk, no forced terminal close. Report marked equity and separate terminal liquidation estimate for every arm.",
+  "derivations": {
+    "winDenominator": "All completed trades including breakevens; open trades excluded and retained separately",
+    "exposure": "Position mark / fixed initial capital, with event-weighted and calendar-time-weighted measures",
+    "holding": "Actual first entry fill to final exit fill, both trading intervals and calendar days; open positions are right-censored at the fixed cutoff",
+    "aggregate": "Four independent TWD100000 capital runs, summed TWD400000 equity. Calendar union carries last marks only for aggregate accounting. Never average symbol drawdowns or imply shared portfolio risk.",
+    "mechanism": "Pair only identical filled entry time, entered quantity and actual entry cost. Retain all unmatched and open trades in whole-window economics. Identify cost-gate blocks followed by forced net losses, and worse PnL with longer holding."
+  },
+  "interpretationBeforeResults": [
+    "Higher win rate alone is not support. Report whole-window cost-adjusted return, maximum drawdown, exposure/holding and matched benchmark.",
+    "Cost-gate blocks followed by forced losses test delayed-loss behavior. Matched-entry PnL and additional holding show whether the delay improved or worsened those losses.",
+    "Higher exposure or drawdown is a side effect even if return improves; no arbitrary weight or post-result threshold combines them into PASS.",
+    "No promotion, parameter tuning, symbol/date selection, efficacy confidence claim or unseen-forward count comes from this development check."
+  ],
+  "uncertainty": "Two-sided descriptive Wilson95 under unvalidated IID assumptions, previous grid selection multiplicity and temporal/cross-symbol dependence. No independent economic-effect CI from one already-inspected historical window.",
+  "limitations": [
+    "All observations were in the already-inspected historical development archive before the new hypothesis freeze.",
+    "The source has bounded point-in-time provenance, not a verified publication archive. Actual fetched_at_utc is retained rather than fabricated per-bar receipt times.",
+    "Modeled fee/slippage are fixed; sell/dividend taxes, broker minimum fees, cash dividends and splits have not been verified for these four symbols. Raw-price returns cannot establish real total-return advantage.",
+    "Official exchange calendar completeness, live quote freshness and actual next-event execution availability are not verified.",
+    "End-of-window open positions remain open; hypothetical terminal liquidation is a separate estimate."
+  ],
+  "attemptAccounting": "One registered window and one hypothesis; immutable input/result and each raw arm replay. Resume reuses saved replays instead of running them again. No filtering unsuccessful arms, no pooling snapshots as independent experiments, no modification of original forward journals/accumulator.",
+  "resourceScope": "Low-resource serial execution; at most four symbols x three fixed arms x 256 rows. No build, old49-case rerun, full suite, grid, new data, API fetch, trading, push or merge.",
+  "outputDirectory": "outputs/cost-covered-exit-history-development-v1",
+  "sourceSha256": {
+    "scripts/runCostCoveredExitHistoryDevelopment.mjs": "8c3f6977f93769935a0946ec40f484712b070f072b39a550c74aad58a988c69c",
+    "scripts/costCoveredExitHistoryMetrics.mjs": "83263c2dc40f926682c23001576da460ec3c69b0b6772110bdfe549716e07d46",
+    "packages/paper-trading/src/historicalBaseline.ts": "4f2fc80032f4f60ca8da71a6a444999348f726825a4eb9cea1b399b0598156a8",
+    "packages/paper-trading/src/fixture.ts": "2004415f09209200a769dbd20625d916c58f8d7096cca26e59255cfbf89c8bd2",
+    "packages/paper-trading/experiments/cost-covered-zscore-exit-v1/protocol.json": "26af15c66d531078a86ac18d871a710fe47881da8d2dc0eee580215de86d3743",
+    "data/market/p194-twstock-ohlcv-v1/provenance.json": "dacc335f8a53331cb49f7ad9b5842d9e7573541226099e37bbffc6037f34c19f"
+  }
+}
