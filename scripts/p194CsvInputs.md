@@ -9,4 +9,12 @@ node scripts/runMiQfiisMultiSymbolGeneralization.mjs --check-csv-input
 
 The first CLI separates `--csv-repo`, `--csv-ref` (default `WORKTREE`) and `--csv-path` from auxiliary legacy inputs. Explicit old-style `--legacy-repo`, `--ref` or `--csv-path` invocations without `--csv-repo` retain their previous CSV source/ref semantics. Use `--csv-repo <this-project-root>` when choosing legacy auxiliary reports while retaining this managed CSV. SHA-256 checks remain active.
 
-This cutover does not retire the old Stock directory. Its separate P193 report and optional legacy feature-source inputs are still required by some research routes; the detached older MMS checkout also retains CSV test references. Leave the original CSV until those consumers are explicitly retired or updated. No existing performance artifact or historical provenance is rewritten.
+The P193 report and optional feature source now default to private, untracked snapshots under `data/private/stock-research-inputs-v1/`, with a local manifest that pins file size/hash and preserves original source paths. Verify them without reading the CSV or running models:
+
+```sh
+node scripts/runTwStrategyResearchStudy.mjs --check-legacy-inputs
+```
+
+The private directory is intentionally excluded from Git. A new checkout needs those independently verified local snapshots restored before report/source-dependent research. Missing or changed managed files fail closed; there is no automatic fallback to the old directory. Python source is retained as formula evidence and is never executed. Explicit `--legacy-repo`, `--ref`, `--refit-report-path` or `--feature-source-path` opts into the legacy/custom reader; Git refs read committed bytes without checkout. Historical provenance and performance artifacts are unchanged.
+
+This cutover does not authorize deleting the old Stock directory. The detached older MMS checkout still retains CSV test references. Preserve its HEAD/worktree state and explicitly switch or retire its consumers before removing any old inputs; preserve source restore maps and verify archived bytes separately.

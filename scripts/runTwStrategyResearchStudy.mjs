@@ -8,11 +8,15 @@
 // fail-closed MMS_PREDICTION_RETRAINING_RESULT_V1 artifact for the same run.
 // Diagnostic-only: no investment advice, no promotion, no execution, no network
 // access, no writes to the legacy repository.
-import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  MANAGED_REFIT_REPORT_PATH, MANAGED_FEATURE_SOURCE_PATH, ORIGINAL_LEGACY_REPOSITORY,
+  ORIGINAL_REFIT_REPORT_PATH, ORIGINAL_FEATURE_SOURCE_PATH, readPinnedResearchBytes,
+  readLegacyResearchInput, parseLegacyRefitReport,
+} from "./legacyResearchInputs.mjs";
 
 import { buildPredictionRetrainingResultV1 } from "@mms/contracts";
 import {
@@ -69,13 +73,16 @@ import {
 } from "@mms/strategy-simulator";
 
 const DEFAULTS = Object.freeze({
-  legacyRepo: "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
+  legacyRepo: fileURLToPath(new URL("../", import.meta.url)),
   ref: "WORKTREE",
+  managedLegacyInputs: true,
+  featureSourcePath: MANAGED_FEATURE_SOURCE_PATH,
+  checkLegacyInputs: false,
   csvRepo: fileURLToPath(new URL("../", import.meta.url)),
   csvRef: "WORKTREE",
   csvPath: "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
   checkCsvInput: false,
-  refitReportPath: "outputs/retraining/p193_real_ohlcv_refit_report.json",
+  refitReportPath: MANAGED_REFIT_REPORT_PATH,
   expectedSha256: "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
   dataEndDate: "2026-08-11",
   reviewDate: "2026-08-12",
@@ -130,11 +137,19 @@ export function parseArgs(argv) {
   let customCsvRef = false;
   let legacyCsvInvocation = false;
   let customCsvPath = false;
+  let customLegacyRepo = false;
+  let legacyInputOverride = false;
+  let customRefitPath = false;
+  let customFeaturePath = false;
 
   for (let index = 0; index < argv.length; index += 1) {
     const flag = argv[index];
     if (!flag.startsWith("--")) continue;
     const key = flag.slice(2);
+    if (key === "check-legacy-inputs") {
+      args.checkLegacyInputs = true;
+      continue;
+    }
     if (key === "check-csv-input") {
       args.checkCsvInput = true;
       continue;
@@ -177,12 +192,13 @@ export function parseArgs(argv) {
     }
     const value = argv[index + 1];
     if (value === undefined) throw new Error(`missing value for --${key}`);
-    if (key === "legacy-repo") { args.legacyRepo = value; legacyCsvInvocation = true; }
-    else if (key === "ref") { args.ref = value; legacyCsvInvocation = true; }
+    if (key === "legacy-repo") { args.legacyRepo = value; customLegacyRepo = true; legacyInputOverride = true; legacyCsvInvocation = true; }
+    else if (key === "ref") { args.ref = value; legacyInputOverride = true; legacyCsvInvocation = true; }
     else if (key === "csv-repo") { args.csvRepo = value; customCsvRepo = true; }
     else if (key === "csv-ref") { args.csvRef = value; customCsvRef = true; }
     else if (key === "csv-path") { args.csvPath = value; customCsvPath = true; }
-    else if (key === "refit-report-path") args.refitReportPath = value;
+    else if (key === "refit-report-path") { args.refitReportPath = value; customRefitPath = true; legacyInputOverride = true; }
+    else if (key === "feature-source-path") { args.featureSourcePath = value; customFeaturePath = true; legacyInputOverride = true; }
     else if (key === "expected-sha256") args.expectedSha256 = value;
     else if (key === "data-end-date") args.dataEndDate = value;
     else if (key === "review-date") args.reviewDate = value;
@@ -197,10 +213,17 @@ export function parseArgs(argv) {
     index += 1;
   }
 
+  if (legacyInputOverride) {
+    args.managedLegacyInputs = false;
+    if (!customLegacyRepo) args.legacyRepo = ORIGINAL_LEGACY_REPOSITORY;
+    if (!customRefitPath) args.refitReportPath = ORIGINAL_REFIT_REPORT_PATH;
+    if (!customFeaturePath) args.featureSourcePath = ORIGINAL_FEATURE_SOURCE_PATH;
+  }
+
   // Explicit old-style invocations retain their source/ref semantics. A caller
   // can separate auxiliary legacy inputs by explicitly choosing --csv-repo.
   if (!customCsvRepo && (legacyCsvInvocation || customCsvPath)) {
-    args.csvRepo = args.legacyRepo;
+    args.csvRepo = legacyInputOverride ? args.legacyRepo : ORIGINAL_LEGACY_REPOSITORY;
     if (!customCsvPath) args.csvPath = "outputs/retraining/p194_twstock_ohlcv_export.csv";
     if (!customCsvRef) args.csvRef = args.ref;
   }
@@ -214,15 +237,6 @@ export function parseArgs(argv) {
 
 function sha256Hex(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
-}
-
-/** Reads the canonical refreshed worktree or a pinned git blob without checkout, network, or writes. */
-function readPinnedGitBlob(repoPath, ref, relativePath) {
-  if (ref === "WORKTREE") return readFileSync(path.resolve(repoPath, relativePath));
-  return execFileSync("git", ["show", `${ref}:${relativePath}`], {
-    cwd: repoPath,
-    maxBuffer: 64 * 1024 * 1024,
-  });
 }
 
 function round8(value) {
@@ -1374,8 +1388,16 @@ function generatePerSymbolLogisticChallengerTemporalMarkdown(output) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
+  if (args.checkLegacyInputs) {
+    const refit = readLegacyResearchInput(args, "REFIT_REPORT");
+    parseLegacyRefitReport(refit.bytes);
+    const feature = readLegacyResearchInput(args, "FEATURE_SOURCE");
+    console.log(JSON.stringify({ status: "LEGACY_INPUTS_VERIFIED", inputs: [refit.provenance, feature.provenance],
+      researchExecuted: false, featureSourceExecuted: false, artifactsWritten: false }));
+    return;
+  }
 
-  const csvBytes = readPinnedGitBlob(args.csvRepo, args.csvRef, args.csvPath);
+  const csvBytes = readPinnedResearchBytes(args.csvRepo, args.csvRef, args.csvPath);
   const actualSha256 = sha256Hex(csvBytes);
   if (actualSha256 !== args.expectedSha256) {
     throw new Error(`SOURCE_SHA256_MISMATCH:expected=${args.expectedSha256}:actual=${actualSha256}`);
@@ -1856,12 +1878,8 @@ async function main() {
   }
 
   if (args.challengerTemporal) {
-    const legacyFeatureSourceBytes = readPinnedGitBlob(
-      args.legacyRepo,
-      args.ref,
-      LEGACY_TECHNICAL_FEATURE_FAMILY.legacySourcePath,
-    );
-    const legacyFeatureSourceSha256 = sha256Hex(legacyFeatureSourceBytes);
+    const legacyFeatureInput = readLegacyResearchInput(args, "FEATURE_SOURCE");
+    const legacyFeatureSourceSha256 = legacyFeatureInput.provenance.sha256;
     if (args.roundTripCostBps && args.roundTripCostBps.length > 0) {
       throw new Error("STOP_MMS_0056_TEMPORAL_COST_OVERRIDE_UNSUPPORTED");
     }
@@ -1935,6 +1953,7 @@ async function main() {
       legacyFeatureSource: {
         path: LEGACY_TECHNICAL_FEATURE_FAMILY.legacySourcePath,
         sha256: legacyFeatureSourceSha256,
+        inputProvenance: legacyFeatureInput.provenance,
       },
     });
 
@@ -2424,8 +2443,8 @@ async function main() {
     latestSignalPositionAdjusted: result0050Adjusted.latestSignal.position,
   };
 
-  const legacyRefitReportBytes = readPinnedGitBlob(args.legacyRepo, args.ref, args.refitReportPath);
-  const legacyRefitReport = JSON.parse(legacyRefitReportBytes.toString("utf8"));
+  const legacyRefitInput = readLegacyResearchInput(args, "REFIT_REPORT");
+  const legacyRefitReport = parseLegacyRefitReport(legacyRefitInput.bytes);
 
   const output = {
     schemaVersion: "MMS_TW_STRATEGY_RESEARCH_RUNNER_V1",
@@ -2451,6 +2470,7 @@ async function main() {
       dataEndDate: args.dataEndDate,
     },
     legacyMlRetraining: {
+      inputProvenance: legacyRefitInput.provenance,
       runId: legacyRefitReport.run.runId,
       holdoutAccuracy: legacyRefitReport.run.holdoutMetrics.accuracy,
       majorityBaselineAccuracy: legacyRefitReport.run.holdoutMetrics.majorityBaselineAccuracy,
