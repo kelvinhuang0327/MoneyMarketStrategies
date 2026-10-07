@@ -1,0 +1,380 @@
+{
+  "classification": "RETROSPECTIVE_DEVELOPMENT_NOT_UNSEEN_FORWARD",
+  "status": "DEVELOPMENT_DIAGNOSTIC_COMPLETE_NOT_PROMOTION",
+  "planRegistrationCommit": "54085cc263a89f6c7daaa85bd1fac2bb867b490c",
+  "frozenCandidateHead": "d70d024c566b422c109f42b83515c365ec1564d6",
+  "frozenProtocolCommit": "c28794d109b4007f2f24caae2d9c8c88b191a74f",
+  "planSha256": "3047a3382994b0604f7f00b76a1ed20aee9bc3ce6c5142ad47eb1fc4fce33959",
+  "inputSha256": "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15",
+  "sourceCsvSha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+  "window": {
+    "startDate": "2026-01-01",
+    "endDate": "2026-08-11",
+    "startTimestamp": 1767245400000,
+    "endTimestamp": 1786426200000
+  },
+  "symbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "rows": {
+    "warmupPerSymbol": 39,
+    "evaluationPerSymbol": 145,
+    "distinctEvaluationRows": 580,
+    "totalRowsWithWarmup": 736,
+    "marketEventsAcross12Replays": 2208
+  },
+  "resources": {
+    "serial": true,
+    "observedActualRunWallSeconds": 0.386822997,
+    "newMetricTestsPassed": 4,
+    "unchanged49TestsRerun": false,
+    "fullBuild": false,
+    "gridSearch": false,
+    "newDataFetch": false,
+    "hostProcessListRetried": false
+  },
+  "actualEconomicModel": {
+    "currency": "TWD",
+    "initialCapitalPerIndependentSymbol": 100000,
+    "summedInitialCapital": 400000,
+    "feeBps": 30,
+    "slippageBps": 100,
+    "quantity": 3,
+    "fill": "alwaysFillNextEvent",
+    "verifiedFullRealCostCoverage": false
+  },
+  "aggregate": {
+    "baseline": {
+      "capitalMeaning": "SUM_OF_FOUR_INDEPENDENT_EQUAL_CAPITAL_RUNS_NOT_SHARED_RISK_PORTFOLIO",
+      "initialCapitalMinor": "40000000",
+      "finalEquityMinor": "40109718",
+      "completedTradeCount": 11,
+      "wins": 7,
+      "losses": 4,
+      "breakevens": 0,
+      "winRate": 0.6363636363636364,
+      "netReturnAfterModeledCostsFraction": 0.00274295,
+      "terminalLiquidationEstimateReturnFraction": 0.00274295,
+      "maximumDrawdownFraction": 0.0058239097259811376,
+      "maximumExposureFractionOfInitialCapital": 0.047445,
+      "calendarWeightedExposureFractionOfInitialCapital": 0.0051739702702702705,
+      "meanSymbolCalendarTimeFractionWithPosition": 0.2015765765765766,
+      "meanSymbolEvaluationEventFractionWithPosition": 0.19827586206896552,
+      "averageCompletedHoldingTradingIntervals": 10.454545454545455,
+      "averageCompletedHoldingCalendarDays": 16.272727272727273,
+      "openPositionQuantities": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "openTradeCount": 0,
+      "pendingOrderCount": 0,
+      "feesPaidMinor": "23266",
+      "winRateWilson95": {
+        "lower": 0.35380117450784887,
+        "upper": 0.8483352890463243
+      }
+    },
+    "candidate": {
+      "capitalMeaning": "SUM_OF_FOUR_INDEPENDENT_EQUAL_CAPITAL_RUNS_NOT_SHARED_RISK_PORTFOLIO",
+      "initialCapitalMinor": "40000000",
+      "finalEquityMinor": "40115475",
+      "completedTradeCount": 11,
+      "wins": 9,
+      "losses": 2,
+      "breakevens": 0,
+      "winRate": 0.8181818181818182,
+      "netReturnAfterModeledCostsFraction": 0.002886875,
+      "terminalLiquidationEstimateReturnFraction": 0.002886875,
+      "maximumDrawdownFraction": 0.005823116324423311,
+      "maximumExposureFractionOfInitialCapital": 0.047445,
+      "calendarWeightedExposureFractionOfInitialCapital": 0.005203521283783785,
+      "meanSymbolCalendarTimeFractionWithPosition": 0.21396396396396397,
+      "meanSymbolEvaluationEventFractionWithPosition": 0.2103448275862069,
+      "averageCompletedHoldingTradingIntervals": 11.090909090909092,
+      "averageCompletedHoldingCalendarDays": 17.272727272727273,
+      "openPositionQuantities": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "openTradeCount": 0,
+      "pendingOrderCount": 0,
+      "feesPaidMinor": "23284",
+      "winRateWilson95": {
+        "lower": 0.523019438039156,
+        "upper": 0.9486323102539149
+      }
+    },
+    "costMatchedBenchmark": {
+      "capitalMeaning": "SUM_OF_FOUR_INDEPENDENT_EQUAL_CAPITAL_RUNS_NOT_SHARED_RISK_PORTFOLIO",
+      "initialCapitalMinor": "40000000",
+      "finalEquityMinor": "40965543",
+      "completedTradeCount": 0,
+      "wins": 0,
+      "losses": 0,
+      "breakevens": 0,
+      "winRate": null,
+      "netReturnAfterModeledCostsFraction": 0.024138575,
+      "terminalLiquidationEstimateReturnFraction": 0.0234838,
+      "maximumDrawdownFraction": 0.012426179981118349,
+      "maximumExposureFractionOfInitialCapital": 0.05503575,
+      "calendarWeightedExposureFractionOfInitialCapital": 0.03769981047297297,
+      "meanSymbolCalendarTimeFractionWithPosition": 0.9819819819819819,
+      "meanSymbolEvaluationEventFractionWithPosition": 0.993103448275862,
+      "averageCompletedHoldingTradingIntervals": null,
+      "averageCompletedHoldingCalendarDays": null,
+      "openPositionQuantities": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "openTradeCount": 4,
+      "pendingOrderCount": 0,
+      "feesPaidMinor": "3154",
+      "winRateWilson95": null
+    }
+  },
+  "perSymbol": [
+    {
+      "symbol": "0056",
+      "baselineCompleted": 2,
+      "candidateCompleted": 2,
+      "baselineWins": 0,
+      "candidateWins": 1,
+      "baselineReturnFraction": -3.13e-05,
+      "candidateReturnFraction": 1.14e-05,
+      "benchmarkReturnFraction": 0.0004403,
+      "matchedEntries": 2,
+      "candidateCostGateBlocks": 3
+    },
+    {
+      "symbol": "2317",
+      "baselineCompleted": 4,
+      "candidateCompleted": 4,
+      "baselineWins": 2,
+      "candidateWins": 3,
+      "baselineReturnFraction": -0.0002282,
+      "candidateReturnFraction": 0.0003048,
+      "benchmarkReturnFraction": 0.0007631,
+      "matchedEntries": 4,
+      "candidateCostGateBlocks": 2
+    },
+    {
+      "symbol": "2330",
+      "baselineCompleted": 3,
+      "candidateCompleted": 3,
+      "baselineWins": 3,
+      "candidateWins": 3,
+      "baselineReturnFraction": 0.0039847,
+      "candidateReturnFraction": 0.0039847,
+      "benchmarkReturnFraction": 0.0210971,
+      "matchedEntries": 3,
+      "candidateCostGateBlocks": 0
+    },
+    {
+      "symbol": "2454",
+      "baselineCompleted": 2,
+      "candidateCompleted": 2,
+      "baselineWins": 2,
+      "candidateWins": 2,
+      "baselineReturnFraction": 0.0072466,
+      "candidateReturnFraction": 0.0072466,
+      "benchmarkReturnFraction": 0.0742538,
+      "matchedEntries": 2,
+      "candidateCostGateBlocks": 0
+    }
+  ],
+  "sideEffects": {
+    "candidateMinusBaselineReturnFraction": 0.00014392500000000004,
+    "candidateMinusBenchmarkReturnFraction": -0.0212517,
+    "candidateMinusBaselineMaximumDrawdownFraction": -7.934015578267214e-07,
+    "candidateMinusBaselineCalendarExposureFraction": 2.955101351351415e-05,
+    "candidateMinusBaselineAverageHoldingCalendarDays": 1,
+    "candidateBlockedThenForcedLossCount": 0,
+    "candidateBlockedThenForcedLossNetPnlMinor": "0",
+    "matchedClosedPairsWithWorseNetPnl": 0,
+    "matchedClosedPairsWithBetterNetPnl": 3,
+    "matchedPairsWithLongerHolding": 3,
+    "symbolsWithWorseReturnThanBaseline": [],
+    "symbolsWithLargerMaximumDrawdownThanBaseline": []
+  },
+  "changedSameEntryPairs": [
+    {
+      "symbol": "0056",
+      "openedAtTimestamp": 1775021400000,
+      "entryCostMinor": "11585",
+      "baselineNetPnlMinor": "-16",
+      "candidateNetPnlMinor": "115",
+      "candidateMarkedOpenPnlMinor": null,
+      "additionalHoldingTradingIntervals": 2,
+      "additionalHoldingCalendarDays": 4,
+      "candidateCostGateBlocks": 2,
+      "candidateExitTrigger": {
+        "kind": "COST_COVERED_EXIT",
+        "sourceEventId": "historical-0056-2026-04-10",
+        "timestamp": 1775799000000,
+        "targetQuantity": 0,
+        "positionQuantity": 3,
+        "actualEntryCostBasisMinor": "11585",
+        "estimatedNetSaleMinor": "11667"
+      },
+      "netPnlDifferenceMinor": "131",
+      "classification": "BOTH_CLOSED"
+    },
+    {
+      "symbol": "0056",
+      "openedAtTimestamp": 1784698200000,
+      "entryCostMinor": "15485",
+      "baselineNetPnlMinor": "-297",
+      "candidateNetPnlMinor": "-1",
+      "candidateMarkedOpenPnlMinor": null,
+      "additionalHoldingTradingIntervals": 3,
+      "additionalHoldingCalendarDays": 5,
+      "candidateCostGateBlocks": 1,
+      "candidateExitTrigger": {
+        "kind": "COST_COVERED_EXIT",
+        "sourceEventId": "historical-0056-2026-08-10",
+        "timestamp": 1786339800000,
+        "targetQuantity": 0,
+        "positionQuantity": 3,
+        "actualEntryCostBasisMinor": "15485",
+        "estimatedNetSaleMinor": "15529"
+      },
+      "netPnlDifferenceMinor": "296",
+      "classification": "BOTH_CLOSED"
+    },
+    {
+      "symbol": "2317",
+      "openedAtTimestamp": 1769059800000,
+      "entryCostMinor": "67926",
+      "baselineNetPnlMinor": "-267",
+      "candidateNetPnlMinor": "5063",
+      "candidateMarkedOpenPnlMinor": null,
+      "additionalHoldingTradingIntervals": 2,
+      "additionalHoldingCalendarDays": 2,
+      "candidateCostGateBlocks": 2,
+      "candidateExitTrigger": {
+        "kind": "COST_COVERED_EXIT",
+        "sourceEventId": "historical-2317-2026-02-24",
+        "timestamp": 1771911000000,
+        "targetQuantity": 0,
+        "positionQuantity": 3,
+        "actualEntryCostBasisMinor": "67926",
+        "estimatedNetSaleMinor": "68697"
+      },
+      "netPnlDifferenceMinor": "5330",
+      "classification": "BOTH_CLOSED"
+    }
+  ],
+  "costCoveredSignalFollowedByNextFillLosses": [
+    {
+      "symbol": "0056",
+      "trade": {
+        "tradeNumber": 2,
+        "openedAtTimestamp": 1784698200000,
+        "closedAtTimestamp": 1786426200000,
+        "enteredQuantity": 3,
+        "entryFillIds": [
+          "co:cost-covered-zscore-exit-v1:historical-0056-2026-07-21:fill:historical-0056-2026-07-22"
+        ],
+        "exitFillIds": [
+          "co:cost-covered-zscore-exit-v1:historical-0056-2026-08-10:fill:historical-0056-2026-08-11"
+        ],
+        "netPnlMinor": "-1",
+        "rightCensored": false,
+        "entryExecutionNotionalMinor": "15438",
+        "entryFeesMinor": "47",
+        "entryCostMinor": "15485",
+        "holdingTradingIntervals": 14,
+        "holdingCalendarDays": 20,
+        "costGateBlockCount": 1,
+        "firstCostGateBlock": {
+          "kind": "BELOW_COST_BLOCK",
+          "sourceEventId": "historical-0056-2026-08-05",
+          "timestamp": 1785907800000,
+          "targetQuantity": 3,
+          "positionQuantity": 3,
+          "actualEntryCostBasisMinor": "15485",
+          "estimatedNetSaleMinor": "15233"
+        },
+        "exitTrigger": {
+          "kind": "COST_COVERED_EXIT",
+          "sourceEventId": "historical-0056-2026-08-10",
+          "timestamp": 1786339800000,
+          "targetQuantity": 0,
+          "positionQuantity": 3,
+          "actualEntryCostBasisMinor": "15485",
+          "estimatedNetSaleMinor": "15529"
+        }
+      }
+    }
+  ],
+  "gainConcentration": {
+    "candidateMinusBaselineNetPnlMinor": "5757",
+    "candidateMinusBaselineTwd": 57.57,
+    "largestSingleMatchedTradeImprovementMinor": "5330",
+    "largestSingleMatchedTradeFractionOfNetImprovement": 0.9258294250477679
+  },
+  "calendarCoverage": {
+    "officialExchangeCalendarVerified": false,
+    "alignment": "UNION_OF_OBSERVED_DATES_NO_ROW_FILTERING",
+    "missingObservedPeerDates": {
+      "2317": [],
+      "2330": [],
+      "2454": [],
+      "0056": []
+    }
+  },
+  "certifiedUnseenForwardRows": 0,
+  "interpretation": [
+    "This window did not exhibit cost-gate blocks followed by forced losses; all 11 completed entries match exactly, three were held longer and improved net PnL, and eight were unchanged.",
+    "One discretionary cost-covered signal ended with a simulated next-event net loss of TWD0.01; quote coverage is not execution coverage.",
+    "The improvement is TWD57.57 across TWD400000 independent capital, with roughly 92.6% from one trade. Average closed holding increased by one calendar day and capital-weighted exposure increased.",
+    "Candidate trails the matched holding benchmark; that benchmark has greater exposure/drawdown and four open positions, so its win rate remains null.",
+    "Keep the frozen candidate only for inexpensive prospective observation; prioritize verifying real costs/corporate actions before expanding research. No retuning, new grid or new window follows this result.",
+    "Descriptive Wilson intervals overlap. All observations are already-inspected development data; these trades do not count toward the original unseen-forward threshold."
+  ],
+  "checks": {
+    "newMetricCases": "4/4 PASS",
+    "targetedESLint": "PASS",
+    "nodeSyntax": "PASS",
+    "cachedSupervisorNoViteOr12ArmRecompute": "PASS",
+    "originalRegisteredEntryCachedTeardown": "FAILED_EPERM_UNLINK_OWNER_JSON_DATA_UNCHANGED",
+    "lockRejectsConcurrentEntryWithoutRemovingOwner": "PASS",
+    "all12AccountReconciliations": "PASS",
+    "sameCostAndRiskSettingsAllArms": "PASS"
+  },
+  "operationalFix": {
+    "entry": "scripts/runCostCoveredExitHistoryDevelopmentCached.mjs",
+    "sha256": "6107ef4f34ab2b7ca3348b25e24b194b987a15091f3ed1167976b0f6995f2157",
+    "reason": "Original repeat produced valid cached JSON then exit1 due EPERM unlinking its own lock owner.json. Keep registered source/plan unchanged; cache-first supervisor reads the verified artifact without Vite/replay, and archives only its matching exited child marker.",
+    "originalFailureEvidence": ".migration-backup/cost-covered-exit-history-development-v1/cached-child-teardown-failure.json",
+    "passingCachedAndLockEvidence": ".migration-backup/cost-covered-exit-history-development-v1/cached-wrapper-and-lock-validation.json"
+  },
+  "rawResult": {
+    "relativePath": "outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.result.json",
+    "sha256": "1f956a65c8534158098f1929229c823aea7164aae4419a05a895740855b058e2",
+    "bytes": 493201
+  },
+  "rawReplaySha256": {
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.costMatchedBenchmark.replay.json": "327bf8298f0580105a1feb9125297bd8e47f7897e4f3942eff15dd58207c482a",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.baseline.replay.json": "6ef8b270cb55e7d1216ef89b62c0e4316e52de2323785bb602069af61bb5ddaa",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.candidate.replay.json": "fb348cdd74bb07d07eccaf255ae7221e042a41c968da0cb4091594045c21a280",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.candidate.replay.json": "47c0da7cb8c11d7945ab459fb5a1d272bd4c92e4b8ade91d0c317075ef566819",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.baseline.replay.json": "67d86920b35bcc390547b2d09bf9b48f786ebfee44e67fe14b117ffc321e1bf3",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.baseline.replay.json": "44991d713485fa87459252760ddf14efe7eb70921edc76e95fb9d492e7339910",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.costMatchedBenchmark.replay.json": "45c1b73830b7b39313052006930b64b485eea3d0b2ee7693e4dcdb5246fcf473",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.candidate.replay.json": "d1c2fce08a4604a06a963363f47ce9a28777c93f33c5a8ab6df11c5fbf4dda1b",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.candidate.replay.json": "aa225f1a440ae99a1507d29b7f39b368a2798740f8cbe6aa0ab63e7a206f63c1",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.costMatchedBenchmark.replay.json": "0505ab3e8be7984e44d6e95e3a1a4b3fcbec877f204532b7032a172e443980d9",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.costMatchedBenchmark.replay.json": "c99ac8803e3e936997cf47271c524582a43f595e94ff9e82bd0eaacd4b0a36ad",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.baseline.replay.json": "275794ce2888e2afaa87f587831495a961bb5d76601ad0ed6aa3bd698b1ac0bd"
+  }
+}
