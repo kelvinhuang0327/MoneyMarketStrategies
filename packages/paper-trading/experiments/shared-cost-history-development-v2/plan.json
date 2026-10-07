@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 2,
+  "experimentId": "shared-cost-history-development-v2",
+  "classification": "RETROSPECTIVE_DEVELOPMENT_NOT_UNSEEN_FORWARD",
+  "registrationRule": "First commit adding exact plan and runner precedes historical replay; one fixed comparison only, no overrides or selected rows.",
+  "protocol": {
+    "path": "packages/paper-trading/experiments/shared-paper-cost-model-v2/protocol.json",
+    "sha256": "bd991540df4e364d97492ccffeac9b563b64e088d4244b646c1f38a2ab957a59",
+    "freezeCommit": "1f7fc54"
+  },
+  "symbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "window": {
+    "startDate": "2026-01-01",
+    "endDate": "2026-08-11"
+  },
+  "warmupRowsPerSymbol": 39,
+  "evaluationRowsPerSymbol": 145,
+  "exactRowsPerReplay": 184,
+  "maximumHistoricalReplays": 12,
+  "exactTotalMarketEvents": 2208,
+  "csv": {
+    "path": "data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv",
+    "sha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+    "profile": "twse-daily-ohlcv-close-v1",
+    "fetchedAtUtc": "2026-08-12T03:29:21Z",
+    "globalRowCount": 8014,
+    "globalDateRange": {
+      "start": "2020-01-02",
+      "end": "2026-08-11"
+    }
+  },
+  "originalInput": {
+    "path": "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.input.json",
+    "sha256": "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15"
+  },
+  "originalEvidenceSha256": {
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.costMatchedBenchmark.replay.json": "327bf8298f0580105a1feb9125297bd8e47f7897e4f3942eff15dd58207c482a",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.baseline.replay.json": "6ef8b270cb55e7d1216ef89b62c0e4316e52de2323785bb602069af61bb5ddaa",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.candidate.replay.json": "fb348cdd74bb07d07eccaf255ae7221e042a41c968da0cb4091594045c21a280",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.candidate.replay.json": "47c0da7cb8c11d7945ab459fb5a1d272bd4c92e4b8ade91d0c317075ef566819",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.baseline.replay.json": "67d86920b35bcc390547b2d09bf9b48f786ebfee44e67fe14b117ffc321e1bf3",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.baseline.replay.json": "44991d713485fa87459252760ddf14efe7eb70921edc76e95fb9d492e7339910",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.costMatchedBenchmark.replay.json": "45c1b73830b7b39313052006930b64b485eea3d0b2ee7693e4dcdb5246fcf473",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.candidate.replay.json": "d1c2fce08a4604a06a963363f47ce9a28777c93f33c5a8ab6df11c5fbf4dda1b",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.candidate.replay.json": "aa225f1a440ae99a1507d29b7f39b368a2798740f8cbe6aa0ab63e7a206f63c1",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.costMatchedBenchmark.replay.json": "0505ab3e8be7984e44d6e95e3a1a4b3fcbec877f204532b7032a172e443980d9",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.costMatchedBenchmark.replay.json": "c99ac8803e3e936997cf47271c524582a43f595e94ff9e82bd0eaacd4b0a36ad",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.baseline.replay.json": "275794ce2888e2afaa87f587831495a961bb5d76601ad0ed6aa3bd698b1ac0bd",
+    "../cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.result.json": "1f956a65c8534158098f1929229c823aea7164aae4419a05a895740855b058e2"
+  },
+  "sourceSha256": {
+    "scripts/runSharedCostHistoryDevelopmentV2.mjs": "4fb0b7eef493177cbbfc74c608e4bc11d20697eaacebb6d9ff3283e5a5747b12",
+    "scripts/sharedCostHistoryPairingV2.mjs": "e9c7efd90c34362ed0c11cffda88ffc48da58d98863f30fb6dd4799e8c5ab4b8",
+    "scripts/costCoveredExitHistoryMetrics.mjs": "83263c2dc40f926682c23001576da460ec3c69b0b6772110bdfe549716e07d46",
+    "packages/paper-trading/src/sharedCostHistoryPairingV2.test.ts": "4c2edbfe3fa6fc4b5247e5789634c30a5074350bf2edbc6fd05ee6aef301ab26",
+    "packages/paper-trading/src/historicalBaseline.ts": "4f2fc80032f4f60ca8da71a6a444999348f726825a4eb9cea1b399b0598156a8",
+    "packages/paper-trading/src/sessionRunner.ts": "7c049ed37b6d22f928cd179ecacd1ef024726bf1d6de2a0fe9fcb1d6a75b1796",
+    "packages/paper-trading/src/costCoveredExitExperiment.ts": "557443d598134240433034fb7a264c2388289b019554218275000c14e9e4c824",
+    "packages/paper-trading/src/crossSymbolResearchRisk.ts": "c7e70c5aca4507375d3408fb946289ea33a8c1c9166837a118e830d49ac149b5",
+    "packages/paper-trading/src/fixture.ts": "2004415f09209200a769dbd20625d916c58f8d7096cca26e59255cfbf89c8bd2",
+    "data/market/p194-twstock-ohlcv-v1/provenance.json": "dacc335f8a53331cb49f7ad9b5842d9e7573541226099e37bbffc6037f34c19f"
+  },
+  "developmentActivationReason": "User explicitly authorizes the already-fixed 2026-01-01 through 2026-08-11 development window. Override only activeFromTimestamp to its 2026-01-01 13:30+08 boundary for both arms; preserve v2 forward freeze/protocol and every other parameter/cost/risk. Old rows never become new forward.",
+  "benchmark": "3 units from first eligible evaluation quote, full next-event execution. Same initial100k, risk, public commission minimum, instrument tax and 100bps slippage; do not force close at cutoff. Separate terminal-liquidation estimate.",
+  "derivations": {
+    "winDenominator": "All completed trades including breakevens; open trades excluded and retained separately",
+    "exposure": "Position mark / fixed initial capital, with event-weighted and calendar-time-weighted measures",
+    "holding": "Actual first entry fill to final exit fill, both trading intervals and calendar days; open positions are right-censored at the fixed cutoff",
+    "aggregate": "Four independent TWD100000 capital runs, summed TWD400000 equity. Calendar union carries last marks only for aggregate accounting. Never average symbol drawdowns or imply shared portfolio risk.",
+    "mechanism": "Pair only identical filled entry time, entered quantity and actual entry cost. Retain all unmatched and open trades in whole-window economics. Identify cost-gate blocks followed by forced net losses, and worse PnL with longer holding."
+  },
+  "interpretationBeforeResults": [
+    "Preserve all completed wins/losses/breakevens and open positions; zero completions have null win rate.",
+    "Report net return vs baseline and benchmark, actual holding, capital-time exposure, drawdown, unknown-cost/no-exit and blocked-then-forced-loss risk.",
+    "Pair only identical actual filled entry timestamp/quantity/entry cost. List every unmatched/open entry and observed reason; do not rank-pair or cherry-pick winners.",
+    "If the economics and holding/downside do not support improvement, retain negative evidence and stop adding variants. No parameter tuning/promotion or efficacy claim from this inspected window."
+  ],
+  "attemptAccounting": "Append-only exclusive attempt.json and immutable new v2 outputs. Saved final result is read-only on repeat; incomplete attempt is not automatically rerun. Do not inspect/create/remove any original .run.lock or durable journal.",
+  "limitations": [
+    "All evaluation prices predate both candidate freezes and are already inspected development data.",
+    "Public fee scenario is not verified actual user broker terms; exact-cent notional and whole-TWD ceiling are declared conservative assumptions.",
+    "Company actions are incomplete for0056/2317 and fullsplit ledger; no dividends credited, so report price-plus-cost return rather than total return.",
+    "Official exchange-calendar completeness, per-row publication-time archive and realistic odd-lot next-event fills unverified.",
+    "Benchmark open positions are marked unrealized; hypothetical liquidation shown separately, no completed win rate.",
+    "Single historical window and dependent small trade samples cannot establish efficacy; descriptive Wilson intervals only."
+  ],
+  "disposition": "NO_PROMOTION_NO_PARAMETER_TUNING_OR_NEW_VARIANTS_FROM_THIS_DEVELOPMENT_WINDOW",
+  "outputDirectory": "outputs/shared-cost-history-development-v2",
+  "resourceScope": "Serial12replays2208events only; no fullbuild/fullsuite/grid/datafetch/gateway/realtrading/oldlock access."
+}
