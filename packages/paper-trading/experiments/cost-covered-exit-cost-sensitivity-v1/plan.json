@@ -1,0 +1,46 @@
+{
+  "classification": "POST_HOC_FIXED_FILL_COST_SENSITIVITY_NOT_NEW_STRATEGY_REPLAY",
+  "declaredAtUtc": "2026-10-07T19:50:24.298166+00:00",
+  "sourceHead": "50d22885007d3a17b510ed6f1a8372d8546055bc",
+  "sourceInputSha256": "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15",
+  "scope": "Read only saved 11 completed trades per arm and four still-open buy-and-hold paths; no strategy/engine/lock entrypoint imports or execution. All saved execution prices (already 100bps slippage) and quantities remain fixed.",
+  "currency": "TWD",
+  "scenarios": [
+    {
+      "id": "original_model",
+      "useSavedFees": true,
+      "sellTaxBps": {
+        "0056": 0,
+        "2317": 0,
+        "2330": 0,
+        "2454": 0
+      },
+      "minCommissionTwd": 0
+    },
+    {
+      "id": "undiscounted_min1_plus_tax",
+      "commissionBps": 14.25,
+      "minCommissionTwd": 1
+    },
+    {
+      "id": "undiscounted_min20_plus_tax",
+      "commissionBps": 14.25,
+      "minCommissionTwd": 20
+    },
+    {
+      "id": "retain30bps_min20_plus_tax_stress",
+      "commissionBps": 30,
+      "minCommissionTwd": 20
+    }
+  ],
+  "sellTaxBps": {
+    "0056": 10,
+    "2317": 30,
+    "2330": 30,
+    "2454": 30
+  },
+  "rounding": "Conservative whole TWD ceiling on commission and tax separately per saved fill, minimum on commission only; a sensitivity assumption, not a verified broker settlement convention. Min1/min20 bracket remains hypothetical unless linked public broker terms are verified. No discounted rates.",
+  "corporateActions": "Do not invent missing actions or silently claim total return. Official historical dividend records may be documented separately; apply no dividend adjustment to cost sensitivity.",
+  "exposure": "Descriptive saved capital-time exposure and gross model PnL decomposition only, no resizing or matched-alpha claim.",
+  "decisionRule": "Report every scenario; retained positive paired difference does not establish profit/alpha or full economic cost coverage. No promotion or retuning."
+}
