@@ -75,3 +75,6 @@ export type {
   SyntheticTradingTerms,
   StrategyInput,
 } from "./types.js";
+
+export { CostCoveredZScoreExitV1Strategy } from "./costCoveredZScoreExit.js";
+export type { CostCoveredZScoreExitV1Config } from "./costCoveredZScoreExit.js";

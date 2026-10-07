@@ -46,6 +46,8 @@ export interface StrategyInput {
   readonly positionQuantity: number;
   /** Sum of actual execution-price notional for the currently open long lots. */
   readonly positionEntryExecutionNotionalMinor: bigint;
+  /** Actual remaining lot cost including paid entry fees. Absent in legacy/custom inputs. */
+  readonly positionCostBasisMinor?: bigint;
 }
 
 export interface PaperStrategy {

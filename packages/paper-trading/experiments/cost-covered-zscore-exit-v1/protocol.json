@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "hypothesisId": "cost-covered-zscore-exit-v1",
+  "status": "FROZEN_SINGLE_CANDIDATE_NOT_EFFICACY_PROVEN",
+  "freezeRule": "First Git commit adding this exact protocol; all real evaluation timestamps must be strictly later than its committer time. Later protocol/implementation edits invalidate this identity.",
+  "parentMainCommit": "7fecfbbd164a9f7697ef9ce5e11b4957a3b7f6e8",
+  "baseline": {
+    "strategyVersion": "rolling-zscore-mean-reversion-v1",
+    "selectedConfigurationId": "lookback-40-entryz-1-exitz-0-hold-20",
+    "parameters": {
+      "lookback": 40,
+      "entryZ": 1,
+      "exitZ": 0,
+      "maxHoldBars": 20,
+      "targetQuantity": 3
+    },
+    "selectionArtifact": "packages/paper-trading/zscore-win-rate-strategy-risk-normalized-v1.json",
+    "selectionArtifactSha256": "7b42c00a71dcb148a723d55e77d96272943128f71e2c644b3477fe32f75f6f25",
+    "developmentConfigurationsTried": 24,
+    "developmentCompletedTrades": 136,
+    "wins": 60,
+    "losses": 76,
+    "meaning": "Already inspected development evidence, not a final holdout"
+  },
+  "singleChange": "On a baseline discretionary z-score exit before maxHoldBars, sell only if the current-quote modeled full-fill sale proceeds after exit fee/slippage cover actual remaining open lot cost including paid entry fees. Unknown basis blocks only discretionary exit. 20-bar forced exit is unconditional.",
+  "unchanged": {
+    "entryRules": true,
+    "lookback": 40,
+    "entryZ": 1,
+    "exitZ": 0,
+    "maxHoldBars": 20,
+    "targetQuantity": 3,
+    "initialCapitalMinor": "10000000",
+    "maxPositionQuantity": 4,
+    "maxExposureMinor": "2000000",
+    "maxMarketAgeMs": 5000,
+    "feeBps": 30,
+    "slippageBps": 100,
+    "fillModel": "alwaysFillNextEvent",
+    "riskProfileId": "CROSS_SYMBOL_RESEARCH_RISK_V1"
+  },
+  "symbols": [
+    "0056",
+    "2317",
+    "2330",
+    "2454"
+  ],
+  "minimumEligibility": {
+    "symbolsWithCompletedTradesInBothArms": 3,
+    "pooledCompletedTradesPerArm": 12,
+    "meaning": "A minimum collection threshold only, not statistical proof; never sufficient for promotion"
+  },
+  "availability": {
+    "storedRealDataThrough": "2026-10-02",
+    "certifiedUnseenRowsAtRegistration": 0,
+    "latestAccumulatorArtifact": "packages/paper-trading/forward-evidence-status-v1.json",
+    "latestAccumulatorSha256": "23666bb42077fef806ca46f7cbd67cdb58e2a90065e13d7f73d6de79e32bb413",
+    "priorHistoricalDataThrough": "2026-08-11",
+    "rule": "All market data that already occurred before registration, including not-yet-downloaded past rows, are development/warmup. Genuine future observations must be received before the next decision/fill tick; late batch downloads cannot certify prospective evidence."
+  },
+  "benchmark": "Quantity 3 held from first eligible quote with identical capital, risk, fee/slippage and next-event fill semantics. Marked terminal equity for every arm, plus a separate hypothetical liquidation estimate.",
+  "analysisPlan": {
+    "winDenominator": "All fully closed trades, including losses and breakevens; open trades excluded and explicitly reported",
+    "winUncertainty": "Two-sided Wilson 95%, descriptive only; IID assumptions, time dependence and prior selection multiplicity disclosed",
+    "effectUncertainty": "No effect CI from a single small window; retain point estimates and explicit non-determination until independent time blocks and verified economics exist",
+    "economicMetrics": [
+      "net return after modeled fee/slippage",
+      "marked-equity maximum drawdown",
+      "exposure",
+      "terminal liquidation estimate",
+      "return differences versus baseline and matched benchmark"
+    ],
+    "failureInterpretation": "Higher win rate alone does not establish benefit. Longer exposure, worse cost-adjusted return/drawdown, or unresolved economics can reject/leave hypothesis inconclusive. No threshold/grid tuning in this identity."
+  },
+  "unresolvedEconomics": [
+    "sell tax",
+    "personal dividend tax",
+    "broker minimum fees",
+    "dividend and split accounting",
+    "independent official-response authenticity and trading-calendar coverage"
+  ],
+  "priorRejectedResearch": {
+    "method": "10-month SMA versus cost-matched benchmark on already seen data",
+    "positiveAbsoluteAndBenchmarkExcessWindows": "0/7",
+    "disposition": "Not stable improvement; not rerun or counted as unseen evidence"
+  },
+  "attemptAccounting": "One fixed hypothesis. Every input snapshot/rejection is retained with raw input and exact SHA-256 in exclusive immutable files. Replays of the same bytes reuse one attempt. Cumulative updated snapshots overlap: never sum their trade counts or treat them as independent trials. Existing accumulator, journal and frozen champion/challenger are untouched.",
+  "currentBatch": "Synthetic behavior validation and registration only. No network fetch, heavy backtest, model/solver experiment, trading, deployment, root checkout switch or legacy data deletion.",
+  "implementationSha256": {
+    "packages/paper-trading/src/costCoveredZScoreExit.ts": "ea5ef84f5d245587fc3d976629ab09763a5d34ce850924df99fb3d4650d7c272",
+    "packages/paper-trading/src/costCoveredExitExperiment.ts": "557443d598134240433034fb7a264c2388289b019554218275000c14e9e4c824",
+    "packages/paper-trading/src/zscoreStrategy.ts": "0e1652e14eabf375fe82fd71ec9d24ed45cbff5851cb46730e6aaab8e36cb256",
+    "packages/paper-trading/src/engine.ts": "31d90cb297ba03c509af7fcc33f40b36a15f753bb9f1ab1eed3b858ed09f9ae6",
+    "packages/paper-trading/src/types.ts": "0a5deaadacf71ae7968ff83401cb27776c18846fdab4e792b12ab784d4757818",
+    "packages/paper-trading/src/money.ts": "fc3fa5554bb5bb280692dd9813f50618fa86e8ff059cd24bd9f14ff4152f75a2",
+    "packages/paper-trading/src/risk.ts": "2e7e695e38f850b726eb8e017bac143b8eaafca3c1b5321b81d47ef0bded9c1b",
+    "packages/paper-trading/src/strategy.ts": "4980501015f5f601874ba905fceb349543a9b08a8e6f66fd330dcfbbc5ea7184",
+    "packages/paper-trading/src/sessionRunner.ts": "7c049ed37b6d22f928cd179ecacd1ef024726bf1d6de2a0fe9fcb1d6a75b1796",
+    "packages/paper-trading/src/crossSymbolResearchRisk.ts": "c7e70c5aca4507375d3408fb946289ea33a8c1c9166837a118e830d49ac149b5",
+    "scripts/runCostCoveredExitExperiment.mjs": "d28948cb2ec45387a0f7c9194917cc527625c2f8324c95266737a8e466d78210",
+    "packages/paper-trading/zscore-win-rate-strategy-risk-normalized-v1.json": "7b42c00a71dcb148a723d55e77d96272943128f71e2c644b3477fe32f75f6f25",
+    "package.json": "2e24c723e333df47174fa8513f8c6f28626f0618abe583ad33750f21028f28f6",
+    "package-lock.json": "742288452cc25a16ba25f10f8772270c3f066a75a59d4638a096025ed4235f0f"
+  }
+}

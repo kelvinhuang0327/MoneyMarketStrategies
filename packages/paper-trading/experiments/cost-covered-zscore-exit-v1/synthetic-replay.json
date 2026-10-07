@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "dataKind": "SYNTHETIC",
+  "datasets": [
+    {
+      "symbol": "0056",
+      "source": {
+        "uri": "synthetic://cost-covered-zscore-exit-v1",
+        "sha256": "8928e6f149bd65ba21343034a423cf1ec463adcb94201914aa05e323043df5c2"
+      },
+      "rows": [
+        {
+          "eventId": "warmup-0",
+          "timestamp": 1787961600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1787961600000
+        },
+        {
+          "eventId": "warmup-1",
+          "timestamp": 1788048000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788048000000
+        },
+        {
+          "eventId": "warmup-2",
+          "timestamp": 1788134400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788134400000
+        },
+        {
+          "eventId": "warmup-3",
+          "timestamp": 1788220800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788220800000
+        },
+        {
+          "eventId": "warmup-4",
+          "timestamp": 1788307200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788307200000
+        },
+        {
+          "eventId": "warmup-5",
+          "timestamp": 1788393600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788393600000
+        },
+        {
+          "eventId": "warmup-6",
+          "timestamp": 1788480000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788480000000
+        },
+        {
+          "eventId": "warmup-7",
+          "timestamp": 1788566400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788566400000
+        },
+        {
+          "eventId": "warmup-8",
+          "timestamp": 1788652800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788652800000
+        },
+        {
+          "eventId": "warmup-9",
+          "timestamp": 1788739200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788739200000
+        },
+        {
+          "eventId": "warmup-10",
+          "timestamp": 1788825600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788825600000
+        },
+        {
+          "eventId": "warmup-11",
+          "timestamp": 1788912000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788912000000
+        },
+        {
+          "eventId": "warmup-12",
+          "timestamp": 1788998400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1788998400000
+        },
+        {
+          "eventId": "warmup-13",
+          "timestamp": 1789084800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789084800000
+        },
+        {
+          "eventId": "warmup-14",
+          "timestamp": 1789171200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789171200000
+        },
+        {
+          "eventId": "warmup-15",
+          "timestamp": 1789257600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789257600000
+        },
+        {
+          "eventId": "warmup-16",
+          "timestamp": 1789344000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789344000000
+        },
+        {
+          "eventId": "warmup-17",
+          "timestamp": 1789430400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789430400000
+        },
+        {
+          "eventId": "warmup-18",
+          "timestamp": 1789516800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789516800000
+        },
+        {
+          "eventId": "warmup-19",
+          "timestamp": 1789603200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789603200000
+        },
+        {
+          "eventId": "warmup-20",
+          "timestamp": 1789689600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789689600000
+        },
+        {
+          "eventId": "warmup-21",
+          "timestamp": 1789776000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789776000000
+        },
+        {
+          "eventId": "warmup-22",
+          "timestamp": 1789862400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789862400000
+        },
+        {
+          "eventId": "warmup-23",
+          "timestamp": 1789948800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1789948800000
+        },
+        {
+          "eventId": "warmup-24",
+          "timestamp": 1790035200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790035200000
+        },
+        {
+          "eventId": "warmup-25",
+          "timestamp": 1790121600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790121600000
+        },
+        {
+          "eventId": "warmup-26",
+          "timestamp": 1790208000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790208000000
+        },
+        {
+          "eventId": "warmup-27",
+          "timestamp": 1790294400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790294400000
+        },
+        {
+          "eventId": "warmup-28",
+          "timestamp": 1790380800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790380800000
+        },
+        {
+          "eventId": "warmup-29",
+          "timestamp": 1790467200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790467200000
+        },
+        {
+          "eventId": "warmup-30",
+          "timestamp": 1790553600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790553600000
+        },
+        {
+          "eventId": "warmup-31",
+          "timestamp": 1790640000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790640000000
+        },
+        {
+          "eventId": "warmup-32",
+          "timestamp": 1790726400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790726400000
+        },
+        {
+          "eventId": "warmup-33",
+          "timestamp": 1790812800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790812800000
+        },
+        {
+          "eventId": "warmup-34",
+          "timestamp": 1790899200000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790899200000
+        },
+        {
+          "eventId": "warmup-35",
+          "timestamp": 1790985600000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1790985600000
+        },
+        {
+          "eventId": "warmup-36",
+          "timestamp": 1791072000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1791072000000
+        },
+        {
+          "eventId": "warmup-37",
+          "timestamp": 1791158400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1791158400000
+        },
+        {
+          "eventId": "warmup-38",
+          "timestamp": 1791244800000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1791244800000
+        },
+        {
+          "eventId": "evaluation-0",
+          "timestamp": 1791417600000,
+          "priceMinor": "8000",
+          "receivedAtTimestamp": 1791417600000
+        },
+        {
+          "eventId": "evaluation-1",
+          "timestamp": 1791504000000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1791504000000
+        },
+        {
+          "eventId": "evaluation-2",
+          "timestamp": 1791590400000,
+          "priceMinor": "10000",
+          "receivedAtTimestamp": 1791590400000
+        },
+        {
+          "eventId": "evaluation-3",
+          "timestamp": 1791676800000,
+          "priceMinor": "11000",
+          "receivedAtTimestamp": 1791676800000
+        },
+        {
+          "eventId": "evaluation-4",
+          "timestamp": 1791763200000,
+          "priceMinor": "12000",
+          "receivedAtTimestamp": 1791763200000
+        }
+      ]
+    }
+  ]
+}

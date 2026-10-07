@@ -37,7 +37,8 @@
     "inspect:research-run": "node scripts/inspectTwResearchRun.mjs",
     "paper:evaluate-historical-actions-v2": "node scripts/runHistoricalActionCostDiagnostic.mjs",
     "paper:audit-historical-exposure": "node scripts/runHistoricalActionCostDiagnostic.mjs --exposure-audit",
-    "research:fundamentals": "node scripts/runFundamentalsOffline.mjs"
+    "research:fundamentals": "node scripts/runFundamentalsOffline.mjs",
+    "paper:experiment-cost-covered-exit-v1": "node scripts/runCostCoveredExitExperiment.mjs"
   },
   "devDependencies": {
     "@types/node": "22.20.1",

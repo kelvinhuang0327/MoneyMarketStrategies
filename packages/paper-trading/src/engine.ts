@@ -655,6 +655,7 @@ export class PaperTradingEngine {
       history: Object.freeze(this.history.map((item) => Object.freeze({ ...item }))),
       positionQuantity: this.positionQuantity,
       positionEntryExecutionNotionalMinor,
+      positionCostBasisMinor: this.lots.reduce((sum, lot) => sum + lot.totalCostMinor, 0n),
     });
     let target: number;
     try {
