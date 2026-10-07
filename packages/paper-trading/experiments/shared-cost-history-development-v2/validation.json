@@ -1,0 +1,39 @@
+{
+  "historicalReplayCount": 12,
+  "auditReplayCount": 0,
+  "historicalReplayWallSeconds": 0.048958417,
+  "focusedTestFiles": 2,
+  "focusedTestsPassed": 5,
+  "focusedTestDurationMs": 172,
+  "targetedEslint": "PASS",
+  "scriptSyntaxChecks": "PASS",
+  "gitDiffCheck": "PASS",
+  "v2FrozenFocusedTestsPreviouslyPassed": 37,
+  "unchangedFrozenTestsRerun": false,
+  "preregistrationCommit": "c5a494e",
+  "savedArtifacts": {
+    "archivePath": ".migration-backup/shared-cost-history-development-v2/history-development-evidence.tar.gz",
+    "sha256": "0c571b61a35a02c4ab8ef96e480789e657ea15c5c8b8a2455c78e1ee0d390047",
+    "bytes": 238262,
+    "regularFiles": 21,
+    "archiveMembersByteVerified": true
+  },
+  "auditSourceSha256": {
+    "scripts/auditSharedCostHistoryResultV2.mjs": "d25765786b9c041b6c10a74299ea4dbdf94bb072ffd533fafe17c8c77ed19c1e",
+    "packages/paper-trading/src/sharedCostHistoryResultAuditV2.test.ts": "726aa99ae88debc65a6842b0356937639526d80f093c501fb1ea02eb73dbec9b"
+  },
+  "newResultSha256": "61eca0ee6286cf5004192510d7f346b6dd26a4ce80f45c72a03176107c777af2",
+  "authoritativeSummarySha256": "0e2bc52d6f434895d9e0c6cefe9954e8fd5699e3e335ca63f0aed16947dc6ac0",
+  "originalEvidenceHashesVerified": 13,
+  "newRawReplayHashesVerified": 12,
+  "frozenProtocolSha256": "bd991540df4e364d97492ccffeac9b563b64e088d4244b646c1f38a2ab957a59",
+  "noPromotion": true,
+  "remainingLimitations": [
+    "All evaluation prices predate both candidate freezes and are already inspected development data.",
+    "Public fee scenario is not verified actual user broker terms; exact-cent notional and whole-TWD ceiling are declared conservative assumptions.",
+    "Company actions are incomplete for0056/2317 and fullsplit ledger; no dividends credited, so report price-plus-cost return rather than total return.",
+    "Official exchange-calendar completeness, per-row publication-time archive and realistic odd-lot next-event fills unverified.",
+    "Benchmark open positions are marked unrealized; hypothetical liquidation shown separately, no completed win rate.",
+    "Single historical window and dependent small trade samples cannot establish efficacy; descriptive Wilson intervals only."
+  ]
+}

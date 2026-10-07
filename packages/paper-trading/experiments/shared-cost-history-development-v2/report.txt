@@ -1,0 +1,78 @@
+v2 固定真實歷史 development 比較；不屬未見前瞻樣本
+
+結論：只有小額歷史點估計改善，伴隨持倉延長、強制虧損及未退出風險；
+不足以支持可推廣的提升。保留結果，停止此方法加碼，不調參、不衍生新變體。
+
+先登記 c5a494e，再執行一次。0056／2317／2330／2454 各39暖機＋145評估，
+2026-01-01 至2026-08-11；同一 CSV SHA256
+ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7。
+12次串行隔離紙上 replay，2208事件，實測 replay 0.048958417秒。
+四份獨立 NT$100,000 資本合計400,000；不是共享風控投資組合。數量3是3股，不是3張。
+
+                    baseline       candidate         cost-matched hold benchmark
+完成交易／勝敗       11／5勝6敗      10／6勝4敗         0／不可判定
+勝率                 45.45%         60.00%            null（未平倉不得0%或PASS）
+扣模擬成本帳面損益   +765.84         +842.94           +9606.97 TWD
+扣成本帳面回報       +0.191460%      +0.210735%        +2.4017425%
+期末假設清倉損益     +765.84         +820.35           +9263.04 TWD
+最大回撤             0.582753%      0.582678%         1.242764%
+未平倉               0              0056 3股          四標的各3股
+pending orders       0              0                 0
+已付費用             564.00         543.00            80.00 TWD
+平均已完成持有天數   16.27          19.20             null
+平均標的持倉時間比   20.1577%       23.8739%          98.1982%
+時間加權資本曝險     0.5174%        0.5241%           3.7700%
+最大資本曝險         4.7445%        4.7445%           5.5036%
+
+candidate vs baseline 帳面 +77.10 TWD／+0.019275百分點；假設清倉 +54.51。
+candidate vs benchmark 帳面 -8764.03 TWD／-2.1910075百分點；兩者曝險/持有不同。
+假設清倉只是扣同費率、滑價的期末估計，沒有捏造成交或未來價格。
+勝率45.45%與60%分母不同且有右設限；描述性Wilson95為21.27–71.99%與31.27–83.18%，
+小樣本交易有相依性，不能當成成功率提升已證實。
+
+逐筆機制（所有11個進場皆完全配對；10個both-closed＋1個candidate open）
+1. 0056 04-01進場：baseline 04-09退出，淨虧40.46；candidate擋16次，
+   達20交易區間強制退出，05-04成交，仍淨虧32.00。延25日，差額+8.46。
+2. 2317 01-22進場：baseline 02-23退出虧41.59；candidate擋3次，
+   02-26退出賺1.49，延3日，差額+43.08。
+3. 0056 07-22進場：baseline 08-06退出虧43.04；candidate至08-11仍3股，
+   entry含費成本174.38，帳面虧17.48，擋3次，已持20日/14交易區間，
+   未達20交易區間上限。此pair淨損益差額null；帳面差額+25.56。
+4. 另外8個已平倉pair的淨損益及退出日期相同。
+已平倉10對差額51.54＋右設限帳面差額25.56＝整窗77.10。全部逐筆資料在result-summary.json。
+共有22個below-cost訊號、3個forced exits，其中1個blocked-then-forced loss（0056）。
+四標的每arm皆145評估事件被接受、riskRejected=0；無pending，不是風控拒絕或資料中斷。
+未平倉原因為成本不足擋出場＋固定觀察窗截止，不能只靠等待宣稱會改善。
+2330首筆cost-covered訊號仍於next-event成交淨虧14.10：報價滿足成本不保證下一筆實際成交。
+
+成本真正參與v2出場及成交；不是事後重算原fills。
+沿用公開一般費率場景：commission 0.1425%、每execution-report最低20 TWD；
+賣出股票稅0.3%、0056 equity-ETF稅0.1%，費與稅分別整TWD向上取整，
+成交名義金額保留精確分，買賣各100bps滑價。未採優惠折扣、未假定用戶券商條款。
+baseline與benchmark損益/回撤/完成筆數精確重現既有min20固定fill敏感度結果。
+旧candidate事後min20重算11筆完成、淨823.59；實際v2為10完成＋1open、帳面842.94，
+假設清倉820.35，顯示最低費用真的改變交易路徑。
+來源（既有已核實公開資料，無本次網路請求）：
+https://www.twse.com.tw/en/about/company/guide.html
+https://www.sinotrade.com.tw/ec/upload/Service-charge.pdf
+具體場景與來源限制見 cost-covered-exit-cost-sensitivity-v1/official-sources.json。
+
+報告修正，不重跑策略：原raw result的mechanism誤讀open trade不存在的enteredQuantity，
+把0056 07-22同一進場列unmatched。新增saved-result audit由entryFillIds取實際買入總量，
+同時核對實際entry費及成本；部分退出亦不誤用剩餘positionQuantity。
+原報告/12raw/plan/runner/helpers均保留原hash；result-summary.json為補正配對的權威摘要。
+新audit不匯入策略或引擎，新增策略replay=0，所有經濟結果不變。
+
+保留原13份證據（12raw＋原result）、v1、v2 frozen protocol/source hashes；
+沒有讀寫原.run.lock、durable ledger、gateway、DB；沒有build/full suite/付費API/下單/push/merge。
+公司行動0056／2317與完整split ledger仍未齊，未記股利；這是價格加成本回報，不是總回報。
+官方交易日完整性、逐列publication archive、真實零股next-event執行仍未知。
+全部評估資料早於v1/v2 freeze，certifiedUnseenForwardRows=0；不可稱新forward或推進策略。
+
+重現只讀核對（不再策略replay）：
+node scripts/auditSharedCostHistoryResultV2.mjs
+node scripts/runSharedCostHistoryDevelopmentV2.mjs --check-inputs
+原 --run 僅在無結果時執行；現有完整結果會驗證hash後只讀cache。本次沒有重跑此入口。
+獨立合成聚焦測試（實際open schema、partial exits、missing fill/basis、不同進場）：
+node_modules/.bin/vitest run packages/paper-trading/src/sharedCostHistoryResultAuditV2.test.ts packages/paper-trading/src/sharedCostHistoryPairingV2.test.ts
+5/5通過，172ms；v2原37/37凍結驗證沿用未全量重跑。新測試定向ESLint、3scripts語法及diff檢查通过。

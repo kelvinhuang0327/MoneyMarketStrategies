@@ -1,0 +1,2485 @@
+{
+  "schemaVersion": 2,
+  "classification": "RETROSPECTIVE_DEVELOPMENT_NOT_UNSEEN_FORWARD",
+  "status": "SAVED_HISTORY_AUDITED_WITH_OPEN_ENTRY_PAIRING_CORRECTION_NO_REPLAY",
+  "sourceResult": {
+    "path": "outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.result.json",
+    "sha256": "61eca0ee6286cf5004192510d7f346b6dd26a4ce80f45c72a03176107c777af2"
+  },
+  "planSha256": "edc0e3fb8d8d721281b2a6ee8fb85423c8399401afd2e387ac6d4522f4e05e3c",
+  "inputSha256": "3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511",
+  "protocolSha256": "bd991540df4e364d97492ccffeac9b563b64e088d4244b646c1f38a2ab957a59",
+  "originalEvidenceCount": 13,
+  "reportingCorrection": {
+    "reason": "Original pairing used absent enteredQuantity on right-censored open summaries. Recover original quantity from saved entry fills; never infer from remaining position after partial exits.",
+    "rawResultPreserved": true,
+    "strategyOrCostChanges": false,
+    "historicalReplaysAdded": 0,
+    "affectedSymbol": "0056",
+    "affectedEntryTimestamp": 1784698200000,
+    "previouslyUnmatchedEntryNowExact": true,
+    "stillExcludedFromCompletedPairPnl": true
+  },
+  "perSymbol": [
+    {
+      "symbol": "0056",
+      "warmupRows": 39,
+      "evaluationRows": 145,
+      "arms": {
+        "baseline": {
+          "strategyVersion": "rolling-zscore-mean-reversion-v1",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "winRate": 0,
+          "netReturnAfterModeledCostsFraction": -0.000835,
+          "terminalLiquidationEstimateReturnFraction": -0.000835,
+          "maximumDrawdownFraction": 0.000835,
+          "maximumExposureFractionOfInitialCapital": 0.0015435,
+          "averageExposureFractionOfInitialCapital": 0.00014428551724137928,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.0001416243243243243,
+          "fractionOfEvaluationEventsWithPosition": 0.10344827586206896,
+          "calendarTimeFractionWithPosition": 0.1036036036036036,
+          "averageCompletedHoldingTradingIntervals": 7.5,
+          "averageCompletedHoldingCalendarDays": 11.5,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "9991650",
+          "terminalLiquidationEstimateEquityMinor": "9991650",
+          "realizedPnlMinor": "-8350",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "8200",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1775712600000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-0056-2026-03-31:fill:historical-0056-2026-04-01"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-0056-2026-04-08:fill:historical-0056-2026-04-09"
+              ],
+              "netPnlMinor": "-4046",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "11550",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "13550",
+              "holdingTradingIntervals": 4,
+              "holdingCalendarDays": 8,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1785994200000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-0056-2026-07-21:fill:historical-0056-2026-07-22"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-0056-2026-08-05:fill:historical-0056-2026-08-06"
+              ],
+              "netPnlMinor": "-4304",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "15438",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "17438",
+              "holdingTradingIntervals": 11,
+              "holdingCalendarDays": 15,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 128,
+            "riskRejected": 0,
+            "ordersSubmitted": 4,
+            "fills": 4,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 141,
+              "ORDER_ACCEPTED": 4
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "9991650",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0,
+            "upper": 0.6576197724933469
+          },
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        },
+        "candidate": {
+          "strategyVersion": "cost-covered-zscore-exit-shared-cost-v2",
+          "completedTradeCount": 1,
+          "wins": 0,
+          "losses": 1,
+          "breakevens": 0,
+          "winRate": 0,
+          "netReturnAfterModeledCostsFraction": -0.0004948,
+          "terminalLiquidationEstimateReturnFraction": -0.0007207,
+          "maximumDrawdownFraction": 0.0006751,
+          "maximumExposureFractionOfInitialCapital": 0.0015735,
+          "averageExposureFractionOfInitialCapital": 0.0003219268965517241,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.00031375675675675686,
+          "fractionOfEvaluationEventsWithPosition": 0.2413793103448276,
+          "calendarTimeFractionWithPosition": 0.23873873873873874,
+          "averageCompletedHoldingTradingIntervals": 20,
+          "averageCompletedHoldingCalendarDays": 33,
+          "openPositionQuantity": 3,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "9995052",
+          "terminalLiquidationEstimateEquityMinor": "9992793",
+          "realizedPnlMinor": "-3200",
+          "unrealizedPnlMinor": "-1748",
+          "feesPaidMinor": "6100",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1777872600000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-0056-2026-03-31:fill:historical-0056-2026-04-01"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-0056-2026-04-30:fill:historical-0056-2026-05-04"
+              ],
+              "netPnlMinor": "-3200",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "11550",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "13550",
+              "holdingTradingIntervals": 20,
+              "holdingCalendarDays": 33,
+              "costGateBlockCount": 16,
+              "firstCostGateBlock": {
+                "kind": "BELOW_COST_BLOCK",
+                "sourceEventId": "historical-0056-2026-04-08",
+                "timestamp": 1775626200000,
+                "targetQuantity": 3,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "13550",
+                "estimatedNetSaleMinor": "9486",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "100"
+              },
+              "exitTrigger": {
+                "kind": "FORCED_EXIT",
+                "sourceEventId": "historical-0056-2026-04-30",
+                "timestamp": 1777527000000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "13550",
+                "estimatedNetSaleMinor": "10047",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "100"
+              }
+            }
+          ],
+          "openTrade": {
+            "openedAtTimestamp": 1784698200000,
+            "positionQuantity": 3,
+            "realizedPnlMinor": "0",
+            "entryFillIds": [
+              "co:cost-covered-zscore-exit-shared-cost-v2:historical-0056-2026-07-21:fill:historical-0056-2026-07-22"
+            ],
+            "exitFillIds": [],
+            "rightCensored": true,
+            "entryExecutionNotionalMinor": "15438",
+            "entryFeesMinor": "2000",
+            "entryCostMinor": "17438",
+            "holdingTradingIntervals": 14,
+            "holdingCalendarDays": 20,
+            "costGateBlockCount": 3,
+            "firstCostGateBlock": {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-08-05",
+              "timestamp": 1785907800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "17438",
+              "estimatedNetSaleMinor": "13179",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            "exitTrigger": null,
+            "markedOpenTradeNetPnlMinor": "-1748"
+          },
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 108,
+            "riskRejected": 0,
+            "ordersSubmitted": 3,
+            "fills": 3,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 142,
+              "ORDER_ACCEPTED": 3
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "9995052",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0,
+            "upper": 0.7934506856227626
+          },
+          "candidateExitDiagnostics": {
+            "discretionarySignals": 19,
+            "costCovered": 0,
+            "belowCost": 19,
+            "unknownCost": 0,
+            "forcedExits": 1
+          },
+          "exitAudit": [
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-08",
+              "timestamp": 1775626200000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9486",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-09",
+              "timestamp": 1775712600000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9504",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-10",
+              "timestamp": 1775799000000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9603",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-13",
+              "timestamp": 1776058200000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9636",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-14",
+              "timestamp": 1776144600000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9771",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-15",
+              "timestamp": 1776231000000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9852",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-16",
+              "timestamp": 1776317400000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10017",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-17",
+              "timestamp": 1776403800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10071",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-20",
+              "timestamp": 1776663000000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10215",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-21",
+              "timestamp": 1776749400000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10365",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-22",
+              "timestamp": 1776835800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10554",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-23",
+              "timestamp": 1776922200000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "9972",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-24",
+              "timestamp": 1777008600000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10062",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-27",
+              "timestamp": 1777267800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10047",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-28",
+              "timestamp": 1777354200000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10107",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-04-29",
+              "timestamp": 1777440600000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10056",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "FORCED_EXIT",
+              "sourceEventId": "historical-0056-2026-04-30",
+              "timestamp": 1777527000000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "13550",
+              "estimatedNetSaleMinor": "10047",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-08-05",
+              "timestamp": 1785907800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "17438",
+              "estimatedNetSaleMinor": "13179",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-08-10",
+              "timestamp": 1786339800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "17438",
+              "estimatedNetSaleMinor": "13476",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-0056-2026-08-11",
+              "timestamp": 1786426200000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "17438",
+              "estimatedNetSaleMinor": "13431",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "100"
+            }
+          ]
+        },
+        "costMatchedBenchmark": {
+          "strategyVersion": "fixed-quantity-hold-first-eligible-shared-cost-v2",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netReturnAfterModeledCostsFraction": 0.0002437,
+          "terminalLiquidationEstimateReturnFraction": 0.0000178,
+          "maximumDrawdownFraction": 0.00023273106505852965,
+          "maximumExposureFractionOfInitialCapital": 0.0016215,
+          "averageExposureFractionOfInitialCapital": 0.0013152227586206895,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.0012916067567567563,
+          "fractionOfEvaluationEventsWithPosition": 0.993103448275862,
+          "calendarTimeFractionWithPosition": 0.9819819819819819,
+          "averageCompletedHoldingTradingIntervals": null,
+          "averageCompletedHoldingCalendarDays": null,
+          "openPositionQuantity": 3,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10002437",
+          "terminalLiquidationEstimateEquityMinor": "10000178",
+          "realizedPnlMinor": "0",
+          "unrealizedPnlMinor": "2437",
+          "feesPaidMinor": "2000",
+          "completedTrades": [],
+          "openTrade": {
+            "openedAtTimestamp": 1767591000000,
+            "positionQuantity": 3,
+            "realizedPnlMinor": "0",
+            "entryFillIds": [
+              "co:fixed-quantity-hold-first-eligible-shared-cost-v2:historical-0056-2026-01-02:fill:historical-0056-2026-01-05"
+            ],
+            "exitFillIds": [],
+            "rightCensored": true,
+            "entryExecutionNotionalMinor": "11253",
+            "entryFeesMinor": "2000",
+            "entryCostMinor": "13253",
+            "holdingTradingIntervals": 143,
+            "holdingCalendarDays": 218,
+            "costGateBlockCount": 0,
+            "firstCostGateBlock": null,
+            "exitTrigger": null,
+            "markedOpenTradeNetPnlMinor": "2437"
+          },
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 0,
+            "riskRejected": 0,
+            "ordersSubmitted": 1,
+            "fills": 1,
+            "decisionReasons": {
+              "ORDER_ACCEPTED": 1,
+              "NO_POSITION_CHANGE": 144
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10002437",
+            "equityMatches": true
+          },
+          "winRateWilson95": null,
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        }
+      }
+    },
+    {
+      "symbol": "2317",
+      "warmupRows": 39,
+      "evaluationRows": 145,
+      "arms": {
+        "baseline": {
+          "strategyVersion": "rolling-zscore-mean-reversion-v1",
+          "completedTradeCount": 4,
+          "wins": 1,
+          "losses": 3,
+          "breakevens": 0,
+          "winRate": 0.25,
+          "netReturnAfterModeledCostsFraction": -0.0017681,
+          "terminalLiquidationEstimateReturnFraction": -0.0017681,
+          "maximumDrawdownFraction": 0.0021672,
+          "maximumExposureFractionOfInitialCapital": 0.007725,
+          "averageExposureFractionOfInitialCapital": 0.0030031034482758613,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.0031738513513513513,
+          "fractionOfEvaluationEventsWithPosition": 0.45517241379310347,
+          "calendarTimeFractionWithPosition": 0.4774774774774775,
+          "averageCompletedHoldingTradingIntervals": 16.5,
+          "averageCompletedHoldingCalendarDays": 26.5,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "9982319",
+          "terminalLiquidationEstimateEquityMinor": "9982319",
+          "realizedPnlMinor": "-17681",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "17000",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771824600000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-01-21:fill:historical-2317-2026-01-22"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-02-11:fill:historical-2317-2026-02-23"
+              ],
+              "netPnlMinor": "-4159",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "67722",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "69722",
+              "holdingTradingIntervals": 15,
+              "holdingCalendarDays": 32,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-03-04:fill:historical-2317-2026-03-05"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-04-01:fill:historical-2317-2026-04-02"
+              ],
+              "netPnlMinor": "-14751",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "67872",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "69872",
+              "holdingTradingIntervals": 20,
+              "holdingCalendarDays": 28,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-04-02:fill:historical-2317-2026-04-07"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-04-21:fill:historical-2317-2026-04-22"
+              ],
+              "netPnlMinor": "3261",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "58176",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "60176",
+              "holdingTradingIntervals": 11,
+              "holdingCalendarDays": 15,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-07-02:fill:historical-2317-2026-07-03"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2317-2026-07-31:fill:historical-2317-2026-08-03"
+              ],
+              "netPnlMinor": "-2032",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "72873",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "74873",
+              "holdingTradingIntervals": 20,
+              "holdingCalendarDays": 31,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 75,
+            "riskRejected": 0,
+            "ordersSubmitted": 8,
+            "fills": 8,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 137,
+              "ORDER_ACCEPTED": 8
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "9982319",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0.04558726080970055,
+            "upper": 0.6993581574175981
+          },
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        },
+        "candidate": {
+          "strategyVersion": "cost-covered-zscore-exit-shared-cost-v2",
+          "completedTradeCount": 4,
+          "wins": 2,
+          "losses": 2,
+          "breakevens": 0,
+          "winRate": 0.5,
+          "netReturnAfterModeledCostsFraction": -0.0013373,
+          "terminalLiquidationEstimateReturnFraction": -0.0013373,
+          "maximumDrawdownFraction": 0.0021582874760551238,
+          "maximumExposureFractionOfInitialCapital": 0.007725,
+          "averageExposureFractionOfInitialCapital": 0.003149379310344827,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.003269391891891892,
+          "fractionOfEvaluationEventsWithPosition": 0.47586206896551725,
+          "calendarTimeFractionWithPosition": 0.49099099099099097,
+          "averageCompletedHoldingTradingIntervals": 17.25,
+          "averageCompletedHoldingCalendarDays": 27.25,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "9986627",
+          "terminalLiquidationEstimateEquityMinor": "9986627",
+          "realizedPnlMinor": "-13373",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "17000",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1772083800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-01-21:fill:historical-2317-2026-01-22"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-02-25:fill:historical-2317-2026-02-26"
+              ],
+              "netPnlMinor": "149",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "67722",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "69722",
+              "holdingTradingIntervals": 18,
+              "holdingCalendarDays": 35,
+              "costGateBlockCount": 3,
+              "firstCostGateBlock": {
+                "kind": "BELOW_COST_BLOCK",
+                "sourceEventId": "historical-2317-2026-02-11",
+                "timestamp": 1770787800000,
+                "targetQuantity": 3,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "69722",
+                "estimatedNetSaleMinor": "65119",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "300"
+              },
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2317-2026-02-25",
+                "timestamp": 1771997400000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "69722",
+                "estimatedNetSaleMinor": "70909",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "300"
+              }
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-03-04:fill:historical-2317-2026-03-05"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-04-01:fill:historical-2317-2026-04-02"
+              ],
+              "netPnlMinor": "-14751",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "67872",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "69872",
+              "holdingTradingIntervals": 20,
+              "holdingCalendarDays": 28,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "FORCED_EXIT",
+                "sourceEventId": "historical-2317-2026-04-01",
+                "timestamp": 1775021400000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "69872",
+                "estimatedNetSaleMinor": "56309",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "200"
+              }
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-04-02:fill:historical-2317-2026-04-07"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-04-21:fill:historical-2317-2026-04-22"
+              ],
+              "netPnlMinor": "3261",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "58176",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "60176",
+              "holdingTradingIntervals": 11,
+              "holdingCalendarDays": 15,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2317-2026-04-21",
+                "timestamp": 1776749400000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "60176",
+                "estimatedNetSaleMinor": "60467",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "200"
+              }
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-07-02:fill:historical-2317-2026-07-03"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2317-2026-07-31:fill:historical-2317-2026-08-03"
+              ],
+              "netPnlMinor": "-2032",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "72873",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "74873",
+              "holdingTradingIntervals": 20,
+              "holdingCalendarDays": 31,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "FORCED_EXIT",
+                "sourceEventId": "historical-2317-2026-07-31",
+                "timestamp": 1785475800000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "74873",
+                "estimatedNetSaleMinor": "72097",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "300"
+              }
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 72,
+            "riskRejected": 0,
+            "ordersSubmitted": 8,
+            "fills": 8,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 137,
+              "ORDER_ACCEPTED": 8
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "9986627",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0.15003898915214947,
+            "upper": 0.8499610108478506
+          },
+          "candidateExitDiagnostics": {
+            "discretionarySignals": 5,
+            "costCovered": 2,
+            "belowCost": 3,
+            "unknownCost": 0,
+            "forcedExits": 2
+          },
+          "exitAudit": [
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-2317-2026-02-11",
+              "timestamp": 1770787800000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "69722",
+              "estimatedNetSaleMinor": "65119",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "300"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-2317-2026-02-23",
+              "timestamp": 1771824600000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "69722",
+              "estimatedNetSaleMinor": "65563",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "300"
+            },
+            {
+              "kind": "BELOW_COST_BLOCK",
+              "sourceEventId": "historical-2317-2026-02-24",
+              "timestamp": 1771911000000,
+              "targetQuantity": 3,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "69722",
+              "estimatedNetSaleMinor": "66604",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "300"
+            },
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2317-2026-02-25",
+              "timestamp": 1771997400000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "69722",
+              "estimatedNetSaleMinor": "70909",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "300"
+            },
+            {
+              "kind": "FORCED_EXIT",
+              "sourceEventId": "historical-2317-2026-04-01",
+              "timestamp": 1775021400000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "69872",
+              "estimatedNetSaleMinor": "56309",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "200"
+            },
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2317-2026-04-21",
+              "timestamp": 1776749400000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "60176",
+              "estimatedNetSaleMinor": "60467",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "200"
+            },
+            {
+              "kind": "FORCED_EXIT",
+              "sourceEventId": "historical-2317-2026-07-31",
+              "timestamp": 1785475800000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "74873",
+              "estimatedNetSaleMinor": "72097",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "300"
+            }
+          ]
+        },
+        "costMatchedBenchmark": {
+          "strategyVersion": "fixed-quantity-hold-first-eligible-shared-cost-v2",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netReturnAfterModeledCostsFraction": 0.0005845,
+          "terminalLiquidationEstimateReturnFraction": 0.0002756,
+          "maximumDrawdownFraction": 0.002380323853789231,
+          "maximumExposureFractionOfInitialCapital": 0.00927,
+          "averageExposureFractionOfInitialCapital": 0.00701751724137931,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.006911689189189189,
+          "fractionOfEvaluationEventsWithPosition": 0.993103448275862,
+          "calendarTimeFractionWithPosition": 0.9819819819819819,
+          "averageCompletedHoldingTradingIntervals": null,
+          "averageCompletedHoldingCalendarDays": null,
+          "openPositionQuantity": 3,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10005845",
+          "terminalLiquidationEstimateEquityMinor": "10002756",
+          "realizedPnlMinor": "0",
+          "unrealizedPnlMinor": "5845",
+          "feesPaidMinor": "2000",
+          "completedTrades": [],
+          "openTrade": {
+            "openedAtTimestamp": 1767591000000,
+            "positionQuantity": 3,
+            "realizedPnlMinor": "0",
+            "entryFillIds": [
+              "co:fixed-quantity-hold-first-eligible-shared-cost-v2:historical-2317-2026-01-02:fill:historical-2317-2026-01-05"
+            ],
+            "exitFillIds": [],
+            "rightCensored": true,
+            "entryExecutionNotionalMinor": "71055",
+            "entryFeesMinor": "2000",
+            "entryCostMinor": "73055",
+            "holdingTradingIntervals": 143,
+            "holdingCalendarDays": 218,
+            "costGateBlockCount": 0,
+            "firstCostGateBlock": null,
+            "exitTrigger": null,
+            "markedOpenTradeNetPnlMinor": "5845"
+          },
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 0,
+            "riskRejected": 0,
+            "ordersSubmitted": 1,
+            "fills": 1,
+            "decisionReasons": {
+              "ORDER_ACCEPTED": 1,
+              "NO_POSITION_CHANGE": 144
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10005845",
+            "equityMatches": true
+          },
+          "winRateWilson95": null,
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        }
+      }
+    },
+    {
+      "symbol": "2330",
+      "warmupRows": 39,
+      "evaluationRows": 145,
+      "arms": {
+        "baseline": {
+          "strategyVersion": "rolling-zscore-mean-reversion-v1",
+          "completedTradeCount": 3,
+          "wins": 2,
+          "losses": 1,
+          "breakevens": 0,
+          "winRate": 0.6666666666666666,
+          "netReturnAfterModeledCostsFraction": 0.003332,
+          "terminalLiquidationEstimateReturnFraction": 0.003332,
+          "maximumDrawdownFraction": 0.0031523107964898486,
+          "maximumExposureFractionOfInitialCapital": 0.07275,
+          "averageExposureFractionOfInitialCapital": 0.0031396551724137928,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.002706081081081081,
+          "fractionOfEvaluationEventsWithPosition": 0.04827586206896552,
+          "calendarTimeFractionWithPosition": 0.04054054054054054,
+          "averageCompletedHoldingTradingIntervals": 2.3333333333333335,
+          "averageCompletedHoldingCalendarDays": 3,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10033320",
+          "terminalLiquidationEstimateEquityMinor": "10033320",
+          "realizedPnlMinor": "33320",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "18100",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2330-2026-03-30:fill:historical-2330-2026-03-31"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2330-2026-04-01:fill:historical-2330-2026-04-02"
+              ],
+              "netPnlMinor": "-1410",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "533280",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "535280",
+              "holdingTradingIntervals": 2,
+              "holdingCalendarDays": 2,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2330-2026-07-17:fill:historical-2330-2026-07-20"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2330-2026-07-21:fill:historical-2330-2026-07-22"
+              ],
+              "netPnlMinor": "3640",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "702960",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "704960",
+              "holdingTradingIntervals": 2,
+              "holdingCalendarDays": 2,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2330-2026-07-28:fill:historical-2330-2026-07-29"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2330-2026-07-31:fill:historical-2330-2026-08-03"
+              ],
+              "netPnlMinor": "31090",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "666600",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "668600",
+              "holdingTradingIntervals": 3,
+              "holdingCalendarDays": 5,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 135,
+            "riskRejected": 0,
+            "ordersSubmitted": 6,
+            "fills": 6,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 139,
+              "ORDER_ACCEPTED": 6
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10033320",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0.2076596008020477,
+            "upper": 0.9385080552796037
+          },
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        },
+        "candidate": {
+          "strategyVersion": "cost-covered-zscore-exit-shared-cost-v2",
+          "completedTradeCount": 3,
+          "wins": 2,
+          "losses": 1,
+          "breakevens": 0,
+          "winRate": 0.6666666666666666,
+          "netReturnAfterModeledCostsFraction": 0.003332,
+          "terminalLiquidationEstimateReturnFraction": 0.003332,
+          "maximumDrawdownFraction": 0.0031523107964898486,
+          "maximumExposureFractionOfInitialCapital": 0.07275,
+          "averageExposureFractionOfInitialCapital": 0.0031396551724137928,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.002706081081081081,
+          "fractionOfEvaluationEventsWithPosition": 0.04827586206896552,
+          "calendarTimeFractionWithPosition": 0.04054054054054054,
+          "averageCompletedHoldingTradingIntervals": 2.3333333333333335,
+          "averageCompletedHoldingCalendarDays": 3,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10033320",
+          "terminalLiquidationEstimateEquityMinor": "10033320",
+          "realizedPnlMinor": "33320",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "18100",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2330-2026-03-30:fill:historical-2330-2026-03-31"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2330-2026-04-01:fill:historical-2330-2026-04-02"
+              ],
+              "netPnlMinor": "-1410",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "533280",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "535280",
+              "holdingTradingIntervals": 2,
+              "holdingCalendarDays": 2,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2330-2026-04-01",
+                "timestamp": 1775021400000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "535280",
+                "estimatedNetSaleMinor": "547235",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "1700"
+              }
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2330-2026-07-17:fill:historical-2330-2026-07-20"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2330-2026-07-21:fill:historical-2330-2026-07-22"
+              ],
+              "netPnlMinor": "3640",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "702960",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "704960",
+              "holdingTradingIntervals": 2,
+              "holdingCalendarDays": 2,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2330-2026-07-21",
+                "timestamp": 1784611800000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "704960",
+                "estimatedNetSaleMinor": "711570",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "2200"
+              }
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2330-2026-07-28:fill:historical-2330-2026-07-29"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2330-2026-07-31:fill:historical-2330-2026-08-03"
+              ],
+              "netPnlMinor": "31090",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "666600",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "668600",
+              "holdingTradingIntervals": 3,
+              "holdingCalendarDays": 5,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2330-2026-07-31",
+                "timestamp": 1785475800000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "668600",
+                "estimatedNetSaleMinor": "716025",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "2200"
+              }
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 135,
+            "riskRejected": 0,
+            "ordersSubmitted": 6,
+            "fills": 6,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 139,
+              "ORDER_ACCEPTED": 6
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10033320",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0.2076596008020477,
+            "upper": 0.9385080552796037
+          },
+          "candidateExitDiagnostics": {
+            "discretionarySignals": 3,
+            "costCovered": 3,
+            "belowCost": 0,
+            "unknownCost": 0,
+            "forcedExits": 0
+          },
+          "exitAudit": [
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2330-2026-04-01",
+              "timestamp": 1775021400000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "535280",
+              "estimatedNetSaleMinor": "547235",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "1700"
+            },
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2330-2026-07-21",
+              "timestamp": 1784611800000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "704960",
+              "estimatedNetSaleMinor": "711570",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "2200"
+            },
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2330-2026-07-31",
+              "timestamp": 1785475800000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "668600",
+              "estimatedNetSaleMinor": "716025",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "2200"
+            }
+          ]
+        },
+        "costMatchedBenchmark": {
+          "strategyVersion": "fixed-quantity-hold-first-eligible-shared-cost-v2",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netReturnAfterModeledCostsFraction": 0.021049,
+          "terminalLiquidationEstimateReturnFraction": 0.0199105,
+          "maximumDrawdownFraction": 0.009077607689221756,
+          "maximumExposureFractionOfInitialCapital": 0.0753,
+          "averageExposureFractionOfInitialCapital": 0.06270724137931034,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.06172027027027027,
+          "fractionOfEvaluationEventsWithPosition": 0.993103448275862,
+          "calendarTimeFractionWithPosition": 0.9819819819819819,
+          "averageCompletedHoldingTradingIntervals": null,
+          "averageCompletedHoldingCalendarDays": null,
+          "openPositionQuantity": 3,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10210490",
+          "terminalLiquidationEstimateEquityMinor": "10199105",
+          "realizedPnlMinor": "0",
+          "unrealizedPnlMinor": "210490",
+          "feesPaidMinor": "2000",
+          "completedTrades": [],
+          "openTrade": {
+            "openedAtTimestamp": 1767591000000,
+            "positionQuantity": 3,
+            "realizedPnlMinor": "0",
+            "entryFillIds": [
+              "co:fixed-quantity-hold-first-eligible-shared-cost-v2:historical-2330-2026-01-02:fill:historical-2330-2026-01-05"
+            ],
+            "exitFillIds": [],
+            "rightCensored": true,
+            "entryExecutionNotionalMinor": "506010",
+            "entryFeesMinor": "2000",
+            "entryCostMinor": "508010",
+            "holdingTradingIntervals": 143,
+            "holdingCalendarDays": 218,
+            "costGateBlockCount": 0,
+            "firstCostGateBlock": null,
+            "exitTrigger": null,
+            "markedOpenTradeNetPnlMinor": "210490"
+          },
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 0,
+            "riskRejected": 0,
+            "ordersSubmitted": 1,
+            "fills": 1,
+            "decisionReasons": {
+              "ORDER_ACCEPTED": 1,
+              "NO_POSITION_CHANGE": 144
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10210490",
+            "equityMatches": true
+          },
+          "winRateWilson95": null,
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        }
+      }
+    },
+    {
+      "symbol": "2454",
+      "warmupRows": 39,
+      "evaluationRows": 145,
+      "arms": {
+        "baseline": {
+          "strategyVersion": "rolling-zscore-mean-reversion-v1",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": 1,
+          "netReturnAfterModeledCostsFraction": 0.0069295,
+          "terminalLiquidationEstimateReturnFraction": 0.0069295,
+          "maximumDrawdownFraction": 0.021592257760927543,
+          "maximumExposureFractionOfInitialCapital": 0.12,
+          "averageExposureFractionOfInitialCapital": 0.015529655172413795,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.014674324324324325,
+          "fractionOfEvaluationEventsWithPosition": 0.18620689655172415,
+          "calendarTimeFractionWithPosition": 0.18468468468468469,
+          "averageCompletedHoldingTradingIntervals": 13.5,
+          "averageCompletedHoldingCalendarDays": 20.5,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10069295",
+          "terminalLiquidationEstimateEquityMinor": "10069295",
+          "realizedPnlMinor": "69295",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "13100",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2454-2026-03-26:fill:historical-2454-2026-03-27"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2454-2026-04-14:fill:historical-2454-2026-04-15"
+              ],
+              "netPnlMinor": "45775",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "480255",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "482255",
+              "holdingTradingIntervals": 11,
+              "holdingCalendarDays": 19,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2454-2026-07-14:fill:historical-2454-2026-07-15"
+              ],
+              "exitFillIds": [
+                "co:rolling-zscore-mean-reversion-v1:historical-2454-2026-08-05:fill:historical-2454-2026-08-06"
+              ],
+              "netPnlMinor": "23520",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "1133220",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "1135220",
+              "holdingTradingIntervals": 16,
+              "holdingCalendarDays": 22,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": null
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 116,
+            "riskRejected": 0,
+            "ordersSubmitted": 4,
+            "fills": 4,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 141,
+              "ORDER_ACCEPTED": 4
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10069295",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0.34238022750665303,
+            "upper": 1
+          },
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        },
+        "candidate": {
+          "strategyVersion": "cost-covered-zscore-exit-shared-cost-v2",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": 1,
+          "netReturnAfterModeledCostsFraction": 0.0069295,
+          "terminalLiquidationEstimateReturnFraction": 0.0069295,
+          "maximumDrawdownFraction": 0.021592257760927543,
+          "maximumExposureFractionOfInitialCapital": 0.12,
+          "averageExposureFractionOfInitialCapital": 0.015529655172413795,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.014674324324324325,
+          "fractionOfEvaluationEventsWithPosition": 0.18620689655172415,
+          "calendarTimeFractionWithPosition": 0.18468468468468469,
+          "averageCompletedHoldingTradingIntervals": 13.5,
+          "averageCompletedHoldingCalendarDays": 20.5,
+          "openPositionQuantity": 0,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10069295",
+          "terminalLiquidationEstimateEquityMinor": "10069295",
+          "realizedPnlMinor": "69295",
+          "unrealizedPnlMinor": "0",
+          "feesPaidMinor": "13100",
+          "completedTrades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2454-2026-03-26:fill:historical-2454-2026-03-27"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2454-2026-04-14:fill:historical-2454-2026-04-15"
+              ],
+              "netPnlMinor": "45775",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "480255",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "482255",
+              "holdingTradingIntervals": 11,
+              "holdingCalendarDays": 19,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2454-2026-04-14",
+                "timestamp": 1776144600000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "482255",
+                "estimatedNetSaleMinor": "507240",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "1600"
+              }
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "enteredQuantity": 3,
+              "entryFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2454-2026-07-14:fill:historical-2454-2026-07-15"
+              ],
+              "exitFillIds": [
+                "co:cost-covered-zscore-exit-shared-cost-v2:historical-2454-2026-08-05:fill:historical-2454-2026-08-06"
+              ],
+              "netPnlMinor": "23520",
+              "rightCensored": false,
+              "entryExecutionNotionalMinor": "1133220",
+              "entryFeesMinor": "2000",
+              "entryCostMinor": "1135220",
+              "holdingTradingIntervals": 16,
+              "holdingCalendarDays": 22,
+              "costGateBlockCount": 0,
+              "firstCostGateBlock": null,
+              "exitTrigger": {
+                "kind": "COST_COVERED_EXIT",
+                "sourceEventId": "historical-2454-2026-08-05",
+                "timestamp": 1785907800000,
+                "targetQuantity": 0,
+                "positionQuantity": 3,
+                "actualEntryCostBasisMinor": "1135220",
+                "estimatedNetSaleMinor": "1182400",
+                "estimatedCommissionMinor": "2000",
+                "estimatedSellTaxMinor": "3600"
+              }
+            }
+          ],
+          "openTrade": null,
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 116,
+            "riskRejected": 0,
+            "ordersSubmitted": 4,
+            "fills": 4,
+            "decisionReasons": {
+              "NO_POSITION_CHANGE": 141,
+              "ORDER_ACCEPTED": 4
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10069295",
+            "equityMatches": true
+          },
+          "winRateWilson95": {
+            "lower": 0.34238022750665303,
+            "upper": 1
+          },
+          "candidateExitDiagnostics": {
+            "discretionarySignals": 2,
+            "costCovered": 2,
+            "belowCost": 0,
+            "unknownCost": 0,
+            "forcedExits": 0
+          },
+          "exitAudit": [
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2454-2026-04-14",
+              "timestamp": 1776144600000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "482255",
+              "estimatedNetSaleMinor": "507240",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "1600"
+            },
+            {
+              "kind": "COST_COVERED_EXIT",
+              "sourceEventId": "historical-2454-2026-08-05",
+              "timestamp": 1785907800000,
+              "targetQuantity": 0,
+              "positionQuantity": 3,
+              "actualEntryCostBasisMinor": "1135220",
+              "estimatedNetSaleMinor": "1182400",
+              "estimatedCommissionMinor": "2000",
+              "estimatedSellTaxMinor": "3600"
+            }
+          ]
+        },
+        "costMatchedBenchmark": {
+          "strategyVersion": "fixed-quantity-hold-first-eligible-shared-cost-v2",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netReturnAfterModeledCostsFraction": 0.0741925,
+          "terminalLiquidationEstimateReturnFraction": 0.0724265,
+          "maximumDrawdownFraction": 0.04090438029177543,
+          "maximumExposureFractionOfInitialCapital": 0.1392,
+          "averageExposureFractionOfInitialCapital": 0.08354172413793104,
+          "calendarWeightedExposureFractionOfInitialCapital": 0.08087567567567568,
+          "fractionOfEvaluationEventsWithPosition": 0.993103448275862,
+          "calendarTimeFractionWithPosition": 0.9819819819819819,
+          "averageCompletedHoldingTradingIntervals": null,
+          "averageCompletedHoldingCalendarDays": null,
+          "openPositionQuantity": 3,
+          "pendingOrder": null,
+          "initialCapitalMinor": "10000000",
+          "finalEquityMinor": "10741925",
+          "terminalLiquidationEstimateEquityMinor": "10724265",
+          "realizedPnlMinor": "0",
+          "unrealizedPnlMinor": "741925",
+          "feesPaidMinor": "2000",
+          "completedTrades": [],
+          "openTrade": {
+            "openedAtTimestamp": 1767591000000,
+            "positionQuantity": 3,
+            "realizedPnlMinor": "0",
+            "entryFillIds": [
+              "co:fixed-quantity-hold-first-eligible-shared-cost-v2:historical-2454-2026-01-02:fill:historical-2454-2026-01-05"
+            ],
+            "exitFillIds": [],
+            "rightCensored": true,
+            "entryExecutionNotionalMinor": "462075",
+            "entryFeesMinor": "2000",
+            "entryCostMinor": "464075",
+            "holdingTradingIntervals": 143,
+            "holdingCalendarDays": 218,
+            "costGateBlockCount": 0,
+            "firstCostGateBlock": null,
+            "exitTrigger": null,
+            "markedOpenTradeNetPnlMinor": "741925"
+          },
+          "counts": {
+            "acceptedEvaluationEvents": 145,
+            "noSignalFlatDecisions": 0,
+            "riskRejected": 0,
+            "ordersSubmitted": 1,
+            "fills": 1,
+            "decisionReasons": {
+              "ORDER_ACCEPTED": 1,
+              "NO_POSITION_CHANGE": 144
+            }
+          },
+          "accountReconciliation": {
+            "fillFeesMatch": true,
+            "positionsMatch": true,
+            "realizedPnlMatches": true,
+            "equityFromPnlMinor": "10741925",
+            "equityMatches": true
+          },
+          "winRateWilson95": null,
+          "candidateExitDiagnostics": null,
+          "exitAudit": []
+        }
+      }
+    }
+  ],
+  "aggregate": {
+    "baseline": {
+      "capitalMeaning": "SUM_OF_FOUR_INDEPENDENT_EQUAL_CAPITAL_RUNS_NOT_SHARED_RISK_PORTFOLIO",
+      "initialCapitalMinor": "40000000",
+      "finalEquityMinor": "40076584",
+      "completedTradeCount": 11,
+      "wins": 5,
+      "losses": 6,
+      "breakevens": 0,
+      "winRate": 0.45454545454545453,
+      "netReturnAfterModeledCostsFraction": 0.0019146,
+      "terminalLiquidationEstimateReturnFraction": 0.0019146,
+      "maximumDrawdownFraction": 0.005827531665636602,
+      "maximumExposureFractionOfInitialCapital": 0.047445,
+      "calendarWeightedExposureFractionOfInitialCapital": 0.0051739702702702705,
+      "meanSymbolCalendarTimeFractionWithPosition": 0.2015765765765766,
+      "meanSymbolEvaluationEventFractionWithPosition": 0.19827586206896552,
+      "averageCompletedHoldingTradingIntervals": 10.454545454545455,
+      "averageCompletedHoldingCalendarDays": 16.272727272727273,
+      "openPositionQuantities": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "openTradeCount": 0,
+      "pendingOrderCount": 0,
+      "feesPaidMinor": "56400",
+      "winRateWilson95": {
+        "lower": 0.21271271622459764,
+        "upper": 0.719908462590678
+      }
+    },
+    "candidate": {
+      "capitalMeaning": "SUM_OF_FOUR_INDEPENDENT_EQUAL_CAPITAL_RUNS_NOT_SHARED_RISK_PORTFOLIO",
+      "initialCapitalMinor": "40000000",
+      "finalEquityMinor": "40084294",
+      "completedTradeCount": 10,
+      "wins": 6,
+      "losses": 4,
+      "breakevens": 0,
+      "winRate": 0.6,
+      "netReturnAfterModeledCostsFraction": 0.00210735,
+      "terminalLiquidationEstimateReturnFraction": 0.002050875,
+      "maximumDrawdownFraction": 0.005826781929242789,
+      "maximumExposureFractionOfInitialCapital": 0.047445,
+      "calendarWeightedExposureFractionOfInitialCapital": 0.005240888513513515,
+      "meanSymbolCalendarTimeFractionWithPosition": 0.23873873873873874,
+      "meanSymbolEvaluationEventFractionWithPosition": 0.23793103448275862,
+      "averageCompletedHoldingTradingIntervals": 12.3,
+      "averageCompletedHoldingCalendarDays": 19.2,
+      "openPositionQuantities": [
+        3,
+        0,
+        0,
+        0
+      ],
+      "openTradeCount": 1,
+      "pendingOrderCount": 0,
+      "feesPaidMinor": "54300",
+      "winRateWilson95": {
+        "lower": 0.31267376973365824,
+        "upper": 0.8318196702937638
+      }
+    },
+    "costMatchedBenchmark": {
+      "capitalMeaning": "SUM_OF_FOUR_INDEPENDENT_EQUAL_CAPITAL_RUNS_NOT_SHARED_RISK_PORTFOLIO",
+      "initialCapitalMinor": "40000000",
+      "finalEquityMinor": "40960697",
+      "completedTradeCount": 0,
+      "wins": 0,
+      "losses": 0,
+      "breakevens": 0,
+      "winRate": null,
+      "netReturnAfterModeledCostsFraction": 0.024017425,
+      "terminalLiquidationEstimateReturnFraction": 0.0231576,
+      "maximumDrawdownFraction": 0.012427643588877506,
+      "maximumExposureFractionOfInitialCapital": 0.05503575,
+      "calendarWeightedExposureFractionOfInitialCapital": 0.03769981047297297,
+      "meanSymbolCalendarTimeFractionWithPosition": 0.9819819819819819,
+      "meanSymbolEvaluationEventFractionWithPosition": 0.993103448275862,
+      "averageCompletedHoldingTradingIntervals": null,
+      "averageCompletedHoldingCalendarDays": null,
+      "openPositionQuantities": [
+        3,
+        3,
+        3,
+        3
+      ],
+      "openTradeCount": 4,
+      "pendingOrderCount": 0,
+      "feesPaidMinor": "8000",
+      "winRateWilson95": null
+    }
+  },
+  "sideEffects": {
+    "candidateMinusBaselineReturnFraction": 0.00019275,
+    "candidateMinusBenchmarkReturnFraction": -0.021910074999999998,
+    "candidateMinusBaselineDrawdownFraction": -7.497363938126569e-7,
+    "candidateBlockedThenForcedLossCount": 1,
+    "candidateBlockedThenForcedLossNetPnlMinor": "-3200",
+    "exactClosedEntryPairCount": 10,
+    "candidateBelowCostSignalCount": 22,
+    "candidateForcedExitCount": 3
+  },
+  "mechanisms": [
+    {
+      "symbol": "0056",
+      "matchedEntries": 2,
+      "matchedBothClosed": 1,
+      "unmatchedBaselineClosedTrades": 0,
+      "unmatchedCandidateClosedTrades": 0,
+      "candidateBlockedThenForcedLossCount": 1,
+      "candidateBlockedThenForcedLossNetPnlMinor": "-3200",
+      "matchedPairsWithLongerHolding": 2,
+      "matchedClosedPairsWithWorseNetPnl": 0,
+      "matchedClosedPairsWithBetterNetPnl": 1,
+      "matchedClosedPairsWithSameNetPnl": 0,
+      "pairs": [
+        {
+          "openedAtTimestamp": 1775021400000,
+          "entryCostMinor": "13550",
+          "baselineNetPnlMinor": "-4046",
+          "candidateNetPnlMinor": "-3200",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 16,
+          "additionalHoldingCalendarDays": 25,
+          "candidateCostGateBlocks": 16,
+          "candidateExitTrigger": {
+            "kind": "FORCED_EXIT",
+            "sourceEventId": "historical-0056-2026-04-30",
+            "timestamp": 1777527000000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "13550",
+            "estimatedNetSaleMinor": "10047",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "100"
+          },
+          "netPnlDifferenceMinor": "846",
+          "classification": "BLOCKED_THEN_FORCED_LOSS"
+        },
+        {
+          "openedAtTimestamp": 1784698200000,
+          "entryCostMinor": "17438",
+          "baselineNetPnlMinor": "-4304",
+          "candidateNetPnlMinor": null,
+          "candidateMarkedOpenPnlMinor": "-1748",
+          "additionalHoldingTradingIntervals": 3,
+          "additionalHoldingCalendarDays": 5,
+          "candidateCostGateBlocks": 3,
+          "candidateExitTrigger": null,
+          "netPnlDifferenceMinor": null,
+          "classification": "CANDIDATE_OPEN_NO_CLOSED_TRADE_COMPARISON"
+        }
+      ],
+      "exactEntryPairsIncludingOpen": [
+        {
+          "baseline": {
+            "openedAtTimestamp": 1775021400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "13550",
+            "rightCensored": false,
+            "closedAtTimestamp": 1775712600000,
+            "netPnlMinor": "-4046",
+            "holdingCalendarDays": 8,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1775021400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "13550",
+            "rightCensored": false,
+            "closedAtTimestamp": 1777872600000,
+            "netPnlMinor": "-3200",
+            "holdingCalendarDays": 33,
+            "costGateBlockCount": 16
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1784698200000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "17438",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785994200000,
+            "netPnlMinor": "-4304",
+            "holdingCalendarDays": 15,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1784698200000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "17438",
+            "rightCensored": true,
+            "closedAtTimestamp": null,
+            "netPnlMinor": null,
+            "holdingCalendarDays": 20,
+            "costGateBlockCount": 3
+          },
+          "comparableCompletedPair": false
+        }
+      ],
+      "unmatchedBaseline": [],
+      "unmatchedCandidate": [],
+      "denominator": "Only identical filled-entry timestamp/quantity/actual cost, both closed, enter paired PnL. Every unmatched/open trade remains in whole-window equity/exposure and is listed separately."
+    },
+    {
+      "symbol": "2317",
+      "matchedEntries": 4,
+      "matchedBothClosed": 4,
+      "unmatchedBaselineClosedTrades": 0,
+      "unmatchedCandidateClosedTrades": 0,
+      "candidateBlockedThenForcedLossCount": 0,
+      "candidateBlockedThenForcedLossNetPnlMinor": "0",
+      "matchedPairsWithLongerHolding": 1,
+      "matchedClosedPairsWithWorseNetPnl": 0,
+      "matchedClosedPairsWithBetterNetPnl": 1,
+      "matchedClosedPairsWithSameNetPnl": 3,
+      "pairs": [
+        {
+          "openedAtTimestamp": 1769059800000,
+          "entryCostMinor": "69722",
+          "baselineNetPnlMinor": "-4159",
+          "candidateNetPnlMinor": "149",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 3,
+          "additionalHoldingCalendarDays": 3,
+          "candidateCostGateBlocks": 3,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2317-2026-02-25",
+            "timestamp": 1771997400000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "69722",
+            "estimatedNetSaleMinor": "70909",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "300"
+          },
+          "netPnlDifferenceMinor": "4308",
+          "classification": "BOTH_CLOSED"
+        },
+        {
+          "openedAtTimestamp": 1772688600000,
+          "entryCostMinor": "69872",
+          "baselineNetPnlMinor": "-14751",
+          "candidateNetPnlMinor": "-14751",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "FORCED_EXIT",
+            "sourceEventId": "historical-2317-2026-04-01",
+            "timestamp": 1775021400000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "69872",
+            "estimatedNetSaleMinor": "56309",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "200"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        },
+        {
+          "openedAtTimestamp": 1775539800000,
+          "entryCostMinor": "60176",
+          "baselineNetPnlMinor": "3261",
+          "candidateNetPnlMinor": "3261",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2317-2026-04-21",
+            "timestamp": 1776749400000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "60176",
+            "estimatedNetSaleMinor": "60467",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "200"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        },
+        {
+          "openedAtTimestamp": 1783056600000,
+          "entryCostMinor": "74873",
+          "baselineNetPnlMinor": "-2032",
+          "candidateNetPnlMinor": "-2032",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "FORCED_EXIT",
+            "sourceEventId": "historical-2317-2026-07-31",
+            "timestamp": 1785475800000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "74873",
+            "estimatedNetSaleMinor": "72097",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "300"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        }
+      ],
+      "exactEntryPairsIncludingOpen": [
+        {
+          "baseline": {
+            "openedAtTimestamp": 1769059800000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "69722",
+            "rightCensored": false,
+            "closedAtTimestamp": 1771824600000,
+            "netPnlMinor": "-4159",
+            "holdingCalendarDays": 32,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1769059800000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "69722",
+            "rightCensored": false,
+            "closedAtTimestamp": 1772083800000,
+            "netPnlMinor": "149",
+            "holdingCalendarDays": 35,
+            "costGateBlockCount": 3
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1772688600000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "69872",
+            "rightCensored": false,
+            "closedAtTimestamp": 1775107800000,
+            "netPnlMinor": "-14751",
+            "holdingCalendarDays": 28,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1772688600000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "69872",
+            "rightCensored": false,
+            "closedAtTimestamp": 1775107800000,
+            "netPnlMinor": "-14751",
+            "holdingCalendarDays": 28,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1775539800000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "60176",
+            "rightCensored": false,
+            "closedAtTimestamp": 1776835800000,
+            "netPnlMinor": "3261",
+            "holdingCalendarDays": 15,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1775539800000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "60176",
+            "rightCensored": false,
+            "closedAtTimestamp": 1776835800000,
+            "netPnlMinor": "3261",
+            "holdingCalendarDays": 15,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1783056600000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "74873",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785735000000,
+            "netPnlMinor": "-2032",
+            "holdingCalendarDays": 31,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1783056600000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "74873",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785735000000,
+            "netPnlMinor": "-2032",
+            "holdingCalendarDays": 31,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        }
+      ],
+      "unmatchedBaseline": [],
+      "unmatchedCandidate": [],
+      "denominator": "Only identical filled-entry timestamp/quantity/actual cost, both closed, enter paired PnL. Every unmatched/open trade remains in whole-window equity/exposure and is listed separately."
+    },
+    {
+      "symbol": "2330",
+      "matchedEntries": 3,
+      "matchedBothClosed": 3,
+      "unmatchedBaselineClosedTrades": 0,
+      "unmatchedCandidateClosedTrades": 0,
+      "candidateBlockedThenForcedLossCount": 0,
+      "candidateBlockedThenForcedLossNetPnlMinor": "0",
+      "matchedPairsWithLongerHolding": 0,
+      "matchedClosedPairsWithWorseNetPnl": 0,
+      "matchedClosedPairsWithBetterNetPnl": 0,
+      "matchedClosedPairsWithSameNetPnl": 3,
+      "pairs": [
+        {
+          "openedAtTimestamp": 1774935000000,
+          "entryCostMinor": "535280",
+          "baselineNetPnlMinor": "-1410",
+          "candidateNetPnlMinor": "-1410",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2330-2026-04-01",
+            "timestamp": 1775021400000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "535280",
+            "estimatedNetSaleMinor": "547235",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "1700"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        },
+        {
+          "openedAtTimestamp": 1784525400000,
+          "entryCostMinor": "704960",
+          "baselineNetPnlMinor": "3640",
+          "candidateNetPnlMinor": "3640",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2330-2026-07-21",
+            "timestamp": 1784611800000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "704960",
+            "estimatedNetSaleMinor": "711570",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "2200"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        },
+        {
+          "openedAtTimestamp": 1785303000000,
+          "entryCostMinor": "668600",
+          "baselineNetPnlMinor": "31090",
+          "candidateNetPnlMinor": "31090",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2330-2026-07-31",
+            "timestamp": 1785475800000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "668600",
+            "estimatedNetSaleMinor": "716025",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "2200"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        }
+      ],
+      "exactEntryPairsIncludingOpen": [
+        {
+          "baseline": {
+            "openedAtTimestamp": 1774935000000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "535280",
+            "rightCensored": false,
+            "closedAtTimestamp": 1775107800000,
+            "netPnlMinor": "-1410",
+            "holdingCalendarDays": 2,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1774935000000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "535280",
+            "rightCensored": false,
+            "closedAtTimestamp": 1775107800000,
+            "netPnlMinor": "-1410",
+            "holdingCalendarDays": 2,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1784525400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "704960",
+            "rightCensored": false,
+            "closedAtTimestamp": 1784698200000,
+            "netPnlMinor": "3640",
+            "holdingCalendarDays": 2,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1784525400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "704960",
+            "rightCensored": false,
+            "closedAtTimestamp": 1784698200000,
+            "netPnlMinor": "3640",
+            "holdingCalendarDays": 2,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1785303000000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "668600",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785735000000,
+            "netPnlMinor": "31090",
+            "holdingCalendarDays": 5,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1785303000000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "668600",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785735000000,
+            "netPnlMinor": "31090",
+            "holdingCalendarDays": 5,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        }
+      ],
+      "unmatchedBaseline": [],
+      "unmatchedCandidate": [],
+      "denominator": "Only identical filled-entry timestamp/quantity/actual cost, both closed, enter paired PnL. Every unmatched/open trade remains in whole-window equity/exposure and is listed separately."
+    },
+    {
+      "symbol": "2454",
+      "matchedEntries": 2,
+      "matchedBothClosed": 2,
+      "unmatchedBaselineClosedTrades": 0,
+      "unmatchedCandidateClosedTrades": 0,
+      "candidateBlockedThenForcedLossCount": 0,
+      "candidateBlockedThenForcedLossNetPnlMinor": "0",
+      "matchedPairsWithLongerHolding": 0,
+      "matchedClosedPairsWithWorseNetPnl": 0,
+      "matchedClosedPairsWithBetterNetPnl": 0,
+      "matchedClosedPairsWithSameNetPnl": 2,
+      "pairs": [
+        {
+          "openedAtTimestamp": 1774589400000,
+          "entryCostMinor": "482255",
+          "baselineNetPnlMinor": "45775",
+          "candidateNetPnlMinor": "45775",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2454-2026-04-14",
+            "timestamp": 1776144600000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "482255",
+            "estimatedNetSaleMinor": "507240",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "1600"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        },
+        {
+          "openedAtTimestamp": 1784093400000,
+          "entryCostMinor": "1135220",
+          "baselineNetPnlMinor": "23520",
+          "candidateNetPnlMinor": "23520",
+          "candidateMarkedOpenPnlMinor": null,
+          "additionalHoldingTradingIntervals": 0,
+          "additionalHoldingCalendarDays": 0,
+          "candidateCostGateBlocks": 0,
+          "candidateExitTrigger": {
+            "kind": "COST_COVERED_EXIT",
+            "sourceEventId": "historical-2454-2026-08-05",
+            "timestamp": 1785907800000,
+            "targetQuantity": 0,
+            "positionQuantity": 3,
+            "actualEntryCostBasisMinor": "1135220",
+            "estimatedNetSaleMinor": "1182400",
+            "estimatedCommissionMinor": "2000",
+            "estimatedSellTaxMinor": "3600"
+          },
+          "netPnlDifferenceMinor": "0",
+          "classification": "BOTH_CLOSED"
+        }
+      ],
+      "exactEntryPairsIncludingOpen": [
+        {
+          "baseline": {
+            "openedAtTimestamp": 1774589400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "482255",
+            "rightCensored": false,
+            "closedAtTimestamp": 1776231000000,
+            "netPnlMinor": "45775",
+            "holdingCalendarDays": 19,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1774589400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "482255",
+            "rightCensored": false,
+            "closedAtTimestamp": 1776231000000,
+            "netPnlMinor": "45775",
+            "holdingCalendarDays": 19,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        },
+        {
+          "baseline": {
+            "openedAtTimestamp": 1784093400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "1135220",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785994200000,
+            "netPnlMinor": "23520",
+            "holdingCalendarDays": 22,
+            "costGateBlockCount": 0
+          },
+          "candidate": {
+            "openedAtTimestamp": 1784093400000,
+            "enteredQuantity": 3,
+            "entryCostMinor": "1135220",
+            "rightCensored": false,
+            "closedAtTimestamp": 1785994200000,
+            "netPnlMinor": "23520",
+            "holdingCalendarDays": 22,
+            "costGateBlockCount": 0
+          },
+          "comparableCompletedPair": true
+        }
+      ],
+      "unmatchedBaseline": [],
+      "unmatchedCandidate": [],
+      "denominator": "Only identical filled-entry timestamp/quantity/actual cost, both closed, enter paired PnL. Every unmatched/open trade remains in whole-window equity/exposure and is listed separately."
+    }
+  ],
+  "pairedExplanation": {
+    "exactEntryCount": 11,
+    "bothClosedCount": 10,
+    "closedPairNetDifferenceMinor": "5154",
+    "censoredPairs": [
+      {
+        "symbol": "0056",
+        "openedAtTimestamp": 1784698200000,
+        "entryCostMinor": "17438",
+        "baselineNetPnlMinor": "-4304",
+        "candidateNetPnlMinor": null,
+        "candidateMarkedOpenPnlMinor": "-1748",
+        "additionalHoldingTradingIntervals": 3,
+        "additionalHoldingCalendarDays": 5,
+        "candidateCostGateBlocks": 3,
+        "candidateExitTrigger": null,
+        "netPnlDifferenceMinor": null,
+        "classification": "CANDIDATE_OPEN_NO_CLOSED_TRADE_COMPARISON"
+      }
+    ],
+    "markedWholeWindowDifferenceMinor": "7710",
+    "candidateMinusBaselineTerminalLiquidationEstimateMinor": "5451"
+  },
+  "costComparison": {
+    "sourcePath": "../cost-covered-exit-cost-sensitivity-v1/packages/paper-trading/experiments/cost-covered-exit-cost-sensitivity-v1/result.json",
+    "sourceSha256": "2c4acc9b60c0208d302accc02db7bc56dce40ad57c851385eea7ce6c01a5d0a4",
+    "baselineAndBenchmarkExactlyMatchPriorMin20CostSensitivity": true,
+    "priorCandidateFixedFillCompletedCount": 11,
+    "priorCandidateFixedFillNetPnlMinor": "82359",
+    "actualV2CandidateCompletedCount": 10,
+    "explanation": "Costs enter actual v2 decisions and executions; prior candidate cost sensitivity only repriced v1 fills and retained v1 exit dates."
+  },
+  "resources": {
+    "historicalReplayCount": 12,
+    "totalMarketEvents": 2208,
+    "serial": true,
+    "measuredReplayWallSeconds": 0.048958417,
+    "fullBuild": false,
+    "fullSuite": false,
+    "gridSearch": false,
+    "newDataFetch": false,
+    "durableOrGatewayEntry": false,
+    "oldLockAccess": false
+  },
+  "certifiedUnseenForwardRows": 0,
+  "checks": {
+    "original12RawEvidenceHashesUnchanged": true,
+    "frozenSourceHashesVerified": true,
+    "exactOriginal736RowsVerified": true,
+    "twelveAccountsReconciled": true,
+    "actualCommissionAndTaxReconciledPerFill": true,
+    "allOriginal13EvidenceHashesVerified": true,
+    "preregisteredSourceAndFrozenProtocolPinsUnchanged": true,
+    "all12NewReplayHashesVerified": true,
+    "completedAndOpenEntryQuantityReconciledFromActualFills": true,
+    "completedDenominatorsAndAccountPnlVerified": true,
+    "pairedAndCensoredPnlExplainWholeWindowDifference": true
+  },
+  "limitations": [
+    "All evaluation prices predate both candidate freezes and are already inspected development data.",
+    "Public fee scenario is not verified actual user broker terms; exact-cent notional and whole-TWD ceiling are declared conservative assumptions.",
+    "Company actions are incomplete for0056/2317 and fullsplit ledger; no dividends credited, so report price-plus-cost return rather than total return.",
+    "Official exchange-calendar completeness, per-row publication-time archive and realistic odd-lot next-event fills unverified.",
+    "Benchmark open positions are marked unrealized; hypothetical liquidation shown separately, no completed win rate.",
+    "Single historical window and dependent small trade samples cannot establish efficacy; descriptive Wilson intervals only."
+  ],
+  "disposition": "SMALL_DEVELOPMENT_POINT_GAIN_WITH_CENSORING_AND_DELAYED_LOSS_DOES_NOT_ESTABLISH_IMPROVEMENT_STOP_VARIANT_EXPANSION"
+}
