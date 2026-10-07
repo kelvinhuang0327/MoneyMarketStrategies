@@ -1,0 +1,2026 @@
+{
+  "classification": "POST_HOC_FIXED_FILL_COST_SENSITIVITY_NOT_NEW_STRATEGY_REPLAY",
+  "planSha256": "2ad00a41124684079a4bc1cf62a3f05be779333b1d4506bc060e1d8debd16113",
+  "sourceResultSha256": "1f956a65c8534158098f1929229c823aea7164aae4419a05a895740855b058e2",
+  "sourceReplaySha256": {
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.baseline.replay.json": "6ef8b270cb55e7d1216ef89b62c0e4316e52de2323785bb602069af61bb5ddaa",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.candidate.replay.json": "aa225f1a440ae99a1507d29b7f39b368a2798740f8cbe6aa0ab63e7a206f63c1",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.costMatchedBenchmark.replay.json": "c99ac8803e3e936997cf47271c524582a43f595e94ff9e82bd0eaacd4b0a36ad",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.baseline.replay.json": "275794ce2888e2afaa87f587831495a961bb5d76601ad0ed6aa3bd698b1ac0bd",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.candidate.replay.json": "d1c2fce08a4604a06a963363f47ce9a28777c93f33c5a8ab6df11c5fbf4dda1b",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.costMatchedBenchmark.replay.json": "0505ab3e8be7984e44d6e95e3a1a4b3fcbec877f204532b7032a172e443980d9",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.baseline.replay.json": "44991d713485fa87459252760ddf14efe7eb70921edc76e95fb9d492e7339910",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.candidate.replay.json": "fb348cdd74bb07d07eccaf255ae7221e042a41c968da0cb4091594045c21a280",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.costMatchedBenchmark.replay.json": "45c1b73830b7b39313052006930b64b485eea3d0b2ee7693e4dcdb5246fcf473",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.baseline.replay.json": "67d86920b35bcc390547b2d09bf9b48f786ebfee44e67fe14b117ffc321e1bf3",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.candidate.replay.json": "47c0da7cb8c11d7945ab459fb5a1d272bd4c92e4b8ade91d0c317075ef566819",
+    "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.costMatchedBenchmark.replay.json": "327bf8298f0580105a1feb9125297bd8e47f7897e4f3942eff15dd58207c482a"
+  },
+  "sourceHashesUnchangedAfterRead": true,
+  "actualEntrySizes": {
+    "0056": [
+      {
+        "quantity": 3,
+        "timestamp": 1775021400000,
+        "executionNotionalMinor": "11550",
+        "savedEntryFeeMinor": "35",
+        "savedEntryCashMinor": "11585"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1784698200000,
+        "executionNotionalMinor": "15438",
+        "savedEntryFeeMinor": "47",
+        "savedEntryCashMinor": "15485"
+      }
+    ],
+    "2317": [
+      {
+        "quantity": 3,
+        "timestamp": 1769059800000,
+        "executionNotionalMinor": "67722",
+        "savedEntryFeeMinor": "204",
+        "savedEntryCashMinor": "67926"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1772688600000,
+        "executionNotionalMinor": "67872",
+        "savedEntryFeeMinor": "204",
+        "savedEntryCashMinor": "68076"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1775539800000,
+        "executionNotionalMinor": "58176",
+        "savedEntryFeeMinor": "175",
+        "savedEntryCashMinor": "58351"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1783056600000,
+        "executionNotionalMinor": "72873",
+        "savedEntryFeeMinor": "219",
+        "savedEntryCashMinor": "73092"
+      }
+    ],
+    "2330": [
+      {
+        "quantity": 3,
+        "timestamp": 1774935000000,
+        "executionNotionalMinor": "533280",
+        "savedEntryFeeMinor": "1600",
+        "savedEntryCashMinor": "534880"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1784525400000,
+        "executionNotionalMinor": "702960",
+        "savedEntryFeeMinor": "2109",
+        "savedEntryCashMinor": "705069"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1785303000000,
+        "executionNotionalMinor": "666600",
+        "savedEntryFeeMinor": "2000",
+        "savedEntryCashMinor": "668600"
+      }
+    ],
+    "2454": [
+      {
+        "quantity": 3,
+        "timestamp": 1774589400000,
+        "executionNotionalMinor": "480255",
+        "savedEntryFeeMinor": "1441",
+        "savedEntryCashMinor": "481696"
+      },
+      {
+        "quantity": 3,
+        "timestamp": 1784093400000,
+        "executionNotionalMinor": "1133220",
+        "savedEntryFeeMinor": "3400",
+        "savedEntryCashMinor": "1136620"
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "id": "original_model",
+      "aggregate": {
+        "baseline": {
+          "completedTradeCount": 11,
+          "wins": 7,
+          "losses": 4,
+          "breakevens": 0,
+          "winRate": 0.6363636363636364,
+          "netPnlMinor": "109718",
+          "netReturnFraction": 0.00274295,
+          "maximumDrawdownFraction": 0.0058239097259811376,
+          "totalCostMinor": "23266",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "candidate": {
+          "completedTradeCount": 11,
+          "wins": 9,
+          "losses": 2,
+          "breakevens": 0,
+          "winRate": 0.8181818181818182,
+          "netPnlMinor": "115475",
+          "netReturnFraction": 0.002886875,
+          "maximumDrawdownFraction": 0.005823116324423311,
+          "totalCostMinor": "23284",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "costMatchedBenchmark": {
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netPnlMinor": "965543",
+          "netReturnFraction": 0.024138575,
+          "maximumDrawdownFraction": 0.012426179981118349,
+          "totalCostMinor": "3154",
+          "openPositionQuantities": [
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "changedPairs": [
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1775021400000,
+          "differenceMinor": "131",
+          "baselineNetPnlMinor": "-16",
+          "candidateNetPnlMinor": "115"
+        },
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1784698200000,
+          "differenceMinor": "296",
+          "baselineNetPnlMinor": "-297",
+          "candidateNetPnlMinor": "-1"
+        },
+        {
+          "symbol": "2317",
+          "openedAtTimestamp": 1769059800000,
+          "differenceMinor": "5330",
+          "baselineNetPnlMinor": "-267",
+          "candidateNetPnlMinor": "5063"
+        }
+      ],
+      "candidateMinusBaselineMinor": "5757",
+      "candidateMinusMarkedBenchmarkMinor": "-850068",
+      "perSymbol": [
+        {
+          "symbol": "0056",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "163",
+          "finalEquityMinor": "9999687",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1775712600000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11604",
+              "costMinor": "70",
+              "netPnlMinor": "-16"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15234",
+              "costMinor": "93",
+              "netPnlMinor": "-297"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 1,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "165",
+          "finalEquityMinor": "10000114",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1776058200000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11736",
+              "costMinor": "71",
+              "netPnlMinor": "115"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1786426200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15531",
+              "costMinor": "94",
+              "netPnlMinor": "-1"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "34",
+          "finalEquityMinor": "10004403",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2317",
+          "arm": "baseline",
+          "completedTradeCount": 4,
+          "wins": 2,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "1601",
+          "finalEquityMinor": "9997718",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771824600000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "67863",
+              "costMinor": "408",
+              "netPnlMinor": "-267"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "376",
+              "netPnlMinor": "-10927"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "372",
+              "netPnlMinor": "7089"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "445",
+              "netPnlMinor": "1823"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "candidate",
+          "completedTradeCount": 4,
+          "wins": 3,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "1617",
+          "finalEquityMinor": "10003048",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771997400000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "73209",
+              "costMinor": "424",
+              "netPnlMinor": "5063"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "376",
+              "netPnlMinor": "-10927"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "372",
+              "netPnlMinor": "7089"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "445",
+              "netPnlMinor": "1823"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "214",
+          "finalEquityMinor": "10007631",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2330",
+          "arm": "baseline",
+          "completedTradeCount": 3,
+          "wins": 3,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "11573",
+          "finalEquityMinor": "10039847",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "3213",
+              "netPnlMinor": "1077"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "4248",
+              "netPnlMinor": "5592"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "4112",
+              "netPnlMinor": "33178"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "candidate",
+          "completedTradeCount": 3,
+          "wins": 3,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "11573",
+          "finalEquityMinor": "10039847",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "3213",
+              "netPnlMinor": "1077"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "4248",
+              "netPnlMinor": "5592"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "4112",
+              "netPnlMinor": "33178"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "1519",
+          "finalEquityMinor": "10210971",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2454",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "9929",
+          "finalEquityMinor": "10072466",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "3036",
+              "netPnlMinor": "48339"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "6893",
+              "netPnlMinor": "24127"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "9929",
+          "finalEquityMinor": "10072466",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "3036",
+              "netPnlMinor": "48339"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "6893",
+              "netPnlMinor": "24127"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "1387",
+          "finalEquityMinor": "10742538",
+          "openPositionQuantity": 3,
+          "trades": []
+        }
+      ]
+    },
+    {
+      "id": "undiscounted_min1_plus_tax",
+      "aggregate": {
+        "baseline": {
+          "completedTradeCount": 11,
+          "wins": 7,
+          "losses": 4,
+          "breakevens": 0,
+          "winRate": 0.6363636363636364,
+          "netPnlMinor": "108384",
+          "netReturnFraction": 0.0027096,
+          "maximumDrawdownFraction": 0.0057988169341641445,
+          "totalCostMinor": "24600",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "candidate": {
+          "completedTradeCount": 11,
+          "wins": 8,
+          "losses": 3,
+          "breakevens": 0,
+          "winRate": 0.7272727272727273,
+          "netPnlMinor": "114059",
+          "netReturnFraction": 0.002851475,
+          "maximumDrawdownFraction": 0.005798038975326715,
+          "totalCostMinor": "24700",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "costMatchedBenchmark": {
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netPnlMinor": "966897",
+          "netReturnFraction": 0.024172425,
+          "maximumDrawdownFraction": 0.012425771102390064,
+          "totalCostMinor": "1800",
+          "openPositionQuantities": [
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "changedPairs": [
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1775021400000,
+          "differenceMinor": "132",
+          "baselineNetPnlMinor": "-246",
+          "candidateNetPnlMinor": "-114"
+        },
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1784698200000,
+          "differenceMinor": "297",
+          "baselineNetPnlMinor": "-504",
+          "candidateNetPnlMinor": "-207"
+        },
+        {
+          "symbol": "2317",
+          "openedAtTimestamp": 1769059800000,
+          "differenceMinor": "5246",
+          "baselineNetPnlMinor": "-359",
+          "candidateNetPnlMinor": "4887"
+        }
+      ],
+      "candidateMinusBaselineMinor": "5675",
+      "candidateMinusMarkedBenchmarkMinor": "-852838",
+      "perSymbol": [
+        {
+          "symbol": "0056",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "600",
+          "finalEquityMinor": "9999250",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1775712600000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11604",
+              "costMinor": "300",
+              "netPnlMinor": "-246"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15234",
+              "costMinor": "300",
+              "netPnlMinor": "-504"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "600",
+          "finalEquityMinor": "9999679",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1776058200000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11736",
+              "costMinor": "300",
+              "netPnlMinor": "-114"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1786426200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15531",
+              "costMinor": "300",
+              "netPnlMinor": "-207"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "100",
+          "finalEquityMinor": "10004337",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2317",
+          "arm": "baseline",
+          "completedTradeCount": 4,
+          "wins": 2,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "9997319",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771824600000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "67863",
+              "costMinor": "500",
+              "netPnlMinor": "-359"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "400",
+              "netPnlMinor": "-10951"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "400",
+              "netPnlMinor": "7061"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "700",
+              "netPnlMinor": "1568"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "candidate",
+          "completedTradeCount": 4,
+          "wins": 3,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "2100",
+          "finalEquityMinor": "10002565",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771997400000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "73209",
+              "costMinor": "600",
+              "netPnlMinor": "4887"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "400",
+              "netPnlMinor": "-10951"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "400",
+              "netPnlMinor": "7061"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "700",
+              "netPnlMinor": "1568"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "200",
+          "finalEquityMinor": "10007645",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2330",
+          "arm": "baseline",
+          "completedTradeCount": 3,
+          "wins": 3,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "12000",
+          "finalEquityMinor": "10039420",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "3300",
+              "netPnlMinor": "990"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "4400",
+              "netPnlMinor": "5440"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "4300",
+              "netPnlMinor": "32990"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "candidate",
+          "completedTradeCount": 3,
+          "wins": 3,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "12000",
+          "finalEquityMinor": "10039420",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "3300",
+              "netPnlMinor": "990"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "4400",
+              "netPnlMinor": "5440"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "4300",
+              "netPnlMinor": "32990"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "800",
+          "finalEquityMinor": "10211690",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2454",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "10000",
+          "finalEquityMinor": "10072395",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "3100",
+              "netPnlMinor": "48275"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "6900",
+              "netPnlMinor": "24120"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "10000",
+          "finalEquityMinor": "10072395",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "3100",
+              "netPnlMinor": "48275"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "6900",
+              "netPnlMinor": "24120"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "700",
+          "finalEquityMinor": "10743225",
+          "openPositionQuantity": 3,
+          "trades": []
+        }
+      ]
+    },
+    {
+      "id": "undiscounted_min20_plus_tax",
+      "aggregate": {
+        "baseline": {
+          "completedTradeCount": 11,
+          "wins": 5,
+          "losses": 6,
+          "breakevens": 0,
+          "winRate": 0.45454545454545453,
+          "netPnlMinor": "76584",
+          "netReturnFraction": 0.0019146,
+          "maximumDrawdownFraction": 0.005827531665636602,
+          "totalCostMinor": "56400",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "candidate": {
+          "completedTradeCount": 11,
+          "wins": 6,
+          "losses": 5,
+          "breakevens": 0,
+          "winRate": 0.5454545454545454,
+          "netPnlMinor": "82359",
+          "netReturnFraction": 0.002058975,
+          "maximumDrawdownFraction": 0.005826734804412509,
+          "totalCostMinor": "56400",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "costMatchedBenchmark": {
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netPnlMinor": "960697",
+          "netReturnFraction": 0.024017425,
+          "maximumDrawdownFraction": 0.012427643588877506,
+          "totalCostMinor": "8000",
+          "openPositionQuantities": [
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "changedPairs": [
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1775021400000,
+          "differenceMinor": "132",
+          "baselineNetPnlMinor": "-4046",
+          "candidateNetPnlMinor": "-3914"
+        },
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1784698200000,
+          "differenceMinor": "297",
+          "baselineNetPnlMinor": "-4304",
+          "candidateNetPnlMinor": "-4007"
+        },
+        {
+          "symbol": "2317",
+          "openedAtTimestamp": 1769059800000,
+          "differenceMinor": "5346",
+          "baselineNetPnlMinor": "-4159",
+          "candidateNetPnlMinor": "1187"
+        }
+      ],
+      "candidateMinusBaselineMinor": "5775",
+      "candidateMinusMarkedBenchmarkMinor": "-878338",
+      "perSymbol": [
+        {
+          "symbol": "0056",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "8200",
+          "finalEquityMinor": "9991650",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1775712600000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11604",
+              "costMinor": "4100",
+              "netPnlMinor": "-4046"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15234",
+              "costMinor": "4100",
+              "netPnlMinor": "-4304"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "8200",
+          "finalEquityMinor": "9992079",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1776058200000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11736",
+              "costMinor": "4100",
+              "netPnlMinor": "-3914"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1786426200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15531",
+              "costMinor": "4100",
+              "netPnlMinor": "-4007"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10002437",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2317",
+          "arm": "baseline",
+          "completedTradeCount": 4,
+          "wins": 1,
+          "losses": 3,
+          "breakevens": 0,
+          "totalCostMinor": "17000",
+          "finalEquityMinor": "9982319",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771824600000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "67863",
+              "costMinor": "4300",
+              "netPnlMinor": "-4159"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "4200",
+              "netPnlMinor": "-14751"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "4200",
+              "netPnlMinor": "3261"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "4300",
+              "netPnlMinor": "-2032"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "candidate",
+          "completedTradeCount": 4,
+          "wins": 2,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "17000",
+          "finalEquityMinor": "9987665",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771997400000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "73209",
+              "costMinor": "4300",
+              "netPnlMinor": "1187"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "4200",
+              "netPnlMinor": "-14751"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "4200",
+              "netPnlMinor": "3261"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "4300",
+              "netPnlMinor": "-2032"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10005845",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2330",
+          "arm": "baseline",
+          "completedTradeCount": 3,
+          "wins": 2,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "18100",
+          "finalEquityMinor": "10033320",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "5700",
+              "netPnlMinor": "-1410"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "6200",
+              "netPnlMinor": "3640"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "6200",
+              "netPnlMinor": "31090"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "candidate",
+          "completedTradeCount": 3,
+          "wins": 2,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "18100",
+          "finalEquityMinor": "10033320",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "5700",
+              "netPnlMinor": "-1410"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "6200",
+              "netPnlMinor": "3640"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "6200",
+              "netPnlMinor": "31090"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10210490",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2454",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "13100",
+          "finalEquityMinor": "10069295",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "5600",
+              "netPnlMinor": "45775"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "7500",
+              "netPnlMinor": "23520"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "13100",
+          "finalEquityMinor": "10069295",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "5600",
+              "netPnlMinor": "45775"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "7500",
+              "netPnlMinor": "23520"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10741925",
+          "openPositionQuantity": 3,
+          "trades": []
+        }
+      ]
+    },
+    {
+      "id": "retain30bps_min20_plus_tax_stress",
+      "aggregate": {
+        "baseline": {
+          "completedTradeCount": 11,
+          "wins": 5,
+          "losses": 6,
+          "breakevens": 0,
+          "winRate": 0.45454545454545453,
+          "netPnlMinor": "73084",
+          "netReturnFraction": 0.0018271,
+          "maximumDrawdownFraction": 0.005827793551513205,
+          "totalCostMinor": "59900",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "candidate": {
+          "completedTradeCount": 11,
+          "wins": 6,
+          "losses": 5,
+          "breakevens": 0,
+          "winRate": 0.5454545454545454,
+          "netPnlMinor": "78859",
+          "netReturnFraction": 0.001971475,
+          "maximumDrawdownFraction": 0.005826996618671442,
+          "totalCostMinor": "59900",
+          "openPositionQuantities": [
+            0,
+            0,
+            0,
+            0
+          ]
+        },
+        "costMatchedBenchmark": {
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "winRate": null,
+          "netPnlMinor": "960697",
+          "netReturnFraction": 0.024017425,
+          "maximumDrawdownFraction": 0.012427643588877506,
+          "totalCostMinor": "8000",
+          "openPositionQuantities": [
+            3,
+            3,
+            3,
+            3
+          ]
+        }
+      },
+      "changedPairs": [
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1775021400000,
+          "differenceMinor": "132",
+          "baselineNetPnlMinor": "-4046",
+          "candidateNetPnlMinor": "-3914"
+        },
+        {
+          "symbol": "0056",
+          "openedAtTimestamp": 1784698200000,
+          "differenceMinor": "297",
+          "baselineNetPnlMinor": "-4304",
+          "candidateNetPnlMinor": "-4007"
+        },
+        {
+          "symbol": "2317",
+          "openedAtTimestamp": 1769059800000,
+          "differenceMinor": "5346",
+          "baselineNetPnlMinor": "-4159",
+          "candidateNetPnlMinor": "1187"
+        }
+      ],
+      "candidateMinusBaselineMinor": "5775",
+      "candidateMinusMarkedBenchmarkMinor": "-881838",
+      "perSymbol": [
+        {
+          "symbol": "0056",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "8200",
+          "finalEquityMinor": "9991650",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1775712600000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11604",
+              "costMinor": "4100",
+              "netPnlMinor": "-4046"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15234",
+              "costMinor": "4100",
+              "netPnlMinor": "-4304"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 0,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "8200",
+          "finalEquityMinor": "9992079",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1775021400000,
+              "closedAtTimestamp": 1776058200000,
+              "quantity": 3,
+              "entryNotionalMinor": "11550",
+              "exitNotionalMinor": "11736",
+              "costMinor": "4100",
+              "netPnlMinor": "-3914"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784698200000,
+              "closedAtTimestamp": 1786426200000,
+              "quantity": 3,
+              "entryNotionalMinor": "15438",
+              "exitNotionalMinor": "15531",
+              "costMinor": "4100",
+              "netPnlMinor": "-4007"
+            }
+          ]
+        },
+        {
+          "symbol": "0056",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10002437",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2317",
+          "arm": "baseline",
+          "completedTradeCount": 4,
+          "wins": 1,
+          "losses": 3,
+          "breakevens": 0,
+          "totalCostMinor": "17000",
+          "finalEquityMinor": "9982319",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771824600000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "67863",
+              "costMinor": "4300",
+              "netPnlMinor": "-4159"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "4200",
+              "netPnlMinor": "-14751"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "4200",
+              "netPnlMinor": "3261"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "4300",
+              "netPnlMinor": "-2032"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "candidate",
+          "completedTradeCount": 4,
+          "wins": 2,
+          "losses": 2,
+          "breakevens": 0,
+          "totalCostMinor": "17000",
+          "finalEquityMinor": "9987665",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1769059800000,
+              "closedAtTimestamp": 1771997400000,
+              "quantity": 3,
+              "entryNotionalMinor": "67722",
+              "exitNotionalMinor": "73209",
+              "costMinor": "4300",
+              "netPnlMinor": "1187"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1772688600000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "67872",
+              "exitNotionalMinor": "57321",
+              "costMinor": "4200",
+              "netPnlMinor": "-14751"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1775539800000,
+              "closedAtTimestamp": 1776835800000,
+              "quantity": 3,
+              "entryNotionalMinor": "58176",
+              "exitNotionalMinor": "65637",
+              "costMinor": "4200",
+              "netPnlMinor": "3261"
+            },
+            {
+              "tradeNumber": 4,
+              "openedAtTimestamp": 1783056600000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "72873",
+              "exitNotionalMinor": "75141",
+              "costMinor": "4300",
+              "netPnlMinor": "-2032"
+            }
+          ]
+        },
+        {
+          "symbol": "2317",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10005845",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2330",
+          "arm": "baseline",
+          "completedTradeCount": 3,
+          "wins": 2,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "18700",
+          "finalEquityMinor": "10032720",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "5700",
+              "netPnlMinor": "-1410"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "6600",
+              "netPnlMinor": "3240"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "6400",
+              "netPnlMinor": "30890"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "candidate",
+          "completedTradeCount": 3,
+          "wins": 2,
+          "losses": 1,
+          "breakevens": 0,
+          "totalCostMinor": "18700",
+          "finalEquityMinor": "10032720",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774935000000,
+              "closedAtTimestamp": 1775107800000,
+              "quantity": 3,
+              "entryNotionalMinor": "533280",
+              "exitNotionalMinor": "537570",
+              "costMinor": "5700",
+              "netPnlMinor": "-1410"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784525400000,
+              "closedAtTimestamp": 1784698200000,
+              "quantity": 3,
+              "entryNotionalMinor": "702960",
+              "exitNotionalMinor": "712800",
+              "costMinor": "6600",
+              "netPnlMinor": "3240"
+            },
+            {
+              "tradeNumber": 3,
+              "openedAtTimestamp": 1785303000000,
+              "closedAtTimestamp": 1785735000000,
+              "quantity": 3,
+              "entryNotionalMinor": "666600",
+              "exitNotionalMinor": "703890",
+              "costMinor": "6400",
+              "netPnlMinor": "30890"
+            }
+          ]
+        },
+        {
+          "symbol": "2330",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10210490",
+          "openPositionQuantity": 3,
+          "trades": []
+        },
+        {
+          "symbol": "2454",
+          "arm": "baseline",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "16000",
+          "finalEquityMinor": "10066395",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "5600",
+              "netPnlMinor": "45775"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "10400",
+              "netPnlMinor": "20620"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "candidate",
+          "completedTradeCount": 2,
+          "wins": 2,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "16000",
+          "finalEquityMinor": "10066395",
+          "openPositionQuantity": 0,
+          "trades": [
+            {
+              "tradeNumber": 1,
+              "openedAtTimestamp": 1774589400000,
+              "closedAtTimestamp": 1776231000000,
+              "quantity": 3,
+              "entryNotionalMinor": "480255",
+              "exitNotionalMinor": "531630",
+              "costMinor": "5600",
+              "netPnlMinor": "45775"
+            },
+            {
+              "tradeNumber": 2,
+              "openedAtTimestamp": 1784093400000,
+              "closedAtTimestamp": 1785994200000,
+              "quantity": 3,
+              "entryNotionalMinor": "1133220",
+              "exitNotionalMinor": "1164240",
+              "costMinor": "10400",
+              "netPnlMinor": "20620"
+            }
+          ]
+        },
+        {
+          "symbol": "2454",
+          "arm": "costMatchedBenchmark",
+          "completedTradeCount": 0,
+          "wins": 0,
+          "losses": 0,
+          "breakevens": 0,
+          "totalCostMinor": "2000",
+          "finalEquityMinor": "10741925",
+          "openPositionQuantity": 3,
+          "trades": []
+        }
+      ]
+    }
+  ],
+  "exposure": {
+    "candidateCalendarWeightedExposureFraction": 0.005203521283783785,
+    "benchmarkCalendarWeightedExposureFraction": 0.03769981047297297,
+    "candidateToBenchmarkExposureRatio": 0.1380251311213937,
+    "algebraicBenchmarkPnlAtCandidateCapitalTimeMinor": 133269.19917834384,
+    "algebraicExposureScalePartOfGapMinor": 832273.8008216561,
+    "remainingAlgebraicGapMinor": 17794.199178343843,
+    "classification": "DESCRIPTIVE_ALGEBRA_NOT_CAUSAL_ATTRIBUTION_OR_IMPLEMENTABLE_RESIZED_RETURN",
+    "originalGrossPnlCandidateMinor": "138759",
+    "originalGrossPnlBenchmarkMinor": "968697",
+    "additionalCandidateFeesMinor": "20130"
+  },
+  "officialSourcesSha256": "085160afc3722a0d017fc538463da7031360e4839db4d06064b133d4e5bd64cb",
+  "partialCorporateActions": [
+    {
+      "symbol": "2330",
+      "exDate": "2026-03-17",
+      "paymentDate": "2026-04-09",
+      "grossTwdPerUnit": "6.00003573",
+      "savedPositionBeforeExDate": {
+        "baseline": 0,
+        "candidate": 0,
+        "costMatchedBenchmark": 3
+      },
+      "grossEntitlementTwdEstimate": {
+        "baseline": "0E-8",
+        "candidate": "0E-8",
+        "costMatchedBenchmark": "18.00010719"
+      },
+      "appliedToPerformance": false,
+      "classification": "PARTIAL_POST_HOC_ACTION_DIAGNOSTIC_SETTLEMENT_AND_TAX_UNVERIFIED"
+    },
+    {
+      "symbol": "2330",
+      "exDate": "2026-06-11",
+      "paymentDate": "2026-07-09",
+      "grossTwdPerUnit": "6.00003573",
+      "savedPositionBeforeExDate": {
+        "baseline": 0,
+        "candidate": 0,
+        "costMatchedBenchmark": 3
+      },
+      "grossEntitlementTwdEstimate": {
+        "baseline": "0E-8",
+        "candidate": "0E-8",
+        "costMatchedBenchmark": "18.00010719"
+      },
+      "appliedToPerformance": false,
+      "classification": "PARTIAL_POST_HOC_ACTION_DIAGNOSTIC_SETTLEMENT_AND_TAX_UNVERIFIED"
+    },
+    {
+      "symbol": "2454",
+      "exDate": "2026-01-06",
+      "paymentDate": "2026-01-30",
+      "grossTwdPerUnit": "29",
+      "savedPositionBeforeExDate": {
+        "baseline": 0,
+        "candidate": 0,
+        "costMatchedBenchmark": 3
+      },
+      "grossEntitlementTwdEstimate": {
+        "baseline": "0",
+        "candidate": "0",
+        "costMatchedBenchmark": "87"
+      },
+      "appliedToPerformance": false,
+      "classification": "PARTIAL_POST_HOC_ACTION_DIAGNOSTIC_SETTLEMENT_AND_TAX_UNVERIFIED"
+    },
+    {
+      "symbol": "2454",
+      "exDate": "2026-07-07",
+      "paymentDate": "2026-07-31",
+      "grossTwdPerUnit": "24.50021529",
+      "savedPositionBeforeExDate": {
+        "baseline": 0,
+        "candidate": 0,
+        "costMatchedBenchmark": 3
+      },
+      "grossEntitlementTwdEstimate": {
+        "baseline": "0E-8",
+        "candidate": "0E-8",
+        "costMatchedBenchmark": "73.50064587"
+      },
+      "appliedToPerformance": false,
+      "classification": "PARTIAL_POST_HOC_ACTION_DIAGNOSTIC_SETTLEMENT_AND_TAX_UNVERIFIED"
+    }
+  ],
+  "limitations": [
+    "11 historical trades per arm, not independent prospective observations.",
+    "Fixed fills already include synthetic 100bps slippage per side. No additional slippage applied.",
+    "Costs may alter frozen cost-covered exit decisions. This sensitivity does not rerun or validate those new decisions.",
+    "Whole-TWD ceiling is conservative sensitivity rounding, not actual settlement cents.",
+    "Min1 assumes eligibility not confirmed. Min20 uses public standard schedule, not confirmed user broker.",
+    "Benchmark 4 positions still open: unrealized mark, zero completed trades, winRate null; no hypothetical exit tax charged.",
+    "Corporate actions/dividend taxation/cash settlement and odd-lot execution availability are not fully modeled.",
+    "No lock paths inspected or mutated; original EPERM evidence untouched."
+  ]
+}

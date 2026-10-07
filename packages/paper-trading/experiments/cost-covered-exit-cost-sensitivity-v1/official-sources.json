@@ -1,0 +1,120 @@
+{
+  "checkedAt": "2026-10-07 UTC",
+  "sources": [
+    {
+      "url": "https://www.twse.com.tw/en/about/company/guide.html",
+      "publisher": "TWSE",
+      "facts": [
+        "Normal share sales tax 0.3% seller only; non-bond ETF sales tax 0.1% seller only.",
+        "Broker sets own commission standard; 3 units is below domestic regular lot of 1000.",
+        "No day-trading tax concession applied because saved exits occur on different dates."
+      ]
+    },
+    {
+      "url": "https://www.cathaysec.com.tw/cathaysec/Products/TradeFee/TWS.aspx",
+      "publisher": "Cathay Securities",
+      "facts": [
+        "Undiscounted listed equity posted commission 1.425 per mille.",
+        "Posted internet discount is deliberately not assumed.",
+        "Their settlement notional is whole TWD truncated; sensitivity instead keeps exact saved cents and ceilings fees to TWD conservatively."
+      ]
+    },
+    {
+      "url": "https://www.sinotrade.com.tw/ec/upload/Service-charge.pdf",
+      "publisher": "SinoPac Securities",
+      "documentDate": "2024-11-28",
+      "facts": [
+        "Posted listed equity commission 1.425 per mille; minimum TWD20.",
+        "Minimum is brokerage commission, separate from tax. No assumption that user is a SinoPac client."
+      ]
+    },
+    {
+      "url": "https://www.sinotrade.com.tw/richclub/invest/offer",
+      "publisher": "SinoPac Securities",
+      "facts": [
+        "Public posted standard listed equity minimum TWD20, limited promotional minimum TWD1.",
+        "Min1 sensitivity does not assume promotion eligibility or discounted commission. ETF-specific broker agreement remains unconfirmed."
+      ]
+    },
+    {
+      "url": "https://www.yuantaetfs.com/product/detail/0056/Basic_information",
+      "publisher": "Yuanta SITC",
+      "facts": [
+        "0056 is Yuanta Taiwan High Dividend ETF, equity index fund beneficiary units; not a bond ETF."
+      ]
+    },
+    {
+      "url": "https://investor.tsmc.com/english/faq",
+      "publisher": "TSMC",
+      "facts": [
+        "TWSE code2330; shareholders own through day before ex-dividend to be entitled."
+      ]
+    },
+    {
+      "url": "https://investor.tsmc.com/english/dividends",
+      "publisher": "TSMC",
+      "facts": [
+        "Per common share dividend NT6.00003573 ex2026-03-17 pay2026-04-09 and ex2026-06-11 pay2026-07-09."
+      ]
+    },
+    {
+      "url": "https://www.mediatek.com/investor-relations/shareholder-services",
+      "publisher": "MediaTek",
+      "facts": [
+        "TWSE ticker2454 common shares; dividend NT29 ex2026-01-06 pay2026-01-30 and NT24.50021529 ex2026-07-07 pay2026-07-31."
+      ]
+    },
+    {
+      "url": "https://www.honhai.com/en-us/investor-relations/shareholders-services/dividend-information",
+      "publisher": "Hon Hai",
+      "facts": [
+        "Public parsed dividend table exposed only2025-07-02. Insufficient2026 coverage; do not treat missing as zero."
+      ]
+    },
+    {
+      "url": "https://www.honhai.com/en-us/investor-relations/shareholders-services/fugle-chart",
+      "publisher": "Hon Hai",
+      "facts": [
+        "TWSE company code2317; separate London GDR codeHHPD."
+      ]
+    }
+  ],
+  "partialCorporateActions": [
+    {
+      "symbol": "2330",
+      "exDate": "2026-03-17",
+      "paymentDate": "2026-04-09",
+      "grossTwdPerUnit": "6.00003573"
+    },
+    {
+      "symbol": "2330",
+      "exDate": "2026-06-11",
+      "paymentDate": "2026-07-09",
+      "grossTwdPerUnit": "6.00003573"
+    },
+    {
+      "symbol": "2454",
+      "exDate": "2026-01-06",
+      "paymentDate": "2026-01-30",
+      "grossTwdPerUnit": "29"
+    },
+    {
+      "symbol": "2454",
+      "exDate": "2026-07-07",
+      "paymentDate": "2026-07-31",
+      "grossTwdPerUnit": "24.50021529"
+    }
+  ],
+  "corporateActionGaps": [
+    "0056 distributions/ex-dates/pay-dates absent from saved corpus; attempted issuer dividend pages could not be read.",
+    "2317 current-year cash/stock dividends not verified from parsed official page.",
+    "No complete split/capital-reduction/action ledger, price adjustment status, dividend tax/withholding/payment rounding or fees verified.",
+    "Official current pages are retrospective references; cannot turn old prices/actions into unseen forward evidence."
+  ],
+  "instrumentTypes": {
+    "0056": "equity ETF beneficiary units",
+    "2317": "Hon Hai TWSE ordinary shares",
+    "2330": "TSMC TWSE ordinary shares, not NYSE ADS",
+    "2454": "MediaTek TWSE ordinary shares"
+  }
+}
