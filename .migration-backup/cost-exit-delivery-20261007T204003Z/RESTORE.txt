@@ -1,0 +1,39 @@
+只在新的、不存在的私有本機目錄還原，勿指向既有repo/worktree。
+先在本備份目錄執行：shasum -a 256 -c SHA256SUMS
+BACKUP設為本備份完整路徑；RESTORE設為新的位置，例如/tmp/mms-cost-exit-restored。
+下列只還原檔案，不執行策略/測試/部署/下載。
+
+python3 - "$BACKUP" "$RESTORE" <<'PY'
+import sys,pathlib,json,hashlib,subprocess,tarfile
+backup=pathlib.Path(sys.argv[1]).resolve(); dest=pathlib.Path(sys.argv[2]).resolve()
+manifest=json.loads((backup/'manifest.json').read_text())
+for name,meta in manifest['artifacts'].items():
+    assert hashlib.sha256((backup/name).read_bytes()).hexdigest()==meta['sha256']
+assert not dest.exists(), 'Restore destination must not already exist'
+dest.mkdir(mode=0o700); repo=dest/'repository.git'
+subprocess.run(['git','init','--bare','--quiet',str(repo)],check=True)
+def git(*args):
+    return subprocess.check_output(['git','-C',str(repo),*args],text=True).strip()
+git('bundle','verify',str(backup/'commits.bundle'))
+git('fetch','--no-tags',str(backup/'commits.bundle'),'refs/heads/*:refs/heads/*')
+git('fsck','--full','--strict')
+for item in manifest['worktrees']:
+    assert git('rev-parse','refs/heads/'+item['branch'])==item['head']
+    git('worktree','add',str(dest/'.worktrees'/item['worktreeName']),item['branch'])
+entries={item['archiveMember']:item for item in manifest['necessaryNonGitEvidence']}
+with tarfile.open(backup/'evidence.tar.gz') as archive:
+    assert len(archive.getmembers())==len(entries)
+    for member in archive.getmembers():
+        assert member.isfile() and member.name in entries
+        item=entries[member.name]; relative=pathlib.PurePosixPath(item['restoreRelativePath'])
+        assert not relative.is_absolute() and '..' not in relative.parts
+        data=archive.extractfile(member).read()
+        assert len(data)==item['bytes'] and hashlib.sha256(data).hexdigest()==item['sha256']
+        target=dest/str(relative); target.parent.mkdir(parents=True,exist_ok=True)
+        assert not target.exists(), 'Do not overwrite existing evidence'
+        target.write_bytes(data); target.chmod(0o600)
+print('Restored five exact branches and 37 evidence files. No strategy/test runs.')
+PY
+
+不含node_modules、credentials、.git config/remotes、原.run.lock、真實ledger/DB；
+不是整個workspace或真實交易系統復原備份。執行依賴可另指向既有版本，本輪不下載或重跑。

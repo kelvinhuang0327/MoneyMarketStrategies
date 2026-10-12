@@ -23,7 +23,7 @@ function sha256(text: string): string {
 }
 
 function loadCanonicalInput(): MiQfiisForeignOwnershipTemporalInput {
-  const ohlcvPath = "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  const ohlcvPath = path.resolve("data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
   const miQfiisPath = path.resolve("outputs/retraining/p198_0056_twse_mi_qfiis_foreign_ownership.csv");
   const ohlcvText = readFileSync(ohlcvPath, "utf8");
   const miQfiisText = readFileSync(miQfiisPath, "utf8");

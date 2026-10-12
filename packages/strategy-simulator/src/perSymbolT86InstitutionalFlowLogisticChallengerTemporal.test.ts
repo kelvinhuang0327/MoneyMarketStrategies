@@ -110,7 +110,7 @@ function loadCanonicalHistoricalData(): {
   readonly ohlcvSha256: string;
   readonly t86Sha256: string;
 } {
-  const ohlcvCsvPath = "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  const ohlcvCsvPath = path.resolve("data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
   const t86CsvPath = path.resolve("outputs/retraining/p196_0056_twse_t86_institutional_flows.csv");
 
   const ohlcvText = readFileSync(ohlcvCsvPath, "utf8");

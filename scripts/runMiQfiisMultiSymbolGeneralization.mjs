@@ -5,6 +5,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import {
   CANONICAL_TRANSACTION_COST_BPS,
@@ -26,7 +27,7 @@ import {
 } from "@mms/strategy-simulator";
 
 const OHLCV_PATH =
-  "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  fileURLToPath(new URL("../data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv", import.meta.url));
 const OHLCV_SHA256 = "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7";
 const MI_QFIIS_PATH = path.resolve(
   "outputs/retraining/p199_0050_2317_2330_2454_twse_mi_qfiis_foreign_ownership.csv",

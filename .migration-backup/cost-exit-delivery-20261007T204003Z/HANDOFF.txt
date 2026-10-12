@@ -1,0 +1,35 @@
+最小私有保留位置：本目錄整份。原worktree、branch、舊archive與快取全部保留，沒有合併主線。
+commits.bundle：自足完整Git歷史，五個精確branch heads及十個階段提交，共用物件只保存一次。
+evidence.tar.gz：必要37份非Git證據：v1合成/CLI驗證4、歷史v1原始及失敗紀錄17、歷史v2原始16。
+成本敏感度、共用費用v2和v2歷史補正摘要/測試結果已在Git，不重複封存。
+manifest.json記完整提交/來源位置/每檔SHA256/磁碟配置；verification.json為獨立還原驗證。
+從空白私有bare repo核bundle完整性、還原5 refs及10階段提交、strict fsck；另抽取37份證據核SHA，
+從還原Git blobs核v1 14及v2 12個source pins。新的驗證scratch已移除，沒有刪linked worktree。
+
+五個worktree均乾淨、同一條鏈，共享原.git物件库，各自checkout/index/HEAD。
+本任務活躍工作已結束；其他使用者/編輯器佔用未確認，未重試被拒的程序清單。
+前兩個node_modules只有Vite空快取目錄各4KiB，非另一份依賴；其他三個沒有node_modules。
+既有outputs/retraining複本不屬本次研究，未讀取/修改/備份其獨立非Git資料。
+cost-covered-zscore-exit-v1: 8304 KiB；outputs 1560、舊私有backup 176、node_modules 4 KiB；HEAD d70d024c566b422c109f42b83515c365ec1564d6。保留審閱/還原，worker無活躍執行。
+cost-covered-exit-history-dev-v1: 10332 KiB；outputs 4996、舊私有backup 240、node_modules 4 KiB；HEAD 50d22885007d3a17b510ed6f1a8372d8546055bc。保留審閱/還原，worker無活躍執行。
+cost-covered-exit-cost-sensitivity-v1: 6752 KiB；outputs 1560、舊私有backup 0、node_modules 0 KiB；HEAD f19cc1e009f4d2586dd2534ac039d14af3b3f0e3。保留審閱/還原，worker無活躍執行。
+shared-paper-cost-model-v2: 6816 KiB；outputs 1560、舊私有backup 0、node_modules 0 KiB；HEAD 1f7fc54f812514bf07522189891e561bf5f1351d。保留審閱/還原，worker無活躍執行。
+shared-cost-history-development-v2: 10780 KiB；outputs 5076、舊私有backup 276、node_modules 0 KiB；HEAD ff2ac5f1252446b1a5ddbb068e524c5c79a24639。保留審閱/還原，worker無活躍執行。
+
+共用費用計算器可獨立重用：精確實作commit b6eb944e8fc70937dd3ef07bde60c013f7f7ec86，
+凍結head 1f7fc54f812514bf07522189891e561bf5f1351d。
+paperCostModelV2.ts是純計算，無執行時依賴；只type-import同目錄types.ts的OrderSide/PaperCostModelV2。
+最小重用單元是此module與這兩個型別，不需cost-covered策略、pair factory或歷史runner。
+freezePaperCostModelV2驗證配置；paperFillCostsV2用bigint分與整數millionths計佣金/最低費、股票/ETF
+賣出稅，各自按quantum捨入。publicTwCostScenarioV2只是一個已揭露假設的公開費率場景。
+可用於獨立離線估算；現紙上engine的實際fill/terms核對和風控reserve亦已接入。
+保留這個基礎工具，不表示推荐尚未獲支持的cost-covered策略；這輪未獨立拆PR或合併。
+
+缺口：僅TWD(100minor)、股票/股票ETF；每execution-report獨立最低費，未支援券商按整張委託或
+當日聚合、退費、優惠折扣，使用者真實條款未知；個人股利稅、公司行動、借券融資、流動性未計。
+既有CLI exact-schema及durable journal序列化/復原不支援新model，durable寫入前拒絕仍保留。
+不能直接接現有accumulator/durable/gateway；未移除guard、遷移ledger或驗證真實金流。
+gate完整report估算不保證next-event/partial-fill費用；engine費用超出售價金的拒絕語義保留。
+本輪只交付整理，無上述功能延伸、測試/策略重跑、回測擴大、全repo掃描、push或merge。
+
+自足bundle包含五個head可達的完整受Git追蹤歷史（含繼承的tracked資料/fixtures）；不另讀取備份非Git真實ledger或凭证。

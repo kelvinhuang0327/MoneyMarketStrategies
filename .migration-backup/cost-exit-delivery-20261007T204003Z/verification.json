@@ -1,0 +1,59 @@
+{
+  "verifiedAtUtc": "2026-10-07T20:41:29.144050+00:00",
+  "status": "INDEPENDENT_PRIVATE_RESTORE_VERIFIED",
+  "temporaryVerificationPath": "/var/folders/tm/ft7d03r14b35h16hbjkjppbs_jv8xm/T/mms-cost-exit-restore-check-adtqra_9",
+  "isolatedBareRepository": "Created empty; verified complete bundle, fetched five refs, strict fsck; no original object-store alternates",
+  "bundleVerification": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.migration-backup/cost-exit-delivery-20261007T204003Z/commits.bundle is okay\nThe bundle contains these 5 refs:\nd70d024c566b422c109f42b83515c365ec1564d6 refs/heads/feat/cost-covered-zscore-exit-v1\n50d22885007d3a17b510ed6f1a8372d8546055bc refs/heads/research/cost-covered-exit-history-dev-v1\nf19cc1e009f4d2586dd2534ac039d14af3b3f0e3 refs/heads/research/cost-covered-exit-cost-sensitivity-v1\n1f7fc54f812514bf07522189891e561bf5f1351d refs/heads/feat/shared-paper-cost-model-v2\nff2ac5f1252446b1a5ddbb068e524c5c79a24639 refs/heads/research/shared-cost-history-development-v2\nThe bundle records a complete history.\nThe bundle uses this hash algorithm: sha1",
+  "fetchVerification": "From /Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.migration-backup/cost-exit-delivery-20261007T204003Z/commits.bundle\n * [new branch]      research/shared-cost-history-development-v2 -> research/shared-cost-history-development-v2\n * [new branch]      feat/shared-paper-cost-model-v2 -> feat/shared-paper-cost-model-v2\n * [new branch]      research/cost-covered-exit-cost-sensitivity-v1 -> research/cost-covered-exit-cost-sensitivity-v1\n * [new branch]      research/cost-covered-exit-history-dev-v1 -> research/cost-covered-exit-history-dev-v1\n * [new branch]      feat/cost-covered-zscore-exit-v1 -> feat/cost-covered-zscore-exit-v1",
+  "strictFsckOutput": "",
+  "restoredRefs": [
+    {
+      "branch": "feat/cost-covered-zscore-exit-v1",
+      "head": "d70d024c566b422c109f42b83515c365ec1564d6",
+      "tree": "60c8b756f023331f01f241cc0dbe0b7ec4fa74a8"
+    },
+    {
+      "branch": "research/cost-covered-exit-history-dev-v1",
+      "head": "50d22885007d3a17b510ed6f1a8372d8546055bc",
+      "tree": "af434970fe0b9036de5831f4d57592c2e4b2dd1e"
+    },
+    {
+      "branch": "research/cost-covered-exit-cost-sensitivity-v1",
+      "head": "f19cc1e009f4d2586dd2534ac039d14af3b3f0e3",
+      "tree": "a5d19837dbe0ea73e3e42d48e2ec85bb8e141ec2"
+    },
+    {
+      "branch": "feat/shared-paper-cost-model-v2",
+      "head": "1f7fc54f812514bf07522189891e561bf5f1351d",
+      "tree": "6ec2631b0159926cfe315ef4ad088ed5e6954ec8"
+    },
+    {
+      "branch": "research/shared-cost-history-development-v2",
+      "head": "ff2ac5f1252446b1a5ddbb068e524c5c79a24639",
+      "tree": "7b5f0cd19f1a1015efab359d515b8b6fc4e6ecab"
+    }
+  ],
+  "exactPhaseCommitsVerified": 10,
+  "nonGitEvidenceExtractedAndByteVerified": 37,
+  "originalEvidenceHashesUnchangedAfterBackup": true,
+  "protocolsVerified": [
+    {
+      "phase": "v1_candidate",
+      "commit": "d70d024c566b422c109f42b83515c365ec1564d6",
+      "protocolSha256": "26af15c66d531078a86ac18d871a710fe47881da8d2dc0eee580215de86d3743",
+      "sourcePinsVerifiedFromIndependentBundle": 14
+    },
+    {
+      "phase": "shared_cost_v2",
+      "commit": "1f7fc54f812514bf07522189891e561bf5f1351d",
+      "protocolSha256": "bd991540df4e364d97492ccffeac9b563b64e088d4244b646c1f38a2ab957a59",
+      "sourcePinsVerifiedFromIndependentBundle": 12
+    }
+  ],
+  "originalFiveWorktreesRemainCleanAndAtExactHeads": true,
+  "originalLockAccess": false,
+  "strategiesOrTestsRun": 0,
+  "fullOriginalRepoScan": false,
+  "worktreesDeleted": 0,
+  "verificationScratchRemoved": true
+}

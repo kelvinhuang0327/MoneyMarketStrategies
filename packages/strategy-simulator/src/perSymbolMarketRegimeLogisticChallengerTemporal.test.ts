@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import {
   runPerSymbolMarketRegimeLogisticChallengerTemporal,
   type MarketRegimeTemporalInput,
@@ -69,7 +70,7 @@ function runSynthetic(rows: readonly RawTwStrategyResearchRow[] = fixtureSynthet
 }
 
 function loadCanonicalHistoricalRows(): RawTwStrategyResearchRow[] {
-  const csvPath = "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System/outputs/retraining/p194_twstock_ohlcv_export.csv";
+  const csvPath = resolve("data/market/p194-twstock-ohlcv-v1/p194_twstock_ohlcv_export.csv");
   const csvText = readFileSync(csvPath, "utf8");
   const raw = parseTwStrategyResearchCsvText(csvText);
   const validated = validateTwStrategyResearchRows(raw, {

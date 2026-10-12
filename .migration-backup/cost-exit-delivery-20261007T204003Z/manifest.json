@@ -1,0 +1,386 @@
+{
+  "schemaVersion": 1,
+  "createdAtUtc": "2026-10-07T20:40:04.164982+00:00",
+  "purpose": "Private self-contained local restore of five exact completed cost-exit phases, including unfavorable evidence",
+  "originalWorkspace": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies",
+  "backupPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.migration-backup/cost-exit-delivery-20261007T204003Z",
+  "worktrees": [
+    {
+      "phase": "v1_candidate",
+      "worktreeName": "cost-covered-zscore-exit-v1",
+      "path": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-zscore-exit-v1",
+      "branch": "feat/cost-covered-zscore-exit-v1",
+      "head": "d70d024c566b422c109f42b83515c365ec1564d6",
+      "status": "CLEAN",
+      "diskAllocatedKiB": 8304,
+      "diskPartsKiB": {
+        "outputs": 1560,
+        ".migration-backup": 176,
+        "node_modules": 4
+      },
+      "gitLayout": "linked worktree; shared original .git object store, separate index/HEAD",
+      "usage": "No active task owned by this worker; retained frozen evidence/review/restoration source. Other-user/editor use is not verified; process-list access was not retried.",
+      "deleteAuthorized": false
+    },
+    {
+      "phase": "v1_history",
+      "worktreeName": "cost-covered-exit-history-dev-v1",
+      "path": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1",
+      "branch": "research/cost-covered-exit-history-dev-v1",
+      "head": "50d22885007d3a17b510ed6f1a8372d8546055bc",
+      "status": "CLEAN",
+      "diskAllocatedKiB": 10332,
+      "diskPartsKiB": {
+        "outputs": 4996,
+        ".migration-backup": 240,
+        "node_modules": 4
+      },
+      "gitLayout": "linked worktree; shared original .git object store, separate index/HEAD",
+      "usage": "No active task owned by this worker; retained frozen evidence/review/restoration source. Other-user/editor use is not verified; process-list access was not retried.",
+      "deleteAuthorized": false
+    },
+    {
+      "phase": "cost_sensitivity",
+      "worktreeName": "cost-covered-exit-cost-sensitivity-v1",
+      "path": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-cost-sensitivity-v1",
+      "branch": "research/cost-covered-exit-cost-sensitivity-v1",
+      "head": "f19cc1e009f4d2586dd2534ac039d14af3b3f0e3",
+      "status": "CLEAN",
+      "diskAllocatedKiB": 6752,
+      "diskPartsKiB": {
+        "outputs": 1560,
+        ".migration-backup": 0,
+        "node_modules": 0
+      },
+      "gitLayout": "linked worktree; shared original .git object store, separate index/HEAD",
+      "usage": "No active task owned by this worker; retained frozen evidence/review/restoration source. Other-user/editor use is not verified; process-list access was not retried.",
+      "deleteAuthorized": false
+    },
+    {
+      "phase": "shared_cost_v2",
+      "worktreeName": "shared-paper-cost-model-v2",
+      "path": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-paper-cost-model-v2",
+      "branch": "feat/shared-paper-cost-model-v2",
+      "head": "1f7fc54f812514bf07522189891e561bf5f1351d",
+      "status": "CLEAN",
+      "diskAllocatedKiB": 6816,
+      "diskPartsKiB": {
+        "outputs": 1560,
+        ".migration-backup": 0,
+        "node_modules": 0
+      },
+      "gitLayout": "linked worktree; shared original .git object store, separate index/HEAD",
+      "usage": "No active task owned by this worker; retained frozen evidence/review/restoration source. Other-user/editor use is not verified; process-list access was not retried.",
+      "deleteAuthorized": false
+    },
+    {
+      "phase": "v2_history",
+      "worktreeName": "shared-cost-history-development-v2",
+      "path": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2",
+      "branch": "research/shared-cost-history-development-v2",
+      "head": "ff2ac5f1252446b1a5ddbb068e524c5c79a24639",
+      "status": "CLEAN",
+      "diskAllocatedKiB": 10780,
+      "diskPartsKiB": {
+        "outputs": 5076,
+        ".migration-backup": 276,
+        "node_modules": 0
+      },
+      "gitLayout": "linked worktree; shared original .git object store, separate index/HEAD",
+      "usage": "No active task owned by this worker; retained frozen evidence/review/restoration source. Other-user/editor use is not verified; process-list access was not retried.",
+      "deleteAuthorized": false
+    }
+  ],
+  "sharedGitObjectsIncludedOnce": true,
+  "baseMainCommit": "7fecfbbd164a9f7697ef9ce5e11b4957a3b7f6e8",
+  "strategyDisposition": "STOP_COST_COVERED_EXIT_VARIANTS_TUNING_AND_EXPANDED_BACKTESTS",
+  "ongoingStrategyOrModelExperiments": false,
+  "worktreesRemoved": 0,
+  "branchesMerged": 0,
+  "testsOrStrategiesRerun": 0,
+  "necessaryNonGitEvidence": [
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/.migration-backup/cost-covered-exit-history-development-v1/cached-child-teardown-failure.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/.migration-backup/cost-covered-exit-history-development-v1/cached-child-teardown-failure.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/.migration-backup/cost-covered-exit-history-development-v1/cached-child-teardown-failure.json",
+      "bytes": 5914,
+      "sha256": "198a3f4ac0c8f1b39b4c8259fe24f8cfbd10d2af9859258fd06eccd87d21825c"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/.migration-backup/cost-covered-exit-history-development-v1/cached-wrapper-and-lock-validation.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/.migration-backup/cost-covered-exit-history-development-v1/cached-wrapper-and-lock-validation.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/.migration-backup/cost-covered-exit-history-development-v1/cached-wrapper-and-lock-validation.json",
+      "bytes": 589,
+      "sha256": "2ebb785c94546ff546161debf5322b90c800c39bce9ce82c98a172f0cc477454"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/3047a3382994b0604f7f00b76a1ed20aee9bc3ce6c5142ad47eb1fc4fce33959.plan.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/3047a3382994b0604f7f00b76a1ed20aee9bc3ce6c5142ad47eb1fc4fce33959.plan.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/3047a3382994b0604f7f00b76a1ed20aee9bc3ce6c5142ad47eb1fc4fce33959.plan.json",
+      "bytes": 6097,
+      "sha256": "3047a3382994b0604f7f00b76a1ed20aee9bc3ce6c5142ad47eb1fc4fce33959"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.baseline.replay.json",
+      "bytes": 211691,
+      "sha256": "6ef8b270cb55e7d1216ef89b62c0e4316e52de2323785bb602069af61bb5ddaa"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.candidate.replay.json",
+      "bytes": 212364,
+      "sha256": "aa225f1a440ae99a1507d29b7f39b368a2798740f8cbe6aa0ab63e7a206f63c1"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.0056.costMatchedBenchmark.replay.json",
+      "bytes": 209446,
+      "sha256": "c99ac8803e3e936997cf47271c524582a43f595e94ff9e82bd0eaacd4b0a36ad"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.baseline.replay.json",
+      "bytes": 219881,
+      "sha256": "275794ce2888e2afaa87f587831495a961bb5d76601ad0ed6aa3bd698b1ac0bd"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.candidate.replay.json",
+      "bytes": 220591,
+      "sha256": "d1c2fce08a4604a06a963363f47ce9a28777c93f33c5a8ab6df11c5fbf4dda1b"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2317.costMatchedBenchmark.replay.json",
+      "bytes": 209710,
+      "sha256": "0505ab3e8be7984e44d6e95e3a1a4b3fcbec877f204532b7032a172e443980d9"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.baseline.replay.json",
+      "bytes": 216249,
+      "sha256": "44991d713485fa87459252760ddf14efe7eb70921edc76e95fb9d492e7339910"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.candidate.replay.json",
+      "bytes": 216145,
+      "sha256": "fb348cdd74bb07d07eccaf255ae7221e042a41c968da0cb4091594045c21a280"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2330.costMatchedBenchmark.replay.json",
+      "bytes": 210264,
+      "sha256": "45c1b73830b7b39313052006930b64b485eea3d0b2ee7693e4dcdb5246fcf473"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.baseline.replay.json",
+      "bytes": 212543,
+      "sha256": "67d86920b35bcc390547b2d09bf9b48f786ebfee44e67fe14b117ffc321e1bf3"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.candidate.replay.json",
+      "bytes": 212245,
+      "sha256": "47c0da7cb8c11d7945ab459fb5a1d272bd4c92e4b8ade91d0c317075ef566819"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.2454.costMatchedBenchmark.replay.json",
+      "bytes": 210251,
+      "sha256": "327bf8298f0580105a1feb9125297bd8e47f7897e4f3942eff15dd58207c482a"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.input.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.input.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.input.json",
+      "bytes": 431390,
+      "sha256": "ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.result.json",
+      "restoreRelativePath": ".worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.result.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-exit-history-dev-v1/outputs/cost-covered-exit-history-development-v1/ca92260041a1a6a64332668be2bf28dfe4e5bfbd6f094397c3bfbb03aaea7c15.result.json",
+      "bytes": 493201,
+      "sha256": "1f956a65c8534158098f1929229c823aea7164aae4419a05a895740855b058e2"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/cli-smoke-validation.json",
+      "restoreRelativePath": ".worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/cli-smoke-validation.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/cli-smoke-validation.json",
+      "bytes": 4308,
+      "sha256": "e8b3134dcf2080a4192e6246ce4fde5e2d057688108cbc78bda1ddb7f540e0a5"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/final-candidate-validation.json",
+      "restoreRelativePath": ".worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/final-candidate-validation.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/final-candidate-validation.json",
+      "bytes": 4071,
+      "sha256": "2fc09c070295f9c08abff0836bf1321a34e59ace6a5c28c423ce4f8241445484"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/fingerprint-guard-validation.json",
+      "restoreRelativePath": ".worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/fingerprint-guard-validation.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/fingerprint-guard-validation.json",
+      "bytes": 1607,
+      "sha256": "b68121b4c24614b8b1bced2729e209ec65285516ecc29a03605d1944024b133a"
+    },
+    {
+      "archiveMember": "evidence/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/synthetic-no-evaluation.json",
+      "restoreRelativePath": ".worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/synthetic-no-evaluation.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/cost-covered-zscore-exit-v1/.migration-backup/cost-covered-exit-validation/synthetic-no-evaluation.json",
+      "bytes": 7039,
+      "sha256": "404bec92f4273066d8a23fa2e31eea621e8625d16f47c81d7a9e69057c66503f"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.baseline.replay.json",
+      "bytes": 212331,
+      "sha256": "02493a45d1ac663db4f92af3f53047af92745fef113387808e33f39627a30dfc"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.candidate.replay.json",
+      "bytes": 219366,
+      "sha256": "a6b3b327882a3374f65b69920b9d15d56959757c53b2389c8b3626c4111b3dad"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.0056.costMatchedBenchmark.replay.json",
+      "bytes": 210201,
+      "sha256": "9aab080ab978b4043c8aeb4525c2097fed80971bc40b55bffa7f4b4be5ea21f8"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.baseline.replay.json",
+      "bytes": 220514,
+      "sha256": "4242150352307f96cd6abefc6a72638513b1fee6ab8ba4505cd71ccfe910891e"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.candidate.replay.json",
+      "bytes": 225043,
+      "sha256": "7ff9a1c74d434446dd8e2659fb4f122a4e8b64f907350b8bcf8eace82214a63b"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2317.costMatchedBenchmark.replay.json",
+      "bytes": 210515,
+      "sha256": "898ba47e8b9a00e4bb0b403fac292aff3400a418516d1b06ef8879fb4dad59e0"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.baseline.replay.json",
+      "bytes": 216881,
+      "sha256": "f43bcf4a5de99cbd77331f42e035f5545d68f411a7678fd2e46bd884020111d2"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.candidate.replay.json",
+      "bytes": 219892,
+      "sha256": "6328a6f3e6665bd368510005e65656c435abb71bbf5eed9250ddaba641894bb7"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2330.costMatchedBenchmark.replay.json",
+      "bytes": 211078,
+      "sha256": "64d73e26c82e6db61a847b8e231ea6a534b9f54d31179fbb155f2e1ced8ffe53"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.baseline.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.baseline.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.baseline.replay.json",
+      "bytes": 213165,
+      "sha256": "07e5175d0e0c1e65e225f9de4de67f308ddb5fe53ba1a912deb30257eb91de3f"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.candidate.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.candidate.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.candidate.replay.json",
+      "bytes": 215709,
+      "sha256": "437775124af3090871e6424d3bcc70766f686a5adb647db7e23bcc78c1d3c605"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.costMatchedBenchmark.replay.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.costMatchedBenchmark.replay.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.2454.costMatchedBenchmark.replay.json",
+      "bytes": 211065,
+      "sha256": "2b88d349a96caa054dd659202aa7183fcd7895c5516b722f48bba13f0c4ec157"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.input.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.input.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.input.json",
+      "bytes": 431814,
+      "sha256": "3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.result.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.result.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/3c1cb4201fa1248137082cb757f798bc22eeb62f2f05e2b43061aedceff67511.result.json",
+      "bytes": 540908,
+      "sha256": "61eca0ee6286cf5004192510d7f346b6dd26a4ce80f45c72a03176107c777af2"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/attempt.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/attempt.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/attempt.json",
+      "bytes": 364,
+      "sha256": "e74dd26d1fdb20afe40e9bfa430136b3765a5836ed1374ffc799a086190a6d42"
+    },
+    {
+      "archiveMember": "evidence/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/edc0e3fb8d8d721281b2a6ee8fb85423c8399401afd2e387ac6d4522f4e05e3c.plan.json",
+      "restoreRelativePath": ".worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/edc0e3fb8d8d721281b2a6ee8fb85423c8399401afd2e387ac6d4522f4e05e3c.plan.json",
+      "originalPath": "/Users/kelvin/VibeCoding-WorkSpace/MoneyMarketStrategies/.worktrees/shared-cost-history-development-v2/outputs/shared-cost-history-development-v2/edc0e3fb8d8d721281b2a6ee8fb85423c8399401afd2e387ac6d4522f4e05e3c.plan.json",
+      "bytes": 9568,
+      "sha256": "edc0e3fb8d8d721281b2a6ee8fb85423c8399401afd2e387ac6d4522f4e05e3c"
+    }
+  ],
+  "nonGitEvidenceCount": 37,
+  "excluded": "Independent non-Git/runtime copies of node_modules/caches, .git config/remotes/credentials, live journals/ledgers/databases, original lock files/directories, redundant prior bundles/tars, and unrelated worktrees. The self-contained bundle necessarily retains all tracked history reachable from the five exact branch heads, including inherited tracked fixtures/data.",
+  "phaseCommitChain": [
+    "ff2ac5f1252446b1a5ddbb068e524c5c79a24639 research: retain fixed shared-cost v2 history evidence and audited open-entry pairs",
+    "c5a494ebda3ce763eb660052cd9ddd4ebc83e3e7 research: preregister one fixed shared-cost v2 history comparison",
+    "1f7fc54f812514bf07522189891e561bf5f1351d freeze(paper): pin shared-cost v2 candidate and focused validation evidence",
+    "b6eb944e8fc70937dd3ef07bde60c013f7f7ec86 feat(paper): share explicit commission and sell-tax costs with v2 exit gate",
+    "f19cc1e009f4d2586dd2534ac039d14af3b3f0e3 research: audit saved odd-lot fill costs and exposure without replay",
+    "0453f7c145b3113ce444d54011fa484e31c7a11a research: predeclare fixed-fill cost sensitivity without strategy replay",
+    "50d22885007d3a17b510ed6f1a8372d8546055bc fix(research): preserve cached history evidence without unlinking owner locks",
+    "54085cc263a89f6c7daaa85bd1fac2bb867b490c feat(research): register fixed historical development exit comparison",
+    "d70d024c566b422c109f42b83515c365ec1564d6 docs(research): explain frozen exit replay and evidence limits",
+    "c28794d109b4007f2f24caae2d9c8c88b191a74f feat(research): freeze cost-covered zscore exit hypothesis and replay"
+  ],
+  "artifacts": {
+    "commits.bundle": {
+      "bytes": 1301624,
+      "sha256": "3a416ecae5ae37be5db1951fab227c623051d8b9b50f61b3179a1b90ba795398"
+    },
+    "evidence.tar.gz": {
+      "bytes": 436349,
+      "sha256": "57045adbe653eca2719c431747d004610fbe95cefb1f45a0fe0c7bf527ae7383"
+    }
+  }
+}
