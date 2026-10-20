@@ -1,0 +1,90 @@
+{
+  "schemaVersion": "p193.real_ohlcv_refit_report.1",
+  "finalClassification": "P194_TWSTOCK_EXPORT_AND_P193_REFIT_COMPLETE_NEGATIVE_HISTORICAL_EVIDENCE",
+  "repository": "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
+  "branch": "main",
+  "trueRetrainingExecuted": true,
+  "run": {
+    "command": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\"}' npx ts-node scripts/p193_real_ohlcv_refit.ts",
+    "runId": "p193-real-ohlcv-2d1aaee13c11-2024-07-18",
+    "sampleCount": 7559,
+    "trainSampleCount": 5279,
+    "holdoutSampleCount": 2280,
+    "purgedSampleCount": 25,
+    "featureCount": 5,
+    "targetDefinition": "1 when close[t+5 trading rows] / close[t] - 1 > 0; otherwise 0",
+    "validationBoundary": {
+      "method": "chronological 70/30 holdout with a five-row purge gap",
+      "trainFeaturePeriod": {
+        "start": "2020-02-10",
+        "end": "2024-07-11"
+      },
+      "trainTargetPeriod": {
+        "start": "2020-02-17",
+        "end": "2024-07-18"
+      },
+      "trainEndDate": "2024-07-18",
+      "testFeaturePeriod": {
+        "start": "2024-07-19",
+        "end": "2026-06-24"
+      },
+      "testTargetPeriod": {
+        "start": "2024-07-30",
+        "end": "2026-07-01"
+      },
+      "purgedBoundarySampleCount": 25,
+      "leakageGuard": "training labels end on or before trainEndDate; test features begin after trainEndDate"
+    },
+    "holdoutMetrics": {
+      "sampleCount": 2280,
+      "positiveCount": 1270,
+      "negativeCount": 1010,
+      "accuracy": 0.54692982,
+      "majorityBaselineAccuracy": 0.55701754,
+      "precision": 0.55335434,
+      "recall": 0.96771654,
+      "brierScore": 0.24872554,
+      "logLoss": 0.69092675,
+      "probabilityMae": 0.49562028,
+      "confusionMatrix": {
+        "truePositive": 1229,
+        "trueNegative": 18,
+        "falsePositive": 992,
+        "falseNegative": 41
+      }
+    },
+    "interpretation": "negative historical evidence: holdout accuracy was below the majority-class baseline in this bounded historical refit."
+  },
+  "validation": {
+    "csvSchemaValidation": "PASS",
+    "boundedPitSafetyValidation": "BOUNDED_PASS_WITH_SOURCE_LIMITATION",
+    "refitReadsOnly": "outputs/retraining/p194_twstock_ohlcv_export.csv",
+    "externalNetworkUsedDuringRefit": false,
+    "fullPointInTimeArchivalSafety": "NOT PROVEN BY TWSTOCK METADATA"
+  },
+  "dbSafety": {
+    "canonicalDbRead": false,
+    "canonicalDbWrite": false
+  },
+  "cannotClaim": [
+    "future stock-price predictive ability",
+    "investment advice",
+    "tradability",
+    "product readiness",
+    "real-market performance",
+    "ROI or Sharpe improvement"
+  ],
+  "filesWritten": [
+    "outputs/retraining/p193_real_ohlcv_metrics.json",
+    "outputs/retraining/p193_real_ohlcv_refit_report.json",
+    "outputs/retraining/p193_real_ohlcv_refit_report.md",
+    "outputs/retraining/p193_real_ohlcv_run_commands.txt",
+    "outputs/retraining/p193_latest_predictions.json",
+    "outputs/retraining/strategy_lab_run_history.json"
+  ],
+  "gitActions": {
+    "staged": false,
+    "committed": false,
+    "pushed": false
+  }
+}

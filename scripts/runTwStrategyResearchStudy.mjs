@@ -69,7 +69,7 @@ import {
 } from "@mms/strategy-simulator";
 
 const DEFAULTS = Object.freeze({
-  legacyRepo: "/Users/kelvin/Kelvin-WorkSpace/Stock-Prediction-System",
+  legacyRepo: path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..", "data", "legacy-source", "Stock-Prediction-System-WORKTREE"),
   ref: "WORKTREE",
   csvPath: "outputs/retraining/p194_twstock_ohlcv_export.csv",
   refitReportPath: "outputs/retraining/p193_real_ohlcv_refit_report.json",
