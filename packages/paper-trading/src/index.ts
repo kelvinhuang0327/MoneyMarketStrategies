@@ -51,6 +51,10 @@ export {
   rollingCloseZScore,
 } from "./zscoreStrategy.js";
 export type { RollingZScoreMeanReversionV1Config } from "./zscoreStrategy.js";
+export {
+  evaluateZScoreForwardWarmupV2,
+  withPriorHistoryV2,
+} from "./zscoreForwardWarmupV2.js";
 export type {
   AccountSnapshot,
   CancelRequest,
