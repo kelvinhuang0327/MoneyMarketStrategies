@@ -1,0 +1,29 @@
+{
+  "format": "legacy-worktree-source-snapshot-v1",
+  "captured_on": "2026-10-14",
+  "source_repository": "Stock-Prediction-System",
+  "source_head": "009d01e0b5c282ad940a1d12244fb2e6381c3ff0",
+  "source_branch": "codex/strategy-lab-visible-results",
+  "source_ref": "WORKTREE",
+  "note": "Working-tree snapshot, not a commit archive. P194 CSV and P193 report were modified in the source worktree at capture; stock_features.py was clean. Values are provenance metadata, not an assertion that this set is complete.",
+  "files": [
+    {
+      "path": "outputs/retraining/p194_twstock_ohlcv_export.csv",
+      "bytes": 642797,
+      "sha256": "ba4ee5760e1f12e2c0eb67eaee66adf773374d8f4e37f629416098316bc091d7",
+      "git_status_at_capture": "M outputs/retraining/p194_twstock_ohlcv_export.csv"
+    },
+    {
+      "path": "outputs/retraining/p193_real_ohlcv_refit_report.json",
+      "bytes": 3083,
+      "sha256": "bb92b0dbc0bb8d7457a1fad9909be2c0494eac90fd2fce85dc1900d713c8a421",
+      "git_status_at_capture": "M outputs/retraining/p193_real_ohlcv_refit_report.json"
+    },
+    {
+      "path": "gbgf/domain/stock_features.py",
+      "bytes": 9751,
+      "sha256": "b75dc0046226bd1025845d12974a2ba290d0cb4e3533483a453c3b8b2b2e2f14",
+      "git_status_at_capture": "clean"
+    }
+  ]
+}

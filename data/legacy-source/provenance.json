@@ -1,0 +1,20 @@
+{
+  "captureMethod": "exact Git blobs extracted from pinned commit; not a Git checkout",
+  "files": [
+    {
+      "gitBlobSha1": "bfb8c2f9383762e976e16a8032a28c5bd2387e6d",
+      "path": "outputs/retraining/p194_twstock_ohlcv_export.csv",
+      "sha256": "2d1aaee13c11015b7d9619e7fe45901cf87283694679a32a410ac03e4854185f",
+      "sizeBytes": 618214
+    },
+    {
+      "gitBlobSha1": "83d303e01f8b3c3412c999c168d4a175331cc81e",
+      "path": "outputs/retraining/p193_real_ohlcv_refit_report.json",
+      "sha256": "6e7dcc2a38781544e970de423b0e9d8fbdebb56c3a656fd9fadfb955fe933af5",
+      "sizeBytes": 3082
+    }
+  ],
+  "schemaVersion": 1,
+  "sourceCommit": "2fc90673cd79b711108e3c7d92cbaa2b6dd461dc",
+  "sourceRepository": "Stock-Prediction-System"
+}
